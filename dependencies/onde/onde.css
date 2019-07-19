@@ -1,0 +1,74 @@
+table.calendar {
+font-family: 'Trebuchet MS' , arial, sans-serif;
+color: black;
+font-size: 10pt;
+border-width: 1px;
+border-color: DarkGray;
+border-style: solid;
+empty-cells: show;
+border-collapse: collapse;
+margin: 0px;
+}
+
+th.calendar {
+text-align: center;
+font-weight: bold;
+font-size: 11pt;
+padding-left: 5px;
+padding-right: 5px;
+background-color: #fff6d5;
+border-width: 1px;
+border-color: DarkGray;
+border-style: solid;
+margin: 0px;
+font-family: 'Trebuchet MS' , arial, sans-serif;
+color: black;
+font-size: 10pt;
+}
+
+td.calendar {
+text-align: left;
+font-size: 10pt;
+padding-left: 5px;
+padding-right: 5px;
+border-width: 1px;
+border-color: DarkGray;
+border-style: solid;
+margin: 0px;
+background-color : white;
+
+font-family: 'Trebuchet MS' , arial, sans-serif;
+color: black;
+font-size: 10pt;
+}
+body {
+        background-color : white;
+	scrollbar-arrow-color:black;
+	scrollbar-track-color:white;
+	scrollbar-shadow-color:black;
+	scrollbar-face-color: #dfdfdf;
+	scrollbar-highlight-color:black;
+	scrollbar-darkshadow-color:silver;
+	scrollbar-3dlight-color:silver;
+}
+
+
+hr { 
+    display: block;
+/*
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: auto;
+    margin-right: auto;
+*/
+    /*border-style: inset;*/
+    border-style: solid;
+    border-width: 0px;
+    color: #9A9A9A;
+    background-color: #9A9A9A;
+    height: 1px;
+}
+
+textarea { 
+  font-family: Monaco, "Lucida Console","Monospace";
+} 

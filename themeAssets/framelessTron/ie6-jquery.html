@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <title>Cross Browser "Fixed Header-Footer-Sidebar" ( IE6-JQuery )</title>
+   <link rel="stylesheet" type="text/css" href="style.css" media="screen">
+   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js" type="text/javascript"></script>
+</head>
+<body><!--root element for modern browsers-->  
+<div id="wrapper"><!--root element for IE6-->  
+    
+    <div id="header">
+        <div id="innerhead">
+            <h1>Cross Browser "Fixed Header-Footer-Sidebar"</h1> 
+            <h3>Tested in IE6-8, FF-2, Opera-9.5, Win/Safari-3.1</h3>
+        </div>
+    </div>
+
+<div id="innerwrap">
+    <div id="main"> 
+    <div class="top-pad"></div><!--preserve the header space-->
+        <div id="right-wrap">
+            <div id="right-inner">
+                <h3>Fixed Sidebar</h3>
+                <p>fixed content</p>
+                <p>fixed content</p>
+                <p>fixed content</p>
+                <p>fixed content</p>
+                <p>fixed content</p>
+                <p>fixed content</p>
+                <p>fixed content</p>
+                <p>fixed content</p>
+                <p>fixed content</p>
+                <p>fixed content</p>
+                <p>fixed content</p>
+                <p>Last fixed content!</p>
+            </div>
+        </div><!--end right-wrap-->           
+        <div id="content">
+            <h2>Main Content Heading</h2>
+            <p class="credit">In this layout IE6 uses a JQuery Library and a custom tailored script 
+            to make the fixed position sidebar behave as it does in modern browsers. It was a lot 
+            of work and much appreciation goes to <a href="http://www.chris-rawlins.com/">Chris Rawlins</a> 
+            for helping me with the script, Thanks Chris!</p>            
+            <p>The header and footer must have fixed heights (either 'px' or 'em').<br /> 
+            They are not designed for large amounts of fluid content.</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Content testing text to cause scrolling</p>
+            <p>Last line of testing text!</p>
+        </div><!--end content-->        
+    <div class="bot-pad"></div><!--preserve the footer space-->
+    </div><!--end main-->
+</div><!--end innerwrap-->
+
+<div id="footer">
+    <div id="innerfoot">
+        <h3>Fixed Footer</h3>
+    </div>
+</div>
+
+</div><!--end wrapper-->
+
+<!--[if IE 6]>
+<link rel="stylesheet" type="text/css" href="ie6.css" media="screen">
+<script type="text/javascript">
+   $(function(){                       // run all of this on document.ready (document.ready is jQuery talk)
+   
+      var resizing = false;
+   
+      init();                          // run the init function
+      
+      $(window).resize(function(){     // bind a resize event to window
+         init();                       // run the init function on window resize
+		 window.location.reload()      // reload the window after init() runs
+      });
+      
+      function init(){   
+	  
+         if(!resizing){
+		    resizing=true;
+            window.setTimeout(function(){    // all code in a setTimeout will run after the set # of milliseconds passes as set below
+               var viewPortHeight = $(window).height(); // set viewport height to a variable
+                  
+               var headerHeight = $("#header").css("height"); // set header height to a variable
+               headerHeight = headerHeight.replace(/px/,'');  // remove the 'px' from the previous variable so we can preform Math with it
+               var footerHeight = $("#footer").css("height");
+               footerHeight = footerHeight.replace(/px/,'');
+            
+               var headerFooterHeight = parseFloat(headerHeight) + parseFloat(footerHeight); // add header and footer height
+            
+               var elHeight = viewPortHeight - headerFooterHeight; // subtract that value from viewPortHeight
+               elHeight = (elHeight - 17) + "px"; // elHeight is how high the fixed element will be, add the 'px' back on
+            
+               $("#right-inner").css('height',elHeight); // set the fixed elements height
+               			
+               $("#innerwrap").scroll(function () { // bind a scroll event to #innerwrap
+                  var scrollY = $("#innerwrap").scrollTop(); // scrollY will equal the amount #innerwrap has scrolled each time it scrolls
+				  $("#right-inner").css('top',scrollY); // set #right-inner top property
+                  $("#right-inner").css({ 'overflow-y' : 'auto', 'overflow-x' : 'hidden' });
+               });
+               resizing = false;
+            },50); // setTimeout will run in 50 milliseconds
+         }
+	  }  
+   });
+</script>
+<![endif]-->
+</body>
+</html>

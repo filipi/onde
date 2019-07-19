@@ -1,0 +1,43 @@
+html,body {
+    overflow:hidden;/*remove scrollbar from IE6*/
+    padding:0;
+    margin:0;
+}
+#wrapper { /*This has essentially become the root element for IE6 now*/
+    overflow:auto;/*IE6 fake fixed (works off a bug where overflow:auto is set on a parent)*/
+    width:100%;
+    height:100%;
+    /*background:#E8E8F4 url(body-bg.jpg) repeat-x;/*same as body BG in main stylesheet*/
+    background:white;
+    border:none;
+}
+#innerwrap {
+    position:absolute;
+    overflow-y:scroll;
+    width:100%;
+    height:100%;
+    z-index:1;
+}
+#main { /*IE picks up the width from the main stylesheet*/
+    margin:0 auto;
+    height:100%;
+    border-left: 0px;/* solid #000;*/
+    border-right: 0px;/* solid #000;*/
+    position:relative; /*establish containing block for AP #right-wrap*/ 
+}
+#right-wrap {
+    position:absolute; /*this is repeated from main css*/
+    border-left:none; /*override left border from main css*/
+}
+#right-inner {
+    position:absolute; /*this is reset to absolute from fixed in main css*/
+    border-left: 0px;/* solid #000;*/
+    top:0;/*important for overriding main css*/
+    right:0; /*important for overriding main css*/
+}
+
+#header {position:absolute;} /*IE6 fake fixed (works off a bug where overflow:auto is set on a parent)*/
+#footer {position:absolute; bottom:-1px;} 
+
+#innerhead, 
+#innerfoot {margin-right:16px;}/* keep it off the scrollbar in IE6*/

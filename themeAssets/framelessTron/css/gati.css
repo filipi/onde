@@ -1,0 +1,710 @@
+A:link {text-decoration: none; color: #0069B3}
+A:visited {text-decoration: none; color: #0069B3}
+A:active {text-decoration: none; color: #0069B3}
+A:hover { text-decoration: none; color: #0069B3}
+
+
+table {
+border-width: 0px;
+border-color: DarkGray;
+border-style: none;
+}
+
+th {
+border-width: 0px;
+border-color: DarkGray;
+border-style: none;
+}
+
+td {
+border-width: 0px;
+border-color: DarkGray;
+border-style: none;
+}
+
+table.onde {
+border-width: 1px;
+border-color: DarkGray;
+border-style: solid;
+}
+
+th.onde {
+border-width: 1px;
+border-color: DarkGray;
+border-style: solid;
+}
+
+td.onde {
+border-width: 1px;
+border-color: DarkGray;
+border-style: solid;
+white-space: nowrap;
+}
+
+td.auxiliaryHidden{
+    margin: 0px;
+    border: 0px;
+    padding: 0px;
+    vertical-align: middle;
+    border-width: 0px;
+} 
+											   
+th.foldable_onde {
+border-width: 0px;
+border-color: DarkGray;
+border-style: solid;
+height: 34px;
+border-left-width: 1px;
+border-left-style: solid;
+}
+
+td.foldable_onde {
+border-width: 0px;
+border-color: DarkGray;
+border-style: solid;
+white-space: nowrap;
+  border-top-width: 1px;
+  border-top-style: solid;
+border-left-width: 1px;
+border-left-style: solid;
+white-space: nowrap;
+}
+
+.demanda
+{
+	border: 1px solid #000000;
+	padding: .2em 40px;
+	margin: .5em 0 1em 0;
+	position: relative;
+}
+
+.message
+{
+	background: #dfd url("../images/accept.png") no-repeat 10px 3px;
+	border: 1px solid #bfb;
+	padding: .2em 40px;
+	margin: .5em 0 1em 0;
+	position: relative;
+}
+.schedulled
+{
+	background: #c5d7eb url("../images/schedulled.png") no-repeat 10px 3px;
+	border: 1px solid #86add5;
+	padding: .2em 40px;
+	margin: .5em 0 1em 0;
+	position: relative;
+}
+.busy
+{
+	background: #fab9b9 url("../images/busy.png") no-repeat 10px 3px;
+	border: 1px solid #c86060;
+	padding: .2em 40px;
+	margin: .5em 0 1em 0;
+	position: relative;
+}
+.birthday
+{
+	background: #ffff95 url("../images/cake.png") no-repeat 10px 3px;
+	border: 1px solid #ffff05;
+	padding: .2em 40px;
+	margin: .5em 0 1em 0;
+	position: relative;
+}
+
+.messagecal
+{
+	font-size: 10px;
+	#background: #dfd url("../images/accept.png") no-repeat 2px 2px;
+	background: #dfd 2px 2px;
+	border: 1px solid #bfb;
+	#padding: .2em 19px;
+	padding: 0;
+	margin: 0;
+	position: relative;
+}
+.schedulledcal
+{
+	font-size: 10px;
+	#background: #c5d7eb url("../images/schedulled.png") no-repeat 2px 2px;
+	background: #c5d7eb 2px 2px;
+	border: 1px solid #86add5;
+	#padding: .2em 19px;
+	padding: 0;
+	margin: 0;
+	position: relative;
+}
+.busycal
+{
+	font-size: 10px;
+	#background: #fab9b9 url("../images/busy.png") no-repeat 2px 2px;
+	background: #fab9b9 2px 2px;
+	border: 1px solid #c86060;
+	#padding: .2em 19px;
+	padding: 0;
+	margin: 0
+	position: relative;
+}
+
+.teste1 {
+position:absolute;
+/* top:54px; */
+top:124px;
+left:550px;;
+
+z-index:10;
+}
+.teste2 {
+position:absolute;
+/* top:54px; */
+top:24px;
+left:100px;;
+
+z-index:10;
+}
+
+.codigoDeDemanda {
+font-size: 72px;
+font-family: "Trebuchet MS", Arial, sans-serif;
+position:absolute;
+top:4px;
+right:10px;
+z-index:0;
+color: lightgrey;
+}
+
+input[type=text] { 
+  border: 1px solid #A3A4B2;
+} 
+input[type=password] { 
+  border: 1px solid #A3A4B2;
+} 
+input[type=search] { 
+  border: 1px solid #A3A4B2;
+} 
+input[type=button] { 
+  border: 1px solid #A3A4B2;
+} 
+input[type=submit] { 
+  border: 1px solid #A3A4B2;
+} 
+textarea { 
+  border: 1px solid #A3A4B2;
+  font-family: Monaco, "Lucida Console","Monospace";
+} 
+select { 
+  border: 1px solid #A3A4B2;
+} 
+
+input.text { 
+    /*border: 1px solid #A3A4B2;*/
+    zoom: 1;
+    overflow: visible;
+    height: 28px;
+    
+    font-family: Verdana,Arial,sans-serif/*{ffDefault}*/; font-size: 1.1em/*{fsDefault}*/;
+    font-size: 1em;
+    -moz-border-radius: 4px/*{cornerRadius}*/;
+    -webkit-border-radius: 4px/*{cornerRadius}*/;
+    border-radius: 4px/*{cornerRadius}*/;    
+} 
+input.password { 
+  /*border: 1px solid #A3A4B2;*/
+    zoom: 1;
+    overflow: visible;
+    height: 28px;
+    
+    font-family: Verdana,Arial,sans-serif/*{ffDefault}*/; font-size: 1.1em/*{fsDefault}*/;
+    font-size: 1em;
+    -moz-border-radius: 4px/*{cornerRadius}*/;
+    -webkit-border-radius: 4px/*{cornerRadius}*/;
+    border-radius: 4px/*{cornerRadius}*/;    
+} 
+input.search { 
+  /*border: 1px solid #A3A4B2;*/
+    zoom: 1;
+    overflow: visible;
+    height: 28px;
+    
+    font-family: Verdana,Arial,sans-serif/*{ffDefault}*/; font-size: 1.1em/*{fsDefault}*/;
+    font-size: 1em;
+    -moz-border-radius: 4px/*{cornerRadius}*/;
+    -webkit-border-radius: 4px/*{cornerRadius}*/;
+    border-radius: 4px/*{cornerRadius}*/;    
+} 
+input.button { 
+/*  border: 1px solid #A3A4B2;*/
+    display: inline-block;
+    position: relative;
+    margin-right: .1em;
+    text-decoration: none !important;
+    cursor: pointer;
+    text-align: center;
+    zoom: 1;
+    overflow: visible;
+    padding: .4em 1em;
+    
+    font-family: Verdana,Arial,sans-serif/*{ffDefault}*/; font-size: 1.1em/*{fsDefault}*/;
+    font-size: 1em;
+    -moz-border-radius: 4px/*{cornerRadius}*/;
+    -webkit-border-radius: 4px/*{cornerRadius}*/;
+    border-radius: 4px/*{cornerRadius}*/;    
+} 
+input.submit { 
+    display: inline-block;
+    position: relative;
+    margin-right: .1em;
+    text-decoration: none !important;
+    cursor: pointer;
+    text-align: center;
+    zoom: 1;
+    overflow: visible;
+    padding: .4em 1em;
+    
+    font-family: Verdana,Arial,sans-serif/*{ffDefault}*/; font-size: 1.1em/*{fsDefault}*/;
+    font-size: 1em;
+    -moz-border-radius: 4px/*{cornerRadius}*/;
+    -webkit-border-radius: 4px/*{cornerRadius}*/;
+    border-radius: 4px/*{cornerRadius}*/;    
+} 
+
+input.text { 
+  border: 1px solid #A3A4B2;
+} 
+input.password { 
+  border: 1px solid #A3A4B2;
+} 
+input.search { 
+  border: 1px solid #A3A4B2;
+} 
+input.button { 
+  border: 1px solid #A3A4B2;
+} 
+input.submit { 
+    display: inline-block;
+    position: relative;
+    margin-right: .1em;
+    text-decoration: none !important;
+    cursor: pointer;
+    text-align: center;
+    zoom: 1;
+    overflow: visible;
+    padding: .4em 1em;    
+    font-family: Verdana,Arial,sans-serif/*{ffDefault}*/; font-size: 1.1em/*{fsDefault}*/;
+    font-size: 1em;
+    -moz-border-radius: 4px/*{cornerRadius}*/;
+    -webkit-border-radius: 4px/*{cornerRadius}*/;
+    border-radius: 4px/*{cornerRadius}*/;        
+} 
+input.tablesubmit { 
+  border: 1px solid #A3A4B2;
+} 
+
+.campo {
+  border: 1px solid #A3A4B2;
+  font-size:1.5em;
+  border-color : #A3A4B2;
+}
+
+/* https://stackoverflow.com/questions/4861224/how-to-use-css-to-surround-a-number-with-a-circle*/
+.numberCircle {
+    border-radius: 50%;
+    behavior: url(PIE.htc); /* remove if you don't care about IE8 */
+
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+
+    background: #fff;
+    border: 2px solid #666;
+    color: #666;
+    text-align: center;
+
+    font: 32px Arial, sans-serif;    
+}
+
+pre {
+  /*font-weight:bold;  */
+  font-family: Monaco, "Lucida Console","Monospace";
+}
+/*
+select, input, input.text, input:focus, input.text:focus{
+  outline: none;
+  border: none;
+  border-bottom: solid 1px;
+}
+*/
+
+.developerEditToolBar {
+font-size: 10px;
+font-family: "Trebuchet MS", Arial, sans-serif;
+position:absolute;
+top:4px;
+right:10px;
+z-index:10;
+color: lightgrey;
+}
+
+
+
+body {
+background-color : white !important;
+background-color : black !important;
+font-family: "Trebuchet MS", Arial, sans-serif!important;
+font-size : 10pt !important;
+color: lightblue;
+padding : 10px !important;
+text-align : justify !important;
+
+//scrollbar-arrow-color:black !important;
+//scrollbar-track-color:white !important;
+//scrollbar-shadow-color:black !important;
+//scrollbar-face-color: #dfdfdf !important;
+//scrollbar-highlight-color:black !important;
+//scrollbar-darkshadow-color:silver !important;
+//scrollbar-3dlight-color:lightblue !important;
+
+    scrollbar-base-color: black;
+    scrollbar-base-color: black;
+    scrollbar-3dlight-color: black;
+    scrollbar-highlight-color: black;
+    scrollbar-track-color: black;
+    scrollbar-arrow-color: black;
+    scrollbar-shadow-color: black;
+    scrollbar-dark-shadow-color: black;
+
+  text-shadow: 0 0 10px #9ecaed;
+
+}
+
+//http://bcreativeweb.blogspot.com.br/2013/09/custom-scrollbars-using-css.html
+@-moz-document url-prefix(http://),url-prefix(https://) {
+scrollbar {
+   -moz-appearance: none !important;
+   background: rgb(0,0,0) !important;
+}
+thumb,scrollbarbutton {
+   -moz-appearance: none !important;
+   background-color: rgb(0,0,0) !important;
+}
+
+thumb:hover,scrollbarbutton:hover {
+   -moz-appearance: none !important;
+   background-color: rgb(0,0,0) !important;
+}
+
+scrollbarbutton {
+   display: none !important;
+}
+
+scrollbar[orient="vertical"] {
+  min-width: 15px !important;
+}
+}
+
+::-webkit-scrollbar { width: 3px; height: 3px;}
+::-webkit-scrollbar-button {&nbsp; background-color: black; }
+::-webkit-scrollbar-track {&nbsp; background-color: black;}
+::-webkit-scrollbar-track-piece { background-color: black;}
+::-webkit-scrollbar-thumb { height: 50px; background-color: #666; border-radius: 3px;}
+::-webkit-scrollbar-corner { background-color: black;}}
+::-webkit-resizer { background-color: black;}
+
+
+
+.campo {
+  border: 1px solid #000;
+  font-size:2em;
+  background-color : transparent;
+  border-color : lightblue;
+  color : lightblue;
+}
+
+input {
+  border: 1px solid #000;
+  background-color : transparent;
+  border-color : lightblue;
+  color : lightblue;
+}
+
+iframe {
+  border: 1px solid #000;
+  background-color : transparent;
+  border-color : lightblue;
+  color : lightblue;
+}
+
+textarea {
+  border: 1px solid #000;
+  background-color : transparent;
+  border-color : lightblue;
+  color : lightblue;
+  /*font-weight:bold;  */
+  font-family: Monaco, "Lucida Console","Monospace";
+}
+
+pre {
+  /*font-weight:bold;  */
+  font-family: Monaco, "Lucida Console", "Monospace";
+  color: lightgreen;
+}
+
+
+.titulo, #titulo {
+	/*width: 500px;*/
+	margin: 5px 0px 0px 0px;
+	font-family: "Trebuchet MS", Arial, sans-serif;
+	background-image: url('../../../themeAssets/fancy/bar_title.png');
+	background-repeat: no-repeat;
+	background-position: bottom;
+	color: lightblue;
+	font-size: 24px;
+}
+
+/*
+#titulo, .titulo {
+font-family : verdana, arial; 
+padding-top : 15px;
+font-weight : normal;
+font-size : 16pt;
+color : black;
+text-decoration : none;	
+text-align : right;
+}
+*/
+
+
+
+.subtitulo , #subtitulo {
+	margin: 15px 0px 8px 0px;
+	/*color: #003664;*/
+        color: lightblue;
+	font-size: 19px;
+}
+
+/*
+#subtitulo, .subtitulo {
+font-family : verdana, tahoma, arial;
+font-weight : bold;
+font-size : 12pt;
+color : #205AA7;
+text-decoration : none;
+}
+*/
+
+
+#destacado, .destacado {
+	margin: 10px 0px 0px 21px;
+	color: #003664;
+	font-size: 17px;
+}
+
+
+/*
+#destacado, .destacado {
+font-family : verdana, tahoma, arial;
+font-weight : bold;
+font-size : 10pt;
+color : #205AA7;
+text-decoration : none;
+}
+*/
+
+#coment, .coment {
+font-family : verdana, tahoma, arial;
+font-size : 08pt;
+color : lightblue;
+text-decoration : none;
+}
+
+#lista {
+font-size:08pt;
+line-height:15pt;
+}
+/*
+a:link , a:visted{
+color: lightblue;
+}
+
+a:hover {
+text-decoration:none;
+}
+*/
+/*
+a:link , a:visted{
+color: #003664;
+}
+
+a:hover {
+text-decoration:none;
+}
+*/
+
+/*a {
+color : green;
+text-decoration : none;
+}
+
+a:visited {
+color : green;
+text-decoration : none;
+}
+
+a:active {
+color : silver;
+text-decoration : underline;
+}
+
+a:hover	{
+color : green;
+text-decoration : underline;
+}
+*/
+
+strong {
+font-weight:bold;
+color: #7d6613;
+font-size: 11px;
+}
+
+ul {
+padding: 0px 0px 0px 2px;
+font-size: 11px;
+list-style-image: url('../../../images/bullet_blue.gif');
+}
+			
+
+sup	{
+font-size : 08pt;
+}
+
+#promo {
+position:absolute;
+top:0px;
+left:285px;
+
+z-index:150;
+}
+
+
+fieldset	{
+background-color : white;
+padding:5px;
+border-width: 1px;
+border-color: #ab4613;
+border-style: solid;
+text-align : left;
+}
+
+legend	{
+padding:5px;
+font-family : 'Trebucher MS', arial, sans-serif;
+font-weight : bold;
+font-size : 10pt;
+color : black;
+text-decoration : none;
+}
+
+table.onde {
+font-family: 'Trebucher MS', arial, sans-serif;
+color: lightblue;
+font-size: 8pt;
+  outline: none;
+  border-color: #9ecaed;
+  box-shadow: 0 0 10px #9ecaed;
+}
+
+th.onde {
+  border-style: solid;
+  border-color: #9ecaed;
+  box-shadow: 0 0 10px #9ecaed;
+}
+
+td.onde{
+  outline: none;
+  border-color: #9ecaed;
+  box-shadow: 0 0 10px #9ecaed;
+}
+
+tr.onde{
+  border-color: #9ecaed;
+  box-shadow: 0 0 10px #9ecaed;
+}
+
+td.auxiliaryHidden{
+    margin: 0px;
+    border: 0px;
+    padding: 0px;
+    vertical-align: middle;
+    border-width: 0px;
+} 
+											   
+th.foldable_onde {
+border-width: 0px;
+border-color: DarkGray;
+border-style: solid;
+height: 34px;
+border-left-width: 1px;
+border-left-style: solid;
+  border-color: #9ecaed;
+  box-shadow: 0 0 10px #9ecaed;
+}
+
+td.foldable_onde {
+border-width: 0px;
+border-color: DarkGray;
+border-style: solid;
+white-space: nowrap;
+  border-top-width: 1px;
+  border-top-style: solid;
+border-left-width: 1px;
+border-left-style: solid;
+  border-color: #9ecaed;
+  box-shadow: 0 0 10px #9ecaed;
+  white-space: nowrap;  
+}
+
+fieldset .interno {
+margin:40px;
+margin-top:5px;
+margin-bottom:10px;
+}
+
+hr { 
+    color: lightblue;
+    background-color: lightblue; 
+}
+
+input {
+/*
+  border: 2px solid #dadada;
+  border-radius: 7px;
+*/
+  outline: none;
+  border-color: #9ecaed;
+  box-shadow: 0 0 10px #9ecaed;
+  text-shadow: 0 0 10px #9ecaed;
+}
+/*
+input:focus {
+  outline: none;
+  border-color: #9ecaed;
+  box-shadow: 0 0 10px #9ecaed;
+}
+*/
+select, .button, .submit, #f_trigger_b, textarea {
+  color:  lightblue; 
+  background-color: black;
+  border-color:  lightblue; 
+
+  outline: none;
+  border-color: #9ecaed;
+  box-shadow: 0 0 10px #9ecaed;
+  text-shadow: 0 0 10px #9ecaed;
+}
+
+hr{
+  outline: none;
+  border-color: #9ecaed;
+  box-shadow: 0 0 10px #9ecaed;
+}
+

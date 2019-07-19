@@ -1,0 +1,88 @@
+table {
+font-family: 'Trebuchet MS' , arial, sans-serif;
+color: lightblue;
+font-size: 10pt;
+border-width: 1px;
+border-color: DarkGray;
+border-style: solid;
+empty-cells: show;
+border-collapse: collapse;
+margin: 0px;
+}
+
+th {
+text-align: center;
+font-weight: bold;
+font-size: 11pt;
+padding-left: 5px;
+padding-right: 5px;
+background-color: black;
+border-width: 1px;
+border-color: lightblue;
+border-style: solid;
+margin: 0px;
+font-family: 'Trebuchet MS' , arial, sans-serif;
+color: blue;
+font-size: 10pt;
+}
+
+td {
+text-align: left;
+font-size: 10pt;
+padding-left: 5px;
+padding-right: 5px;
+border-width: 1px;
+border-color: DarkGray;
+border-style: solid;
+margin: 0px;
+/*background-color: black;*/
+font-family: 'Trebuchet MS' , arial, sans-serif;
+/*color: lightblue;*/
+font-size: 10pt;
+}
+
+.pequeno {
+font-size: 08pt;
+}
+
+.center {
+text-align: center;
+}
+
+.esquerda {
+text-align: left;
+}
+
+.direita {
+text-align: right;
+}
+
+.azul {
+background-color: #b1e6fe;
+}
+
+.cinza {
+background-color:gainsboro;
+}
+
+.amarelo {
+background-color:#ffffd5;
+}
+
+.verde {
+background-color:#ceffce;
+}
+
+.rosa {
+background-color:#FDD5CE;
+}
+
+
+.roxo {
+background-color:#d6aae6;
+}
+
+.laranja {
+background-color:#fae6cb;
+}
+

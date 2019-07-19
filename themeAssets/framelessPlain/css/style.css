@@ -1,0 +1,117 @@
+/** {margin:0;padding:0;}/*for demo purposes only, use a proper reset in your final layout*/
+
+/*=== Begin Layout Structure ===*/
+html,body {height:100%;padding:0; background:white;} 
+
+html {overflow-y:scroll;}/*keep scrollbar position present in FF*/
+
+body {	
+    /*background:#E8E8F4 url(body-bg.jpg) repeat-x;
+    background-attachment:fixed;*/
+    font-size: 100%;
+    font-family: "Trebuchet MS", tahoma, verdana, Arial, sans-serif;
+    color: #000;
+}
+#wrapper {
+    margin:0 auto;
+    /*width:900px;*/
+    min-height:100%;
+    /*background:#EEF; /*important for good browsers since min-height:100%; is on this div*/
+    border-left: 0px;/* solid #000;*/
+    border-right: 0px;/* solid #000;  */
+    background:white;
+}
+#header {
+    width:100%;
+    /*height:101px; */
+    height:1px;
+    position:fixed;
+    top:0;
+    left:0;
+    z-index:5;
+}
+#innerhead {
+    /*height:100px;*/
+    height: 0px;
+    border-bottom: 1px solid #000;
+    /*background:#8293C3;*/
+}
+#innerwrap {/*IE6 gets it's own styling for this*/}
+
+#main{
+    margin:0 auto;
+    /*width:900px;*/
+    /*background:#EEF;/*this is here to be picked up by IE6*/
+    /*position:relative; /*establish containing block for AP #rightwrap*/
+    padding-left: 236px;
+    background:white;
+}
+.top-pad {height:101px}/* same height as header to preserve space*/
+
+#content {
+    /*width:698px; /*actual space available is 699px, let's keep it an even number*/
+    padding-bottom:20px; /*give bottom padding for textual content*/
+    /*background:inherit; /*inherhit #main BG color for 100% height appearance with minimal content*/
+    /*line-height:1.2;*/
+    background:white;
+}
+#right-wrap {
+    z-index: 8;
+    width:236px; 
+    border-left: 0px; /*  solid #000; /*201px total width with left border*/
+    position:absolute;
+    top:0px; /*same as header height*/
+    bottom:61px; /*same as footer height*/ 
+    /*right:0;*/
+    left: 0;
+    background:white;
+    /*background:#BCC5E1; */
+}
+#right-inner {
+    left: 0;
+    z-index: 9;
+    position:fixed;/*for good browsers*/
+    width:236px;
+    top: 0px; /*same as header height*/
+    bottom:0px; /*same as footer height*/ 
+    padding-bottom:20px; /*give bottom padding for textual content*/
+    /*background:#BCC5E1; */
+    background:white;
+    overflow:auto; /*give insurance for text acessability at smaller viewport heights*/
+}
+.bot-pad {height:1px}/* same height as footer to preserve space*/
+
+#footer {
+    width:100%;
+    height:1px; 
+    position:fixed;
+    bottom:0;
+    left:0;
+    z-index:5;
+}
+#innerfoot {
+    height:0px;
+    border-top: 1px solid #000;
+    /*background:#8293C3;*/
+}
+
+/*=== Begin Demo Typography ===
+a {text-decoration:none;}
+p {padding:10px 10px 0 10px;}
+.credit {
+    font-weight:bold;
+    color:#333;
+    line-height:1.2;
+    padding:15px 10px;
+}
+h1,h2,h3 {
+    padding:5px 10px 0 10px;
+    text-align:center;
+    font-family: "trebuchet ms", verdana, sans-serif;
+}
+h1 {font-size:1.75em;}
+h2 {font-size:1.5em;}
+h3 {font-size:1.25em;}
+#content h2, #right-wrap h3 {text-align:left;}
+*/
+
