@@ -12,5 +12,5 @@ manual.html:	manual.tex
 
 clean:
 	@rm -rfv *~ *.toc *.lof *.log *.aux
-	@rm -rfv rm -rf *.4* *.tmp *.xref *.css *.lg *.dvi *.html *.idv *.png
+	@rm -rfv rm -rf *.4* *.tmp *.xref *.css *.lg *.dvi *.html *.idv *.png *.out
 
