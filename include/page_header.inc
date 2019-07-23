@@ -57,15 +57,17 @@ if (stripos("_" . $_theme, "frameless"))
 if (!$_remoteAssets) if ($_theme) echo "themeAssets/" . $_theme;
 ?>/css/tabela.css" TYPE="text/css">
     <LINK REL="stylesheet" HREF="<?PHP
-  if (stripos("_" . $_theme, 'fancy') || stripos("_" . $_theme, 'tron'))
-    if (file_exists("./css/fancy.css"))
-      echo "css/fancy.css";
+  if (stripos("_" . $_theme, 'fancy') || stripos("_" . $_theme, 'tron')){
+    if (file_exists("./dependencies/onde/css/fancy.css"))
+      echo "dependencies/onde/css/fancy.css";
     else{
-      if (file_exists("../css/fancy.css"))
-        echo "../css/fancy.css";
-      else if (file_exists("../../css/fancy.css"))
-          echo "../../css/fancy.css";
+      if (file_exists("../dependencies/onde/css/fancy.css"))
+        echo "../dependencies/onde/css/fancy.css";
+      else if (file_exists("../../dependencies/onde/css/fancy.css"))
+          echo "../../dependencies/onde/css/fancy.css";
     }
+  //echo "<script>consle.log('passei . " . $_theme . "\n');</script>\n";
+  }
   else if (file_exists("./themeAssets/" . $_theme . "/css/gati.css")) echo "themeAssets/" . $_theme . "/css/gati.css";
     else{
       if (file_exists("../themeAssets/" . $_theme . "/css/gati.css"))

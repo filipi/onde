@@ -17,7 +17,7 @@
   $_debug = 0;
   $_singleQueue = 0;
   $_remoteAssets = 0;
-  $_theme = "framelessPlain";
+  $_theme = "framelessTron";
   $verificaEmail = 1;
   $encoding = "UTF-8";
   $mem_limit = "0";
@@ -37,7 +37,7 @@
   $path_to_rsvg_convert = "/usr/bin/rsvg-convert";
   $path_to_sed = "/bin/sed";
   $path_to_ssh = "/usr/bin/ssh";
-  $path_to_temp_dir = "";
+  $path_to_temp_dir = "session_files";
   $path_to_tex = "/usr/bin/latex";
   $path_to_wget = "/usr/bin/wget";
   $path_to_ypcat = "/usr/bin/ypcat";

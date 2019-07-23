@@ -17,7 +17,7 @@
   $_debug = 0;
   $_singleQueue = 0;
   $_remoteAssets = 0;
-  $_theme = "framelessPlain";
+  $_theme = "framelessTron";
   $verificaEmail = 1;
   $encoding = "UTF-8";
   $mem_limit = "0";
