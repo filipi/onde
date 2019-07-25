@@ -5,7 +5,7 @@
 ///////////////////////////////////////////////////////////////////// Cabecalho
 $useSessions = 1;
 $ehXML = 0;
-$headerTitle = "Página de gabarito";
+$headerTitle = "Ground truth generation tool";
 $myPATH = ini_get('include_path') . ':./include:../include:../../include';
 ini_set('include_path', $myPATH);
 include "page_header.inc";
@@ -61,23 +61,40 @@ include "page_header.inc";
 
   <body onload="(doVisuTimer())">
   <?PHP
+  if (!isset($_POST['album'])) $_POST['album'] = 11;
   //  $_debug = 3;
-    //                                                     width, default, submit, echoCaption, filter, desc
+    //                                                   width, default,                 submit, echoCaption, filter, desc
+  echo "<FORM METHOD=POST>\n";
   echo "<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-  dbcombo("albuns", "codigo", "\"Álbum\"", $conn, "album", NULL,  NULL,    NULL,   NULL,        NULL,   NULL);
+  echo "<B>Select dataset</B>";
+  echo "<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+dbcombo("albuns", "codigo", "\"Álbum\"", $conn, "album", NULL,  intval($_POST['album']),    1,   NULL,        " codigo <> 1",   NULL);
   // echo $conn;
   // $query = "select codigo from albuns";
   // $result = pg_exec($conn, $query);
   // $data = pg_fetch_all($reult);		     
   // echo "<PRE>";  var_dump($data); echo "</PRE>";
+  echo "</FORM>\n";
 
-  ?> 
-    <div style="width:100%; height: 100%;">
+//echo $_POST['album'];
+
+  $sql  = "SELECT codigo FROM arquivos\n";
+  $sql .= "  where \"Conteúdo\" IS NOT NULL\n";
+  $sql .= "  and small = false and thumb = false \n";
+  if ( isset($_POST['album']) && intval($_POST['album']) )
+    $sql .= " and codigo in (select arquivo from arquivos_albuns where album = " . intval($_POST['album'])  . ")\n";
+    $sql .= " and codigo not in (select arquivo from arquivos_albuns where album = 1)\n";
+  $sql .= "  order by \"Nome do arquivo\" ";
+
+//echo "<PRE>" . $sql . "</PRE>";
+
+?> 
+<div style="width:100%; height: 100%;">
       <div class="container">
        <div class="display"  >
 
         <?php ////////////Coleta as imagens do banco de dados e adiciona ao HTML
-          $sql = "SELECT codigo FROM arquivos where \"Conteúdo\" IS NOT NULL order by \"Nome do arquivo\" ";
+
           $result = pg_query($conn, $sql);
           $total = pg_NumRows($result);
           $colunas = pg_NumFields($result);
