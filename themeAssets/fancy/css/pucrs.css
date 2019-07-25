@@ -1,0 +1,226 @@
+body {
+background-color : white !important;
+background-color : black !important;
+font-family: "Trebuchet MS", Arial, sans-serif!important;
+font-size : 10pt !important;
+color: lightblue;
+padding : 10px !important;
+text-align : justify !important;
+scrollbar-arrow-color:black !important;
+scrollbar-track-color:white !important;
+scrollbar-shadow-color:black !important;
+scrollbar-face-color: #dfdfdf !important;
+scrollbar-highlight-color:black !important;
+scrollbar-darkshadow-color:silver !important;
+scrollbar-3dlight-color:silver !important;
+}
+
+.campo {
+  border: 1px solid #000;
+  font-size:2em;
+  background-color : black;
+  border-color : lightblue;
+  color : lightblue;
+}
+
+input {
+  border: 1px solid #000;
+  background-color : black;
+  border-color : lightblue;
+  color : lightblue;
+}
+
+iframe {
+  border: 1px solid #000;
+  background-color : black;
+  border-color : lightblue;
+  color : lightblue;
+}
+
+textarea {
+  border: 1px solid #000;
+  background-color : black;
+  border-color : lightblue;
+  color : lightblue;
+  /*font-weight:bold;  */
+  font-family: Monaco, "Lucida Console","Monospace";
+}
+
+pre {
+  /*font-weight:bold;  */
+  font-family: "Lucida Console", "Monospace";
+  color: lightgreen;
+}
+
+
+.titulo, #titulo {
+	/*width: 500px;*/
+	margin: 5px 0px 0px 0px;
+	font-family: "Trebuchet MS", Arial, sans-serif;
+	background-image: url('../../../themeAssets/fancy/bar_title.png');
+	background-repeat: no-repeat;
+	background-position: bottom;
+	color: lightblue;
+	font-size: 24px;
+}
+
+/*
+#titulo, .titulo {
+font-family : verdana, arial; 
+padding-top : 15px;
+font-weight : normal;
+font-size : 16pt;
+color : black;
+text-decoration : none;	
+text-align : right;
+}
+*/
+
+
+
+.subtitulo , #subtitulo {
+	margin: 15px 0px 8px 0px;
+	/*color: #003664;*/
+        color: lightblue;
+	font-size: 19px;
+}
+
+/*
+#subtitulo, .subtitulo {
+font-family : verdana, tahoma, arial;
+font-weight : bold;
+font-size : 12pt;
+color : #205AA7;
+text-decoration : none;
+}
+*/
+
+
+#destacado, .destacado {
+	margin: 10px 0px 0px 21px;
+	color: #003664;
+	font-size: 17px;
+}
+
+
+/*
+#destacado, .destacado {
+font-family : verdana, tahoma, arial;
+font-weight : bold;
+font-size : 10pt;
+color : #205AA7;
+text-decoration : none;
+}
+*/
+
+#coment, .coment {
+font-family : verdana, tahoma, arial;
+font-size : 08pt;
+color : lightblue;
+text-decoration : none;
+}
+
+#lista {
+font-size:08pt;
+line-height:15pt;
+}
+/*
+a:link , a:visted{
+color: lightblue;
+}
+
+a:hover {
+text-decoration:none;
+}
+*/
+/*
+a:link , a:visted{
+color: #003664;
+}
+
+a:hover {
+text-decoration:none;
+}
+*/
+
+/*a {
+color : green;
+text-decoration : none;
+}
+
+a:visited {
+color : green;
+text-decoration : none;
+}
+
+a:active {
+color : silver;
+text-decoration : underline;
+}
+
+a:hover	{
+color : green;
+text-decoration : underline;
+}
+*/
+
+strong {
+font-weight:bold;
+color: #7d6613;
+font-size: 11px;
+}
+
+ul {
+padding: 0px 0px 0px 2px;
+font-size: 11px;
+list-style-image: url('../../../images/bullet_blue.gif');
+}
+			
+
+sup	{
+font-size : 08pt;
+}
+
+#promo {
+position:absolute;
+top:0px;
+left:285px;
+
+z-index:150;
+}
+
+
+fieldset	{
+background-color : white;
+padding:5px;
+border-width: 1px;
+border-color: #ab4613;
+border-style: solid;
+text-align : left;
+}
+
+legend	{
+padding:5px;
+font-family : 'Trebucher MS', arial, sans-serif;
+font-weight : bold;
+font-size : 10pt;
+color : black;
+text-decoration : none;
+}
+
+table {
+font-family: 'Trebucher MS', arial, sans-serif;
+color: lightblue;
+font-size: 8pt;
+}
+
+fieldset .interno {
+margin:40px;
+margin-top:5px;
+margin-bottom:10px;
+}
+
+hr { 
+    color: lightblue;
+    background-color: lightblue; 
+}

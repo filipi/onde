@@ -1,0 +1,260 @@
+A:link {text-decoration: none; color: #0069B3}
+A:visited {text-decoration: none; color: #0069B3}
+A:active {text-decoration: none; color: #0069B3}
+A:hover { text-decoration: none; color: #0069B3}
+
+
+table {
+border-width: 0px;
+border-color: DarkGray;
+border-style: none;
+}
+
+th {
+border-width: 0px;
+border-color: DarkGray;
+border-style: none;
+}
+
+td {
+border-width: 0px;
+border-color: DarkGray;
+border-style: none;
+}
+
+table.onde {
+border-width: 1px;
+border-color: DarkGray;
+border-style: solid;
+}
+
+th.onde {
+border-width: 1px;
+border-color: DarkGray;
+border-style: solid;
+}
+
+td.onde {
+border-width: 1px;
+border-color: DarkGray;
+border-style: solid;
+white-space: nowrap;
+}
+
+td.auxiliaryHidden{
+    margin: 0px;
+    border: 0px;
+    padding: 0px;
+    vertical-align: middle;
+    border-width: 0px;
+} 
+											   
+th.foldable_onde {
+border-width: 0px;
+border-color: DarkGray;
+border-style: solid;
+height: 34px;
+border-left-width: 1px;
+border-left-style: solid;
+}
+
+td.foldable_onde {
+border-width: 0px;
+border-color: DarkGray;
+border-style: solid;
+white-space: nowrap;
+  border-top-width: 1px;
+  border-top-style: solid;
+border-left-width: 1px;
+border-left-style: solid;
+white-space: nowrap;
+}
+
+.demanda
+{
+	border: 1px solid #000000;
+	padding: .2em 40px;
+	margin: .5em 0 1em 0;
+	position: relative;
+}
+
+.message
+{
+	background: #dfd url("../images/accept.png") no-repeat 10px 3px;
+	border: 1px solid #bfb;
+	padding: .2em 40px;
+	margin: .5em 0 1em 0;
+	position: relative;
+}
+.schedulled
+{
+	background: #c5d7eb url("../images/schedulled.png") no-repeat 10px 3px;
+	border: 1px solid #86add5;
+	padding: .2em 40px;
+	margin: .5em 0 1em 0;
+	position: relative;
+}
+.busy
+{
+	background: #fab9b9 url("../images/busy.png") no-repeat 10px 3px;
+	border: 1px solid #c86060;
+	padding: .2em 40px;
+	margin: .5em 0 1em 0;
+	position: relative;
+}
+.birthday
+{
+	background: #ffff95 url("../images/cake.png") no-repeat 10px 3px;
+	border: 1px solid #ffff05;
+	padding: .2em 40px;
+	margin: .5em 0 1em 0;
+	position: relative;
+}
+
+.messagecal
+{
+	font-size: 10px;
+	#background: #dfd url("../images/accept.png") no-repeat 2px 2px;
+	background: #dfd 2px 2px;
+	border: 1px solid #bfb;
+	#padding: .2em 19px;
+	padding: 0;
+	margin: 0;
+	position: relative;
+}
+.schedulledcal
+{
+	font-size: 10px;
+	#background: #c5d7eb url("../images/schedulled.png") no-repeat 2px 2px;
+	background: #c5d7eb 2px 2px;
+	border: 1px solid #86add5;
+	#padding: .2em 19px;
+	padding: 0;
+	margin: 0;
+	position: relative;
+}
+.busycal
+{
+	font-size: 10px;
+	#background: #fab9b9 url("../images/busy.png") no-repeat 2px 2px;
+	background: #fab9b9 2px 2px;
+	border: 1px solid #c86060;
+	#padding: .2em 19px;
+	padding: 0;
+	margin: 0
+	position: relative;
+}
+
+.teste1 {
+position:absolute;
+/* top:54px; */
+top:124px;
+left:550px;;
+
+z-index:10;
+}
+.teste2 {
+position:absolute;
+/* top:54px; */
+top:24px;
+left:100px;;
+
+z-index:10;
+}
+
+.codigoDeDemanda {
+font-size: 72px;
+font-family: "Trebuchet MS", Arial, sans-serif;
+position:absolute;
+top:4px;
+right:10px;
+z-index:0;
+color: lightgrey;
+}
+
+input[type=text] { 
+  border: 1px solid #A3A4B2;
+} 
+input[type=password] { 
+  border: 1px solid #A3A4B2;
+} 
+input[type=search] { 
+  border: 1px solid #A3A4B2;
+} 
+input[type=button] { 
+  border: 1px solid #A3A4B2;
+} 
+input[type=submit] { 
+  border: 1px solid #A3A4B2;
+} 
+textarea { 
+  border: 1px solid #A3A4B2;
+  font-family: Monaco, "Lucida Console","Monospace";
+} 
+select { 
+  border: 1px solid #A3A4B2;
+} 
+
+input.text { 
+  border: 1px solid #A3A4B2;
+} 
+input.password { 
+  border: 1px solid #A3A4B2;
+} 
+input.search { 
+  border: 1px solid #A3A4B2;
+} 
+input.button { 
+  border: 1px solid #A3A4B2;
+} 
+input.submit { 
+  border: 1px solid #A3A4B2;
+} 
+input.tablesubmit { 
+  border: 1px solid #A3A4B2;
+} 
+
+.campo {
+  border: 1px solid #A3A4B2;
+  font-size:1.5em;
+  border-color : #A3A4B2;
+}
+
+/* https://stackoverflow.com/questions/4861224/how-to-use-css-to-surround-a-number-with-a-circle*/
+.numberCircle {
+    border-radius: 50%;
+    behavior: url(PIE.htc); /* remove if you don't care about IE8 */
+
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+
+    background: #fff;
+    border: 2px solid #666;
+    color: #666;
+    text-align: center;
+
+    font: 32px Arial, sans-serif;    
+}
+
+pre {
+  /*font-weight:bold;  */
+  font-family: Monaco, "Lucida Console","Monospace";
+}
+/*
+select, input, input.text, input:focus, input.text:focus{
+  outline: none;
+  border: none;
+  border-bottom: solid 1px;
+}
+*/
+
+.developerEditToolBar {
+font-size: 10px;
+font-family: "Trebuchet MS", Arial, sans-serif;
+position:absolute;
+top:4px;
+right:10px;
+z-index:10;
+color: lightgrey;
+}
