@@ -21,8 +21,7 @@ include "page_header.inc";
 <html>
   <head>
     <style>
-      .display {
-        
+      .display {        
         width: 100%;
         height: 360px;
         margin-top: auto;
@@ -50,9 +49,8 @@ include "page_header.inc";
         top: 20px;
       }
       .container{
-
         position: relative;
-        width: 418px;
+        width: 1536px;
         height: 550px;
         top: 50px;
         left: 50px;
@@ -62,12 +60,24 @@ include "page_header.inc";
   </head>
 
   <body onload="(doVisuTimer())">
+  <?PHP
+  //  $_debug = 3;
+    //                                                     width, default, submit, echoCaption, filter, desc
+  echo "<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+  dbcombo("albuns", "codigo", "\"Álbum\"", $conn, "album", NULL,  NULL,    NULL,   NULL,        NULL,   NULL);
+  // echo $conn;
+  // $query = "select codigo from albuns";
+  // $result = pg_exec($conn, $query);
+  // $data = pg_fetch_all($reult);		     
+  // echo "<PRE>";  var_dump($data); echo "</PRE>";
+
+  ?> 
     <div style="width:100%; height: 100%;">
       <div class="container">
        <div class="display"  >
 
         <?php ////////////Coleta as imagens do banco de dados e adiciona ao HTML
-          $sql = "SELECT codigo FROM arquivos where \"Conteúdo\" IS NOT NULL";
+          $sql = "SELECT codigo FROM arquivos where \"Conteúdo\" IS NOT NULL order by \"Nome do arquivo\" ";
           $result = pg_query($conn, $sql);
           $total = pg_NumRows($result);
           $colunas = pg_NumFields($result);
@@ -85,10 +95,10 @@ include "page_header.inc";
               echo "</center>";
             }
           }
-          pg_close($conn);
+          //pg_close($conn);
         ?>
       </div>
-      <div style="width: 500px; height: 50px;">
+      <div style="width: 1536x; height: 307px;">
         <div class = "playbutton" onclick="playDisplay()">
           <img id="imgPlayStop" src="images/play.jpg" width=50 height=50 >
         </div>
@@ -137,7 +147,7 @@ include "page_header.inc";
             index = 1;
           }
           images[index-1].style.display  = "block";
-          t = setTimeout("changeDisplay()", 500);
+          t = setTimeout("changeDisplay()", 100);
           timeSlider.value = index-1;
       }
     }
