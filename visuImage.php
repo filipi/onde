@@ -11,16 +11,31 @@ ini_set('include_path', $myPATH);
 include "page_header.inc";
 //////////////////////////////////////////////////////////////// Funcoes locais
 ///////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////// Finaliza solicitacao
-//////////////////////////////////////////////////////////// remove solicitacao
-////////////////////////////////////////////////// Carrega solicitacao desejada
-////////////////////////////////////////////////////////////// Monta formulario
 //echo "<img id = '".$id."' src = '".$id.".jpeg"
 
 ?>
 <html>
   <head>
+        <script src="dependencies/knob/js/jquery.knob-1.0.1.1.js"></script>
+        <link href="dependencies/knob/stylesheet.css" rel="stylesheet" type="text/css">
+        <script>
+            $(function() {
+                $(".knob").knob();
+                /*$(".knob").knob(
+                                {
+                                'change':function(e){
+                                        console.log(e);
+                                    }
+                                }
+                            )
+                           .val(79)
+                           ;*/
+            });
+        </script>
     <style>
+	input{
+	  box-shadow: none;
+	  }
       .display {        
         width: 100%;
         height: 360px;
@@ -54,7 +69,13 @@ include "page_header.inc";
         height: 550px;
         top: 50px;
         left: 50px;
-
+      }
+      .rotate90 {
+        -webkit-transform: rotate(90deg);
+        -moz-transform: rotate(90deg);
+        -o-transform: rotate(90deg);
+        -ms-transform: rotate(90deg);
+        transform: rotate(90deg);
       }
     </style>
   </head>
@@ -68,7 +89,7 @@ include "page_header.inc";
   echo "<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
   echo "<B>Select dataset</B>";
   echo "<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-dbcombo("albuns", "codigo", "\"Álbum\"", $conn, "album", NULL,  intval($_POST['album']),    1,   NULL,        " codigo <> 1",   NULL);
+  dbcombo("albuns", "codigo", "\"Álbum\"", $conn, "album", NULL,  intval($_POST['album']),    1,   NULL,        " codigo <> 1",   NULL);
   // echo $conn;
   // $query = "select codigo from albuns";
   // $result = pg_exec($conn, $query);
@@ -88,8 +109,10 @@ dbcombo("albuns", "codigo", "\"Álbum\"", $conn, "album", NULL,  intval($_POST['
 
 //echo "<PRE>" . $sql . "</PRE>";
 
+//echo "<div style=\"width:100%; height: 35%;\">\n";
+echo "<div style=\"width:100%;\">\n";
+
 ?> 
-<div style="width:100%; height: 100%;">
       <div class="container">
        <div class="display"  >
 
@@ -115,7 +138,10 @@ dbcombo("albuns", "codigo", "\"Álbum\"", $conn, "album", NULL,  intval($_POST['
           //pg_close($conn);
         ?>
       </div>
-      <div style="width: 1536x; height: 307px;">
+      <?php
+//      echo "      <div style=\"width: 400x; height: 80px;\">\n";
+echo "      <div style=\"width: 1536x; height: 307px;\">\n";
+	    ?>
         <div class = "playbutton" onclick="playDisplay()">
           <img id="imgPlayStop" src="images/play.jpg" width=50 height=50 >
         </div>
@@ -189,7 +215,36 @@ dbcombo("albuns", "codigo", "\"Álbum\"", $conn, "album", NULL,  intval($_POST['
       }
     }
   </script>
-</html>
+
+        <div style="float:left;width:320px;height:300px;padding:20px">
+            <input class="knob" data-cursor=true data-skin="tron" value="35">
+        </div>
+
+        <div style="float:left;width:320px;height:300px;padding:20px">
+            <input class="knob"data-width="250" data-min="-100" value="44">
+        </div>
+
+        <div style="float:left;width:320px;height:300px;padding:20px">
+            <input class="knob" data-width="300" data-cursor=true value="29">
+        </div>
+
+        <script type="text/javascript">
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-3008949-6']);
+            _gaq.push(['_trackPageview']);
+        </script>
+        <script type="text/javascript">
+            (function() {
+                    var ga = document.createElement('script');
+                    ga.type = 'text/javascript';
+                    ga.async = true;
+                    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+            })();
+        </script>
+
+
+  </html>
 <?PHP
 include "page_footer.inc";
 ?>

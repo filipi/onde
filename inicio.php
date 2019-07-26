@@ -64,95 +64,7 @@ if ($totalAniversariantes){
   }
   echo ", <B>" . $_SESSION[nome] . "</B>!</DIV>\n";
 
-if (!strpos("_" . $_SESSION['grupos'], 'diretor') || 
-    strpos("_" . $_SESSION['grupos'], 'root') ){
-  $query  = "SELECT naofinalizadas('" . $_SESSION['matricula'] . "'),\n";
-  $query .= "       naodefinidas('" . $_SESSION['matricula'] . "')\n";
 
-
-foreach($tipos as $esteTipo) if ($esteTipo['demandas']) $empty = false;
-
-  $result = pg_exec ($conn, $query); // Executa a consulta.
-
-if ($_debug){
-  togglePoint("query_pendencias", "Consulta SQL para mostrar pendencias", 0, NULL, NULL); 
-  echo "<PRE>\n";
-  echo $query . "\n";
-  if (pg_last_error()) echo "\n-----------------------------------------\n" . pg_last_error() . "\n";
-  echo "</PRE>\n";
-
-  showPgFunctionDefinition($conn, "naofinalizadas");
-  showPgFunctionDefinition($conn, "naodefinidas");
-  echo $closeDIV;
-}
-
-  $row = pg_fetch_row ($result, 0);
-  if ($row[0]){
-    echo "<DIV class=\"schedulled\">";
-    echo "Voc&ecirc; tem <A href=\"masterForm.php?PHPSESSID=" . $PHPSESSID . "&formID=" . ATIVIDADES . "\">" . $row[0];
-    if ($row[0]>1)
-      echo " atividades n&atilde;o finalizadas.\n";
-    else
-      echo " atividade n&atilde;o finalizada.\n";
-    echo "</A></DIV>\n";
-  }
-  if ($row[1]){
-    echo "<DIV class=\"busy\">";
-    echo "Voc&ecirc; tem <A href=\"masterForm.php?PHPSESSID=" . $PHPSESSID . "&formID=" . ATIVIDADES . "\">" . $row[1];
-    if ($row[1]>1)
-      echo " atividades ";
-    else
-      echo " atividade ";
-    echo "</A>com situa&ccedil;&atilde;o n&atilde;o definida.\n";
-    echo "</DIV>\n";
-  }
-}
-if (strpos("_" . $_SESSION['grupos'], 'diretor') ||
-    strpos("_" . $_SESSION['grupos'], 'root') ){
-   $query  = "SELECT codigo, nome, demandasporsituacao(codigo) from situacoes";
-   if ($_debug) echo "<PRE>" . $query . "</PRE><BR>\n";
-   $result = pg_exec ($conn, $query); // Executa a consulta.
-   $total  = pg_numrows($result);
-   $linhas = 0;
-   while ($linhas<$total){
-     $row = pg_fetch_row($result, $linhas);
-     if ($_debug>1){
-       echo "<PRE>\n";
-       var_dump($row);
-       echo "\n</PRE>\n";
-     }     
-     $demandas[stripAccents($row[1])] = $row[2];
-     $linhas++;
-   }
-   if ($_debug){
-     echo "<PRE>\n";
-     var_dump($demandas);
-     echo "\n</PRE>\n";
-   }
-
-  if ($demandas['em andamento'] + $demandas['nao definida']){
-    echo "<DIV class=\"schedulled\">";
-    echo "O Instituto tem <A href=\"masterForm.php?PHPSESSID=" . $PHPSESSID . "&formID=" . SOLICITACOES . "\">";
-    echo $demandas['em andamento'] + $demandas['nao definida'];
-    if (($demandas['em andamento'] + $demandas['nao definida'])>1)
-      echo " solicita&ccedil;&otilde;es n&atilde;o finalizadas.\n";
-    else
-      echo " solicita&ccedil;&atilde;o n&atilde;o finalizada.\n";
-    echo "</A></DIV>\n";
-  }
-  if ($demandas['nao definida']){
-    echo "<DIV class=\"busy\">";
-    echo "O Instituto tem <A href=\"masterForm.php?PHPSESSID=" . $PHPSESSID . "&formID=" . SOLICITACOES . "\">";
-    echo $demandas['nao definida'];
-    if ($demandas['nao definida'] > 1)
-      echo " solicita&ccedil;&otilde;es ";
-    else
-      echo " solicita&ccedil;&atilde;o ";
-    echo "</A>com situa&ccedil;&atilde;o n&atilde;o definida.\n";
-    echo "</DIV>\n";
-  }
-
-}
 
 $linhas = 0;
 if ($totalAniversariantes){
@@ -220,44 +132,6 @@ if ($_debug>1){
 
 echo "  <CENTER>\n";
 
-$query  = "select apelido as unidade, solicitacoesPorUnidade('" . $ano . "', apelido) as demandas,\n";
-$query .= "       to_char((case \n";
-$query .= "                  when horasTrabalhadasAno('" . $ano . "', apelido) is null \n";
-$query .= "                    then 0 else horasTrabalhadasAno('" . $ano . "', apelido) \n";
-$query .= "                end) + horasAtividadesAno('" . $ano . "', apelido), '999999') as horas";
-$query .= "\nfrom unidades\n";
-$query .= "where solicitacoesPorUnidade('" . $ano . "', apelido) >0 \n";
-if ($orientation==1)
-  $query .= "order by demandas desc \n";
-else
-  $query .= "order by unidade \n";
-
-$result = pg_exec ($conn, $query);
-$total  = pg_numrows($result);
-$linhas = 0;
-
-if (!$total){
-  if ($_debug>1){
-    echo "Ano: " . intval($_GET['ano']) . "\n";
-    echo $query . "\n";
-    echo "Linhas resultantes: " . intval($total) . "\n";
-  }
-  $ano--;
-}
-
-if (strpos("_" . $_SESSION['grupos'], 'diretor') ||
-    strpos("_" . $_SESSION['grupos'], 'root') ){
-  echo "  <A HREF=\"relatorioAnual.php?PHPSESSID=" .  $PHPSESSID . "&ano=" . $ano . "\">\n";
-}
-
-$query = "select count(codigo) from solicitacoes where to_char(quando, 'YYYY') = '" . $ano . "'";
-$result = pg_exec ($conn, $query);
-$total  = pg_numrows($result);
-if ($total){
-  echo "  <IMG WIDTH=" . ($isMobile ? "321" : "800") . " HEIGHT=" . ($isMobile ? "535" : "480") . " BORDER=0 SRC=\"plot.php?PHPSESSID=" . $PHPSESSID . "&ano=" . $ano . ($isMobile ? "&orientation=1&mobile=1" : "") . "\"></A><BR>\n";
-  echo "  <DIV class=coment><A HREF=\"plot.php?PHPSESSID=" .  $PHPSESSID . "&ano=" . $ano . "&type=svg\">\n";
-  echo "  [clique aqui para baixar este gráfico no formato editável SVG]</DIV>\n";
-}
 
 ?>
   <TABLE class=onde>
