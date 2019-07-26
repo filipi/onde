@@ -1,0 +1,8 @@
+
+@font-face {
+	font-family: 'MoviePoster';
+	src: url('font/MoviePoster.eot?') format('eot'), 
+	     url('font/MoviePoster.woff') format('woff'), 
+	     url('font/MoviePoster.ttf')  format('truetype'),
+	     url('font/MoviePoster.svg#') format('svg');
+}

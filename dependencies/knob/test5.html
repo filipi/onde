@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>jQuery Knob demo</title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+        <script src="js/jquery.knob-1.0.1.1.js"></script>
+
+        <link href="stylesheet.css" rel="stylesheet" type="text/css">
+        <script>
+            $(function() {
+                $(".knob").knob();
+                /*$(".knob").knob(
+                                {
+                                'change':function(e){
+                                        console.log(e);
+                                    }
+                                }
+                            )
+                           .val(79)
+                           ;*/
+            });
+        </script>
+    </head>
+    <body>
+
+        </div>
+        <div style="float:left;width:320px;height:300px;padding:20px">
+            <input class="knob" data-cursor=true data-skin="tron" value="35">
+        </div>
+
+        <div style="float:left;width:320px;height:300px;padding:20px">
+            <input class="knob"data-width="250" data-min="-100" value="44">
+        </div>
+
+        <div style="float:left;width:320px;height:300px;padding:20px">
+            <input class="knob" data-width="300" data-cursor=true value="29">
+        </div>
+
+    </body>
+</html>
