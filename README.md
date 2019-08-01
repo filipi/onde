@@ -2,7 +2,7 @@
 
 O.N.D.E. - Onde is Not Developed by Experts
 
-Inspired by [exflickr/flamework](https://github.com/exflickr/flamework), 
+Inspired by the [exflickr/flamework](https://github.com/exflickr/flamework), 
 Onde is a quick and dirty PHP application prototyping fLame Work.
 
 ## Automatic form CRUD (forms.php)
