@@ -53,7 +53,7 @@
    SELECT column_name, is_nullable
    FROM  INFORMATION_SCHEMA.COLUMNS
    WHERE table_name = 'table'
-     AND table_catalog = 'databas_name'
+     AND table_catalog = 'database_name'
 
    -- Lists the foregin keys of a table
    SELECT
@@ -126,8 +126,22 @@ $argumentKey = 0;
 if(isset($_GET['buttonrow']) && !isset($_POST['buttonrow'])){
   $_POST['buttonrow'] = $_GET['buttonrow'];
  }
+
+if (isset($_POST['buttonrow']) 
+    && trim($formulario['formulario'])
+    && $formulario['Apenas form, sem tabela'] == 't'
+    && $formulario['Não exigir login para este formulário'] == 't'){
+  unset($_POST['buttonrow']);
+  unset($_GET['buttonrow']);
+}
+
+//echo $formulario['formulario'] . "<BR>";
+//echo $formulario['Apenas form, sem tabela'] . "<BR>";
+//echo $formulario['Não exigir login para este formulário'] . "<BR>";
+ 
+
 if (isset($_POST['buttonrow'])){
-  foreach($_POST['buttonrow'] as $buttonrow_key => $buttonrow_val){
+    foreach($_POST['buttonrow'] as $buttonrow_key => $buttonrow_val){
     $queryarguments[$argumentKey]['key'] = 0;
     $queryarguments[$argumentKey]['value'] = pg_escape_string($buttonrow_key);
     $queryarguments[$argumentKey]['type'] = 0; //string
@@ -149,8 +163,12 @@ if (isset($_POST['buttonrow'])){
   $argumentKey++;
 }
 
-if (isset($_GET['args'])){
-  foreach($_GET['args'] as $argkey => $argvalue){
+if (isset($_GET['args']) || isset($_GET['a'])){
+  if (isset($_GET['a']))
+    $arguments = $_GET['a'];
+  else
+    $arguments = $_GET['args'];
+  foreach($arguments as $argkey => $argvalue){
     if (is_numeric($argkey))
       if (is_float($argkey))
 	$queryarguments[$argumentKey]['key'] = floatval($argkey) + 1;
@@ -376,6 +394,9 @@ if (trim($formulario['tabela'])){
 
 if (trim($formulario['consulta'])){
   $query = $formulario['consulta'];
+  if (isset($_SESSION['matricula']) && trim($_SESSION['matricul']))
+    $query = str_replace("\$onde_user", $_SESSION['matricula'], $query);
+
   if (isset($queryarguments))
     foreach($queryarguments as $queryargument)
       $query = str_replace("\$" . $queryargument['key'], trim($queryargument['value']), $query);
@@ -445,6 +466,8 @@ if ($formulario['formulario']){
   $form['action'] .= "?form=" . $codigo;
   foreach ($_GET['toggle'] as $value)
     $form['action'] .= "&toggle[]=" . $value;
+  foreach ($_GET['args'] as $value)
+    $form['action'] .= "&args[]=" . $value;
 
   if ($orderBy) $form['action'] .= "&orderby=" . $orderBy . "&desc=" . $desc;
 
@@ -723,10 +746,10 @@ if ($formulario['formulario']){
 
 
       $mail = new PHPMailer();
-      $mail->From     = $emailTemplate['Endereço do remetente'] ? $emailTemplate['Endereço do remetente'] : "default_mail@default.domain";// change this Filipi
-      $mail->FromName = $emailTemplate['Nome do remetente'] ? $emailTemplate['Nome do remetente'] : "Default recipient";// change this Filipi
-      $mail->Host     = "default.mail.server";// change this Filipi
-      $mail->Mailer   = "smtp";
+      $mail->From     = $emailTemplate['Endereço do remetente'] ? $emailTemplate['Endereço do remetente'] : $system_mail_from;
+      $mail->FromName = $emailTemplate['Nome do remetente'] ? $emailTemplate['Nome do remetente'] : $system_mail_from_name;
+      $mail->Host     = $system_mail_host;
+      $mail->Mailer   = $system_mail_mailer;
       $mail->CharSet = $encoding;
 
       if (trim($emailTemplate['Enviar confirmação de recebimento para']))
@@ -946,7 +969,7 @@ if ($formulario['formulario']){
 	    //echo trim($address['email']) . "  " . trim($address['name']) . " ";
 	    //$_debug = 1;
 	    if ($_debug)
-	      $mail->AddAddress("default@email.adress", "Default Mail Recepient");// change this Filipi
+	      $mail->AddAddress($debug_mail_recipient , "ONDE debug mail recipient");
 	    else
 	      $mail->AddAddress(trim($address['email']) ,
 				trim($address['name']) ? trim($address['name']) : trim($address['email']) );
@@ -1193,7 +1216,7 @@ if ($formulario['formulario']){
 	  //echo trim($address['email']) . "  " . trim($address['name']) . " ";
 	  //$_debug = 1;
 	  if ($_debug)
-	    $mail->AddAddress("default@email.adress", "Default Mail Recepient");// change this Filipi
+	    $mail->AddAddress($debug_mail_recipient, "ONDE debug mail recipient");
 	  else
 	    $mail->AddAddress(trim($address['email']) ,
 			      trim($address['name']) ? trim($address['name']) : trim($address['email']) );
@@ -1563,6 +1586,10 @@ if ($formulario['formulario']){
     else      
       $queryIncluiLinha = trim($formulario['Incluir linha 1 col 1 da query']);    
     if ($queryIncluiLinha){
+      if (isset($queryarguments))
+        foreach($queryarguments as $queryargument)
+          $queryIncluiLinha = str_replace("\$" . $queryargument['key'], trim($queryargument['value']), $queryIncluiLinha);
+
       reset($_POST['buttonrow']);
       while (list($key, $val) = each($_POST['buttonrow'])){
 	$whereString .= $row[0] . " = ";
@@ -1696,17 +1723,10 @@ if ($formulario['formulario']){
         if ($_debug) echo "NULLABLE: " . $nullableColumns[$row[0]]['is_nullable'] . "<BR>\n";
         if ($relations['total']) $row[1] = "references";
 
-         //if ($row[0] == "Usuário"){
-	 //echo "<H1>PASSEI</H1>"; echo "<PRE>"; var_dump($row); echo "</PRE>";
-         //   echo "\$row[0]: " . $row[0] . "<BR>\n";
-	 //   echo "\$formulario['Campo para salvar usuário logado']: " . $formulario['Campo para salvar usuário logado'] . "<BR>\n";
-	 // }
-	 
-	if (
-	    $linhas != intval($formulario['chave'])
+	if ($linhas != intval($formulario['chave'])
             &&  ($row[0]!=trim($formulario['Campo para salvar usuário logado']))
-            //&&  ( $row[3] != "t" || $row[1]!='timestamp')
-            &&  ($row[3] != "t" || $row[1]!='timestamp' || $row[1]!='date')
+            &&  ($row[3] != "t" || $row[1]!='timestamp')
+            //&&  ($row[3] != "t" || $row[1]!='timestamp' || $row[1]!='date')
 	    ){
 	  switch ($row[1]) {
           case 'references':
@@ -1798,7 +1818,7 @@ if ($formulario['formulario']){
             echo " NAME=\"" . fixField($row[0]) . "\" id=\"onde_" . fixField($row[0]) . "\"";
 	    echo " STYLE=\"height: 28px; width: ";
 	    if (intval($row[2]) == -1 ) $row[2] = 50;
-            echo (intval($row[2]/2)>100 || $isMobile) ? "80vw" : (intval($row[2]/1.1)*8 ."px");
+            echo ($isMobile) ? "80vw" : (intval($row[2]/2)>100 ? "200px" : (intval($row[2]/1.1)*8 ."px"));
             //echo intval($row[2]/2)>100 ? 255 : intval($row[2]/1.3)*8;
 	    echo ";\" SIZE=\"";
             echo intval($row[2]/2)>100 ? 200 : intval($row[2]/1.3);
@@ -2052,10 +2072,13 @@ if ($formulario['formulario']){
     }
     if (isset($firingChangingFunctions)){
       echo "<script type=\"text/javascript\">\n";
+      echo "  $(function() {\n";
       foreach($firingChangingFunctions as $changeFunction){
-	//echo "console.log('aqui tambem');";	
+	echo "console.log('aqui tambem');\n";	
+        //echo "console.log('  -- " . $changeFunction . " --  ');\n";
 	echo $changeFunction;	
       }
+      echo "  });\n";
       echo "</script>\n";
     }
     echo "</FORM>\n";
