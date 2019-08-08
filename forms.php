@@ -394,8 +394,8 @@ if (trim($formulario['tabela'])){
 
 if (trim($formulario['consulta'])){
   $query = $formulario['consulta'];
-  if (isset($_SESSION['matricula']) && trim($_SESSION['matricul']))
-    $query = str_replace("\$onde_user", $_SESSION['matricula'], $query);
+  if (isset($_SESSION['matricula']) && trim($_SESSION['matricula']))
+    $query = str_replace("\$onde_user", "'" . $_SESSION['matricula'] . "'", $query);
 
   if (isset($queryarguments))
     foreach($queryarguments as $queryargument)
@@ -577,7 +577,7 @@ if ($formulario['formulario']){
 
     //>>>>>>>>>>>>>>>>>>>>>>>      3. A tabela que tiver apenas 2 chaves estrangeiras, eh uma relacao N:N
     if ($NNtables[$NNkey]['lines'] == 2 && $NNtables[$NNkey]['size'] == 2){
-     //echo "PASSEI";
+      //echo "PASSEI";
       $row = pg_fetch_row ($innerResult, intval($formulario['chave']));
 
       // "SELECT a.attname, t.typname, a.atttypmod\n"
@@ -1279,16 +1279,17 @@ if ($formulario['formulario']){
           $result = pg_exec($conn, "BEGIN");
 	  if ($_debug){
 	    echo "<PRE>PASSEI\n\n";
-	    echo "campo: " . $NNtable['relations'][1]['foreign_table_name'] . "\n";
-	    var_dump($_POST[ $NNtable['relations'][1]['foreign_table_name'] ] );
+	    echo "campo: " . fixField($NNtable['relations'][1]['foreign_table_name']) . "\n";
+	    var_dump($_POST[ fixField($NNtable['relations'][1]['foreign_table_name']) ] );
 	  
-	    echo "campo: lastState_" . $NNtable['relations'][1]['foreign_table_name'] . "\n";
-	    var_dump($_POST[ "lastState_" . $NNtable['relations'][1]['foreign_table_name'] ] );
+	    echo "campo: lastState_" . fixField($NNtable['relations'][1]['foreign_table_name']) . "\n";
+	    var_dump($_POST[ "lastState_" . fixField($NNtable['relations'][1]['foreign_table_name']) ] );
 	    echo "</PRE>\n";
 	  }
-	  if ( !is_null($_POST[ $NNtable['relations'][1]['foreign_table_name'] ]) ||
+	  if ( !is_null($_POST[ fixField($NNtable['relations'][1]['foreign_table_name']) ]) ||
                !is_null($_POST[ "lastState_" . $NNtable['relations'][1]['foreign_table_name'] ])
 	       ){
+	    echo "<PRE>PASSEI -- deletando...\n\n";
 	    $queryDelete  = "DELETE FROM \"" . $NNtable['table_name'] . "\" WHERE \"";
 	    $queryDelete .= $NNtable['relations'][0]['column_name'] . "\" = '" .  intval($_POST[$row[0]]) . "'";
 	    $resultDelete = pg_exec($conn, $queryDelete);
@@ -1305,8 +1306,8 @@ if ($formulario['formulario']){
 	    //echo "<PRE>"; var_dump($NNbridge); echo "</PRE>";
 	    if ($_debug){
 	      echo "<PRE>PASSEI\n\n";
-	      echo "campo: " . $NNtable['relations'][1]['foreign_table_name'] . "\n";
-	      var_dump($_POST[ $NNtable['relations'][1]['foreign_table_name'] ] );
+	      echo "campo: " . fixField($NNtable['relations'][1]['foreign_table_name']) . "\n";
+	      var_dump($_POST[ fixField($NNtable['relations'][1]['foreign_table_name']) ] );
 	      echo "</PRE>\n";
 	    }
 
@@ -1318,7 +1319,7 @@ if ($formulario['formulario']){
 	    if ($getDataTypeResult) $dataType = pg_fetch_row($getDataTypeResult, 0);
 	    //echo "<PRE>"; var_dump($dataType); echo "</PRE>";
 
-	    foreach($_POST[ $NNtable['relations'][1]['foreign_table_name'] ] as $campo => $valores){
+	    foreach($_POST[ fixField($NNtable['relations'][1]['foreign_table_name']) ] as $campo => $valores){
 	      while (list($key, $val) = each($valores)) {
 	        $queryINSERT  = "INSERT INTO \"" . $NNtable['table_name'] . "\"(\"". $NNtable['relations'][0]['column_name'];
 	        $queryINSERT .= "\", \"" . $NNtable['relations'][1]['column_name'] . "\") VALUES (";
@@ -1357,8 +1358,8 @@ if ($formulario['formulario']){
 	    else{
 	      $result = pg_exec($conn, "COMMIT");
 	      //echo "      <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
-	      echo "      <DIV CLASS=\"message\">" . mb_ucfirst($NNtable['relations'][1]['column_name'], $encoding);
-	      echo "      salvo com sucesso!</DIV>\n";
+	      echo "      <DIV CLASS=\"message\">" . trim(mb_ucfirst($NNtable['relations'][1]['column_name'], $encoding));
+	      echo " salvo com sucesso!</DIV>\n";
 	    }
 	  }  
 	}
@@ -2014,11 +2015,13 @@ if ($formulario['formulario']){
 
 	    echo "    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
 	    echo "<INPUT TYPE=\"checkbox\" NAME=\"";
-	    echo $NNtable['relations'][1]['foreign_table_name'] . "[" . $NNtable['relations'][1]['foreign_column_name'] . "]";
+	    //echo $NNtable['relations'][1]['foreign_table_name'] . "[" . $NNtable['relations'][1]['foreign_column_name'] . "]";
+	    
+	    echo fixField($NNtable['relations'][1]['foreign_table_name'] . "[" . $NNtable['relations'][1]['foreign_column_name'] . "][" . $checkBox[$NNtable['relations'][1]['foreign_column_name']] . "]\"");//?D?
 
 	    ///////////////////////////////////////////////// Testar melhor e se nao funcionar inverter estas duas linhas (descomentar uma e comentar a otura)
 	    //echo "[" . $checkBox['codigo'] . "]\"";
-	    echo "[" . $checkBox[$NNtable['relations'][1]['foreign_column_name']] . "]\"";
+	    //echo "[" . $checkBox[$NNtable['relations'][1]['foreign_column_name']] . "]\"";
 
 	    //echo " VALUE=\"" . $checkBox['codigo'] . "\" ";
 	    echo " " . ($checkBox['checked'] == 't' ? "CHECKED" : "") . ">";
@@ -2033,7 +2036,7 @@ if ($formulario['formulario']){
 
 	}
       }
-      if ($_debug) show_query($queryNN, $conn);
+      //if ($_debug) show_query($queryNN, $conn);
     }
 
 
