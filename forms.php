@@ -1289,7 +1289,7 @@ if ($formulario['formulario']){
 	  if ( !is_null($_POST[ fixField($NNtable['relations'][1]['foreign_table_name']) ]) ||
                !is_null($_POST[ "lastState_" . $NNtable['relations'][1]['foreign_table_name'] ])
 	       ){
-	    echo "<PRE>PASSEI -- deletando...\n\n";
+	    //echo "<PRE>PASSEI -- deletando...\n\n";
 	    $queryDelete  = "DELETE FROM \"" . $NNtable['table_name'] . "\" WHERE \"";
 	    $queryDelete .= $NNtable['relations'][0]['column_name'] . "\" = '" .  intval($_POST[$row[0]]) . "'";
 	    $resultDelete = pg_exec($conn, $queryDelete);
@@ -1746,7 +1746,7 @@ if ($formulario['formulario']){
                     //(trim($caption) == "" ? "selecione uma opção" : $caption),
                     $caption,
 		    ($referenceOnChangeFunctions[$linhas] ? $referenceOnChangeFunctions[$linhas] : 0),
-		    0, $ReferencedFilters[$linhas], NULL);
+		    0, $ReferencedFilters[$linhas], NULL, NULL);
 	    echo "<BR><BR>\n";
 	    if ($referenceOnChangeFunctions[$linhas]){
               echo "<script type=\"text/javascript\">\n";
@@ -2095,15 +2095,13 @@ if ($formulario['formulario']){
       if ($index != $formulario['Campo para salvar usuário logado']){
         echo "      var " . fixField($index) . " = document.forms[\"" . fixField($formulario['tabela']) . "\"][\"" . fixField($index) . "\"].value;\n";
         echo "      console.log(" . fixField($index) . ");\n";
+        echo "      if (" . fixField($index) . ".trim() == \"\") {\n";
+        echo "        console.log(\"NULLO: \"+" . fixField($index) . ");\n";
+        echo "        error++\n";
+        echo "      }\n";
       }
-
       echo "      console.log('\$index: " . $index . "');\n";
       echo "      console.log('\$formularios[\'Campo para salvar usuário logado\']: " . $formulario['Campo para salvar usuário logado'] . "');\n";
-
-      echo "      if (" . fixField($index) . ".trim() == \"\") {\n";
-      echo "        console.log(\"NULLO: \"+" . fixField($index) . ");\n";
-      echo "        error++\n";
-      echo "      }\n";
     }
     echo "      if (error) alert(\"Os campos indicados com (*) são obrigatórios.!\")\n";
   
