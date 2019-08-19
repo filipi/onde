@@ -1608,10 +1608,13 @@ if ($formulario['formulario']){
 
       if ($_debug) show_query($queryIncluiLinha, $conn);
       if ($_POST['botao']!=$stringNovo || ($_POST['botao']==$stringNovo && trim($formulario['Incluir linha 1 col 1 da query ao clicar em novo'])) ){
+        //echo "<PRE>" . htmlentities($queryIncluiLinha) . "</PRE>";
         $resultIncluiLinha = pg_exec ($conn, $queryIncluiLinha);
+        //echo pg_last_error() . "<BR>";
         if (pg_numrows($resultIncluiLinha)){
           $rowIncluiLinha = pg_fetch_row ($resultIncluiLinha, 0);
           echo $rowIncluiLinha[0];
+          //echo "PASSEI\n";
         }
       }
     }
@@ -2017,6 +2020,9 @@ if ($formulario['formulario']){
 	    echo "<INPUT TYPE=\"checkbox\" NAME=\"";
 	    //echo $NNtable['relations'][1]['foreign_table_name'] . "[" . $NNtable['relations'][1]['foreign_column_name'] . "]";
 	    
+	    echo fixField($NNtable['relations'][1]['foreign_table_name'] . "[" . $NNtable['relations'][1]['foreign_column_name'] . "][" . $checkBox[$NNtable['relations'][1]['foreign_column_name']] . "]\"");//?D?
+
+	    echo " id=\"";
 	    echo fixField($NNtable['relations'][1]['foreign_table_name'] . "[" . $NNtable['relations'][1]['foreign_column_name'] . "][" . $checkBox[$NNtable['relations'][1]['foreign_column_name']] . "]\"");//?D?
 
 	    ///////////////////////////////////////////////// Testar melhor e se nao funcionar inverter estas duas linhas (descomentar uma e comentar a otura)
