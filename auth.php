@@ -21,11 +21,11 @@ ini_set ( "error_reporting", "E_ALL" );
 /**
  * Trecho de codigo para autenticacao.
  */
-$matricula = $_POST['matricula'];
+$login = $_POST['login'];
 $senha = $_POST['senha'];
-$senha_crypt = crypt($senha,'9$');
+$senha_crypt = crypt(trim($senha),'9$');
 $ip = getenv(REMOTE_ADDR);
-
+$type = intval($_POST['type']);
 
 // Informacaoes sobre a sessao.
 session_cache_expire(1);
@@ -39,15 +39,19 @@ session_start();
 
 $query_adm  = "SELECT * \n";
 $query_adm .= "  FROM usuarios\n";
-$query_adm .= "  WHERE login='" . $matricula . "' AND\n";
+if($type){
+  $query_adm .= "  WHERE email='" . $login . "' AND\n";
+} else {
+  $query_adm .= "  WHERE login='" . $login . "' AND\n";
+}
 $query_adm .= "        senha='" . $senha_crypt . "' AND ativo = true";
 $exec_adm = pg_exec($conn,$query_adm);
 $nro_linhas =  pg_NumRows($exec_adm);
-
+//$login = pg_fetch_row($exec_adm);
 //$authlog_query  = "INSERT INTO authlog(matricula, senha, IP, success)\n";
-//$authlog_query .= "  VALUES ('" . $matricula . "', '" . $senha . "',\n";
+//$authlog_query .= "  VALUES ('" . $login . "', '" . $senha . "',\n";
 $authlog_query  = "INSERT INTO authlog(matricula, IP, success)\n";
-$authlog_query .= "  VALUES ('" . $matricula . "', \n";
+$authlog_query .= "  VALUES ('" . $login . "', \n";
 $authlog_query .= "          '" . $ip . "', ";
 $authlog_query .= (($nro_linhas>0) ? "true" : "false") . ")\n";
 $authlog_exe = pg_exec($conn,$authlog_query);
@@ -55,12 +59,14 @@ $authlog_exe = pg_exec($conn,$authlog_query);
 if ($nro_linhas > 0){
   $linha = pg_fetch_row($exec_adm,0);
   $h_log = date("Y-m-d H:i:s");
-  $matricula = $linha[0];
+  $login = $linha[0];
   $senha_crypt = $linha[1];
   $nome = $linha[2];
   $email = $linha[3];
   $last_login = $linha[4];
   $first = $linha[5];
+
+  
 /*
 
   session_register("h_log","matricula","senha","senha_crypt",
@@ -68,7 +74,7 @@ if ($nro_linhas > 0){
 
 */
   $_SESSION['h_log']       = $h_log;
-  $_SESSION['matricula']   = $matricula;
+  $_SESSION['matricula']   = $login;
   $_SESSION['senha']       = $senha;
   $_SESSION['senha_crypt'] = $senha_crypt;
   $_SESSION['nome']        = $nome;
@@ -94,7 +100,7 @@ if ($nro_linhas > 0){
 
   $query  = "SELECT grupos.nome\n";
   $query .= "  FROM usuarios_grupos, grupos\n";
-  $query .= "  WHERE usuarios_grupos.usuario = '" . $matricula . "'\n";
+  $query .= "  WHERE usuarios_grupos.usuario = '" . $login . "'\n";
   $query .= "   AND  grupos.codigo = usuarios_grupos.grupo\n";
   //if ($_debug) echo "<PRE>" . $query . "</PRE><BR>\n";
    $result = pg_exec ($conn, $query);
@@ -107,6 +113,7 @@ if ($nro_linhas > 0){
      $linhas++;
    }
 
+   
   if ($first == "f"){?>
     <META HTTP-EQUIV='Refresh' CONTENT='
     <?PHP if ($_debug>1) echo "10"; else echo "1";?>;
@@ -131,7 +138,7 @@ else
 if ($_debug){
   echo "<PRE>\n";
   echo $query_adm . "\n";
-  echo "<B>matricula: " . $matricula . "</B>\n";
+  echo "<B>matricula: " . $login . "</B>\n";
   echo "<B>senha: " . $senha . "</B>\n";
   echo "<B>IP: " . $ip . "</B>\n";
   echo "<B>conn: " . $conn . "</B>\n";
