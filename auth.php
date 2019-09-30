@@ -21,7 +21,6 @@ ini_set ( "error_reporting", "E_ALL" );
 /**
  * Trecho de codigo para autenticacao.
  */
-
 $login = $_POST['login'];
 $senha = $_POST['senha'];
 $senha_crypt = crypt(trim($senha),'9$');
@@ -39,8 +38,19 @@ session_start();
 
 $user = new userInfo($login, $type, $senha_crypt);
 
-
-//echo $user->getUserInfo('avatar');
+$query_adm  = "SELECT * \n";
+$query_adm .= "  FROM usuarios\n";
+if($type){
+  $query_adm .= "  WHERE email='" . $login . "' AND\n";
+} else {
+  $query_adm .= "  WHERE login='" . $login . "' AND\n";
+}
+$query_adm .= "        senha='" . $senha_crypt . "' AND ativo = true";
+$exec_adm = pg_exec($conn,$query_adm);
+$nro_linhas =  pg_NumRows($exec_adm);
+//$login = pg_fetch_row($exec_adm);
+//$authlog_query  = "INSERT INTO authlog(matricula, senha, IP, success)\n";
+//$authlog_query .= "  VALUES ('" . $login . "', '" . $senha . "',\n";
 
 $authlog_query  = "INSERT INTO authlog(matricula, IP, success)\n";
 $authlog_query .= "  VALUES ('" . $login . "', \n";
@@ -51,6 +61,17 @@ $authlog_exe = pg_exec($conn,$authlog_query);
 if($user->isValidUser()){
   $h_log = date("Y-m-d H:i:s");
 
+  /*Depois do merge*/
+  $login = $linha[0];
+  $senha_crypt = $linha[1];
+  $nome = $linha[2];
+  $email = $linha[3];
+  $last_login = $linha[4];
+  $first = $linha[5];
+  /*Depois do merge*/
+  
+
+/* Antes do merge
   $login = $user->getUserInfo('login');
   $first = $user->getUserInfo('first');
   $_SESSION['h_log']       = $h_log;
@@ -62,41 +83,8 @@ if($user->isValidUser()){
   $_SESSION['last_login']  = $user->getUserInfo('last_login');
   $_SESSION['first']       = $first;
   $_SESSION['ip']          = $ip;
+*/
 
-/*
-  $query_adm  = "SELECT * \n";
-  $query_adm .= "  FROM usuarios\n";
-  if($type){
-    $query_adm .= "  WHERE email='" . $login . "' AND\n";
-  } else {
-    $query_adm .= "  WHERE login='" . $login . "' AND\n";
-  }
-  $query_adm .= "        senha='" . $senha_crypt . "' AND ativo = true";
-  $exec_adm = pg_exec($conn,$query_adm);
-  $nro_linhas =  pg_NumRows($exec_adm);
-  //$login = pg_fetch_row($exec_adm);
-  //$authlog_query  = "INSERT INTO authlog(matricula, senha, IP, success)\n";
-  //$authlog_query .= "  VALUES ('" . $login . "', '" . $senha . "',\n";
-  $authlog_query  = "INSERT INTO authlog(matricula, IP, success)\n";
-  $authlog_query .= "  VALUES ('" . $login . "', \n";
-  $authlog_query .= "          '" . $ip . "', ";
-  $authlog_query .= (($nro_linhas>0) ? "true" : "false") . ")\n";
-  $authlog_exe = pg_exec($conn,$authlog_query);
-
-  if ($nro_linhas > 0){
-    $linha = pg_fetch_row($exec_adm,0);
-    echo "<pre>";
-    // var_dump($linha);
-    echo "</pre>";
-    $h_log = date("Y-m-d H:i:s");
-    $login = $linha[0];
-    $senha_crypt = $linha[1];
-    $nome = $linha[2];
-    $email = $linha[3];
-    $last_login = $linha[4];
-    $first = $linha[5];
-   // exit(0);
-  */
 /*
 
   session_register("h_log","matricula","senha","senha_crypt",
@@ -142,6 +130,7 @@ if($user->isValidUser()){
      $_SESSION['grupos'] .= $row[0];
      $linhas++;
    }
+
   if ($first == "f"){?>
     <META HTTP-EQUIV='Refresh' CONTENT='
     <?PHP if ($_debug>1) echo "10"; else echo "1";?>;
