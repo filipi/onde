@@ -60,6 +60,20 @@ $withoutMenu[] = "f_cronograma.php";
 
 // Ver mais itens em $withoutMenu no start_sessao.inc
 
+/**
+* @brief Simply uses var_dump() inside a <pre> to give a more visibly a var.
+* @param $var The var to be dumped for debuging. Ex: $_POST
+* @author: Gustavo Leal
+*/
+
+function pretty_dump($var){
+  echo "<PRE>";
+  var_dump($var);
+  echo "</PRE>";
+}
+
+
+
 function fixField($fieldName){
   return stripAccents(strtr($fieldName, ' <>?=.\\-', '________'));
 }
@@ -3154,6 +3168,7 @@ function show_query(){
 		      if (preg_match('/[0-9][0-9][0-9]:[0-9][0-9]:[0-9][0-9]/', $row[$colunas], $matches) )
 			$MTBR = $matches[0];
 		      else
+
 		        if (preg_match('/[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/', $row[$colunas], $matches) )
 			  $MTBR = $matches[0];
                         else

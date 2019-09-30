@@ -3,7 +3,7 @@ if (!isset($_startup) || !$_startup){
   include_once("php_backwards_compatibility.inc");
   include_once("escapeConfVars.inc");
   include("conf.inc"); escapeConfVars();
-
+  include("classes.inc");
   if (!$_debug)
     ini_set ( "error_reporting", "E_COMPILE_ERROR|E_ERROR|E_CORE_ERROR" );
   else
@@ -26,7 +26,7 @@ if (!isset($_startup) || !$_startup){
   include_once("lib.inc");
 
   $ONDE_VERSION = "0.1.0";
-  $SYSTEM_NAME = "System Name as on startup.inc";
+  $SYSTEM_NAME = "EasyBeasy";
   $APPLICATION_NAME = "Demonstraion";
   $SYSTEM_VERSION = "0.0.1";
   $DATABASE_VERSION = "0.0";
