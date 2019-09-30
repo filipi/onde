@@ -3168,6 +3168,7 @@ function show_query(){
 		      if (preg_match('/[0-9][0-9][0-9]:[0-9][0-9]:[0-9][0-9]/', $row[$colunas], $matches) )
 			$MTBR = $matches[0];
 		      else
+
 		        if (preg_match('/[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/', $row[$colunas], $matches) )
 			  $MTBR = $matches[0];
                         else

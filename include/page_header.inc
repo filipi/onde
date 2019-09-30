@@ -39,6 +39,12 @@ if (!$ehXML){
   //echo "UNTITLED";
   else 
     echo $headerTitle; ?></TITLE>
+    <meta name="viewport" content="width=device-width, user-scalable=no">			     
+
+    <meta charset="<?PHP echo $encoding; ?>">
+    <meta name="google" content="notranslate">
+    <meta http-equiv="Content-Language" content="en">
+
     <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=<?PHP echo $encoding; ?>">
 <?PHP
 if (stripos("_" . $_theme, "bootstrap"))
@@ -46,6 +52,7 @@ if (stripos("_" . $_theme, "bootstrap"))
 if (stripos("_" . $_theme, "frameless"))
   echo "    <link rel=\"stylesheet\" type=\"text/css\" href=\"themeAssets/" . $_theme . "/css/style.css\" media=\"screen\">\n";
 ?>
+    <link href="dependencies/onde/chat.css" rel="stylesheet" type="text/css"/>
     <link href="dependencies/jquery/jquery-ui.css" rel="stylesheet" type="text/css"/>
     <link href="dependencies/codemirror/lib/codemirror.css" rel="stylesheet" type="text/css"/>
     <link href="dependencies/codemirror/theme/night.css" rel="stylesheet" type="text/css"/>
@@ -253,6 +260,23 @@ if ( stripos("_" . $_theme, "bootstrap") && !$ehXML && !$erro_sessao)
 ?>
         <div id="content">
 <?PHP
+if ($isMobile && (!in_array(basename($_SERVER['PHP_SELF']), $withoutMenu)) && !$ehXML){
+  ?>
+<SCRIPT LANGUAGE='javascript'>
+   var menu_mouse;
+</SCRIPT>
+<A STYLE="display:block;"
+  onclick="document.getElementById('right-wrap').style.display = 'block';
+           document.getElementById('right-inner').style.width=jQuery(window).width();"
+  onmouseover="menu_mouse = document.body.style.cursor; document.body.style.cursor = 'pointer'; "
+  onmouseout="document.body.style.cursor =  menu_mouse;"
+  style="text-decoration: none; cursor: pointer; margin: 0px; padding: 0px; border: 0px;  width: 100%; display:block;"
+  border="0"
+  ><img src="images/Ic_menu_48px<?PHP if(stripos("_" . $_theme, 'fancy') || stripos("_" . $_theme, 'tron')) echo "Glow";?>.png"></A>
+<?PHP
+}
+
+	   
 }
   if (file_exists("./images/titulo.gif"))
     echo "<DIV ID=titulo><IMG SRC=./images/titulo.gif></DIV>\n<BR>\n";
@@ -281,4 +305,15 @@ if (!$ehXML){
   echo "\$toggle: " . count($toggle) . "<BR>\n";
 }
 */
+
+if ($isMobile && (!in_array(basename($_SERVER['PHP_SELF']), $withoutMenu)) && !$ehXML ){
+  echo "<SCRIPT>document.getElementById('right-wrap').style.display = 'none';\n";
+  echo "        document.getElementById(\"main\").style.paddingLeft = \"0px\";\n";
+  echo "        document.getElementById('right-inner').style.width=jQuery(window).width();\n";
+  echo "</SCRIPT>";
+}
+
+//echo "<PRE>";
+//var_dump($_SESSION);
+//echo "</PRE>";
 ?>
