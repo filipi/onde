@@ -7,7 +7,7 @@ $headerTitle = "P&aacute;gina de configura&ccedil;&atilde;o do sistema";
 $useSessions = 1; $ehXML = 0;
 $myPATH = ini_get('include_path') . ':./include:../include:../../include';
 ini_set('include_path', $myPATH);
-
+include_once("masterFormStartup.inc");
 include "page_header.inc";
 
 if (trim($_POST['banco'])){
@@ -75,8 +75,7 @@ if (trim($_POST['banco'])){
   else
     Warning("Erro gravando configura&ccedil;&otilde;es!");
 
-  if (PHP_VERSION_ID >= 50500) opcache_invalidate("conf.inc");
-  // Da um include apos salvar para recarregar os valores no FORM
+  include_once("php_backwards_compatibility.inc");
   include_once("escapeConfVars.inc");
   include "conf.inc"; escapeConfVars();
   
@@ -197,8 +196,8 @@ foreach($themes as $val){
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <B>Endereço do servidor:</B><BR>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <INPUT TYPE="TEXT" CLASS="TEXT" NAME="host_site" SIZE="40"
-    VALUE="<?PHP echo $host_site; ?>"><BR>
+    <INPUT TYPE="TEXT" CLASS="TEXT" NAME="host_siteIdeia" SIZE="40"
+    VALUE="<?PHP echo $host_siteIdeia; ?>"><BR>
     <BR>
 <?PHP
   echo $closeDIV;
@@ -279,9 +278,9 @@ if (strpos($_SESSION['grupos'], 'manuten')){
   echo "<B>USU&Aacute;RIO LOGADO:</B><BR>\n";
   echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
   if (isset($_SESSION['nome']))
-    dbcombo("usuarios", "login", "nome", $conn, "matricula", 100, $_SESSION['nome'], $submit, NULL, NULL, NULL);
+    dbcombo("usuarios", "login", "nome", $conn, "matricula", 100, $_SESSION['nome'], $submit, NULL, NULL, NULL, NULL);
   else
-    dbcombo("usuarios", "login", "nome", $conn, "matricula", 100, "selecione o usuario", $submit, NULL, NULL, NULL);
+    dbcombo("usuarios", "login", "nome", $conn, "matricula", 100, "selecione o usuario", $submit, NULL, NULL, NULL, NULL);
   echo "<BR>\n";
   echo "<BR>\n";
 }

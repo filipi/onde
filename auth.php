@@ -36,6 +36,7 @@ ini_set('session.save_path',"./session_files");
 session_name('onde');
 session_start();
 
+$user = new userInfo($login, $type, $senha_crypt);
 
 $query_adm  = "SELECT * \n";
 $query_adm .= "  FROM usuarios\n";
@@ -50,29 +51,47 @@ $nro_linhas =  pg_NumRows($exec_adm);
 //$login = pg_fetch_row($exec_adm);
 //$authlog_query  = "INSERT INTO authlog(matricula, senha, IP, success)\n";
 //$authlog_query .= "  VALUES ('" . $login . "', '" . $senha . "',\n";
+
 $authlog_query  = "INSERT INTO authlog(matricula, IP, success)\n";
 $authlog_query .= "  VALUES ('" . $login . "', \n";
 $authlog_query .= "          '" . $ip . "', ";
-$authlog_query .= (($nro_linhas>0) ? "true" : "false") . ")\n";
+$authlog_query .= ($user->isValidUser() ? "true" : "false") . ")\n";
 $authlog_exe = pg_exec($conn,$authlog_query);
 
-if ($nro_linhas > 0){
-  $linha = pg_fetch_row($exec_adm,0);
+if($user->isValidUser()){
   $h_log = date("Y-m-d H:i:s");
+
+  /*Depois do merge*/
   $login = $linha[0];
   $senha_crypt = $linha[1];
   $nome = $linha[2];
   $email = $linha[3];
   $last_login = $linha[4];
   $first = $linha[5];
-
+  /*Depois do merge*/
   
+
+/* Antes do merge
+  $login = $user->getUserInfo('login');
+  $first = $user->getUserInfo('first');
+  $_SESSION['h_log']       = $h_log;
+  $_SESSION['matricula']   = $login;
+  $_SESSION['senha']       = $senha;
+  $_SESSION['senha_crypt'] = $user->getUserInfo('senha');
+  $_SESSION['nome']        = $user->getUserInfo('nome');
+  $_SESSION['email']       = $user->getUserInfo('email');
+  $_SESSION['last_login']  = $user->getUserInfo('last_login');
+  $_SESSION['first']       = $first;
+  $_SESSION['ip']          = $ip;
+*/
+
 /*
 
   session_register("h_log","matricula","senha","senha_crypt",
 		   "nome","email","last_login","first","ip");
 
 */
+/*
   $_SESSION['h_log']       = $h_log;
   $_SESSION['matricula']   = $login;
   $_SESSION['senha']       = $senha;
@@ -83,7 +102,7 @@ if ($nro_linhas > 0){
   $_SESSION['first']       = $first;
   $_SESSION['ip']          = $ip;
 
-
+*/
 //echo $_SESSION['matricula'] ;
 //echo "<BR>\nSID=" . SID . "<BR>\n";
 //echo "PASSEI";
@@ -96,7 +115,6 @@ if ($nro_linhas > 0){
   $PHPSESSID = session_id();
 
   $_SESSION['grupos'] = "_";
-
 
   $query  = "SELECT grupos.nome\n";
   $query .= "  FROM usuarios_grupos, grupos\n";
@@ -113,7 +131,6 @@ if ($nro_linhas > 0){
      $linhas++;
    }
 
-   
   if ($first == "f"){?>
     <META HTTP-EQUIV='Refresh' CONTENT='
     <?PHP if ($_debug>1) echo "10"; else echo "1";?>;
@@ -126,8 +143,8 @@ if ($nro_linhas > 0){
      echo $PHPSESSID; if ($demanda) echo "&demanda=" . $demanda; else if ($form) echo "&form=" . $form . ($alvo ? "&alvo=" . $alvo : ""); ?>' TARGET='_self'><?PHP  
   }
 }
-else
-{?>
+else{
+?>
     <META HTTP-EQUIV='Refresh' CONTENT='
     <?PHP if ($_debug) echo "10000"; else echo "1";?>;
     URL=./frm_login.php?ERR=1<?PHP if ($demanda) echo "&demanda=" . $demanda; else if ($form) echo "&form=" . $form . ($alvo ? "&alvo=" . $alvo : ""); ?>' TARGET='_self'> <?PHP

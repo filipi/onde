@@ -24,7 +24,7 @@ $closeDIV = "        </DIV>\n";
 $dataDictionary  = "SELECT a.attname, tt.typname, a.atttypmod, a.atthasdef\n";
 $dataDictionary .= "  FROM pg_tables as t, pg_class as c, pg_attribute as a, pg_type as tt\n";
 $dataDictionary .= "  WHERE\n";
-$dataDictionary .= "    tableowner <> 'postgres' AND\n";
+$dataDictionary .= "    (tableowner <> 'postgres' OR t.tablename in ('pg_class', 'pg_constraint', 'pg_attribute') )AND\n";
 $dataDictionary .= "    c.relname = t.tablename AND\n";
 $dataDictionary .= "    attrelid = c.oid AND\n";
 $dataDictionary .= "    attstattarget<>0 AND \n";
@@ -59,6 +59,20 @@ $withoutMenu[] = "f_cronograma.php";
 //$withoutMenu[] = "wireit.php";
 
 // Ver mais itens em $withoutMenu no start_sessao.inc
+
+/**
+* @brief Simply uses var_dump() inside a <pre> to give a more visibly a var.
+* @param $var The var to be dumped for debuging. Ex: $_POST
+* @author: Gustavo Leal
+*/
+
+function pretty_dump($var){
+  echo "<PRE>";
+  var_dump($var);
+  echo "</PRE>";
+}
+
+
 
 function fixField($fieldName){
   return stripAccents(strtr($fieldName, ' <>?=.\\-', '________'));
@@ -319,6 +333,28 @@ if ($landscape){
 }
 
 
+
+function getContraintKeys(){
+  global $foreginKeys, $formulario, $_debug, $conn;
+  $relationsQuery  = $foreginKeys;
+  $relationsQuery .= "  and class.relname = '" . $formulario['tabela'] . "'\n";
+  $relationsQuery .= "  and cons.confkey is not null\n";
+
+  $result = pg_exec ($conn, $relationsQuery);
+  if ($result){
+    $total = pg_numrows($result);
+    $rows = pg_fetch_all($result);
+    $linhas = 0;
+    foreach($rows as $row){
+      $conKeys[$linhas] = $row['conkey'];
+      $linhas++;
+    }
+  }
+  else $conKeys = 0;  
+  return $conKeys;
+}
+
+
 function checkRelations($linhas){
   global $foreginKeys, $formulario, $_debug, $conn;
   $relationsQuery  = $foreginKeys;
@@ -326,18 +362,17 @@ function checkRelations($linhas){
   $relationsQuery .= "  and cons.confkey is not null\n";
   $relationsQuery .= "  and cons.conkey = '{" . ( $linhas + 1 ) . "}'\n";
   if ($_debug>2) show_query($relationsQuery, $conn);
-  //echo "</CENTER><PRE>" . $relationsQuery . "</PRE><CENTER>\n";
-  //show_query($relationsQuery, $conn);
   $relations['result'] = pg_exec ($conn, $relationsQuery);
   $relations['total'] = pg_numrows($relations['result']);
   return $relations;
 }
 
 
+
 //http://us2.php.net/function.fsockopen
 // utilizada funcao isOnline($url) exemplo no help do fsockopen do php.net
 function timeOutCheck($url){
-  global $ehXML, $_debug, $_no_check_certificate;
+  global $ehXML, $_debug, $_no_check_certificate, $error_hosts;
   
   if (!$url_info = parse_url($url)) {
     return true;    
@@ -381,13 +416,30 @@ function timeOutCheck($url){
   }
 
   if (!$fid && !$errno && !$errstr){
-    error_reporting( E_ALL );      
-    $fid = stream_socket_client($scheme . $url_info['host'] . ":" . $port, $errno, $errstr, 30, STREAM_CLIENT_CONNECT, $context);
-    printTimeStamp(false);
-    echo "Error number: " . $errno . "\n";
-    printTimeStamp(false);
-    echo "Error string: " . $errstr . "\n";
-    paraBot(14);
+    if (!in_array($url_info['host'], $error_hosts)){
+      error_reporting( E_ALL );      
+      $fid = stream_socket_client($scheme . $url_info['host'] . ":" . $port, $errno, $errstr, 30, STREAM_CLIENT_CONNECT, $context);
+      printTimeStamp(false);    
+      echo "Error number: " . $errno . "\n";
+      printTimeStamp(false);
+      echo "Error string: " . $errstr . "\n";
+      echo "Erro de conexão segura no servidor remoto.\n";
+      echo "      " . $url_info['host'] . "\n";
+      $error_hosts[] = $url_info['host'];
+      error_reporting( E_COMPILE_ERROR | E_ERROR | E_CORE_ERROR );      
+    }
+    else{
+      echo "+";
+    }
+  }
+  else{ // caso nao tenha erro, remove do array
+    if (!in_array($url_info['host'], $error_hosts)){
+      foreach($error_hosts as $error_host){
+        if ($error_host != $url_info['host'])
+   	  $new_error_hosts[] = $url_info['host'];	
+      }
+      $error_hosts = $new_error_hosts;
+    }
   }
   
   if ($fid) {
@@ -3000,15 +3052,17 @@ function show_query(){
 		  echo "    <TD " . ($row[$formata['corDeFundo']] ? " bgcolor=\"" . $row[$formata['corDeFundo']] . "\" ": "");
                   echo " class=onde VALIGN=\"top\">";	  
 		  
-                  echo "<SPAN TITLE=\"" . $row[$colunas] . "\">";
+                  echo "<SPAN TITLE=\"" . htmlentities(strip_tags($row[$colunas])) . "\">";
                   if ($row[$boldCondition['column']]==$boldCondition['value'] && isset($boldCondition)) echo "<B>";
 
 		  if ($formata['url']==$colunas)
 		    echo "<A HREF=\"" . $row[$colunas] . "\" target=new>";
                   
 
-  		  $row[$colunas] =  nl2br(htmlentities(mb_substr(tiraQuebrasDeLinha($row[$colunas], NULL), 0, 
-								 $formata[$colunas], $encoding), ENT_COMPAT, $encoding));
+  		  //$row[$colunas] =  nl2br(htmlentities(mb_substr(tiraQuebrasDeLinha($row[$colunas], NULL), 0, 
+		  //						 $formata[$colunas], $encoding), ENT_COMPAT, $encoding));
+  		  $row[$colunas] =  htmlentities(mb_substr(tiraQuebrasDeLinha($row[$colunas], NULL), 0, 
+								 $formata[$colunas], $encoding), ENT_COMPAT, $encoding);
 		  if ($destak)
                     $detak = html_entity_decode($destak, ENT_COMPAT, $encoding);
                     $row[$colunas] = html_entity_decode($row[$colunas], ENT_COMPAT, $encoding);
@@ -3022,6 +3076,9 @@ function show_query(){
 		      $row[$colunas] = str_ireplace($destak,
 			  		   "<FONT COLOR=\"#FF0000\"><I><BF>" . $destak . "</BF></I></FONT>", 
 				  	   $row[$colunas]);
+                    ////if (strlen($row[$colunas])>intval($formata[$colunas]) && $formata[$colunas])
+                    //echo "(" . strlen($row[$colunas]) . ")";
+
 		    if (!$link){
 		      echo nl2br($row[$colunas]);
 		    }
@@ -3096,10 +3153,26 @@ function show_query(){
 		    }
                     $MTBR = intval(trim(mb_substr($row[$colunas], 0, strpos($row[$colunas], $lookFor))));
 		    if (!$MTBR){
-		      if (preg_match('/[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/', $row[$colunas], $matches))
+		      if (preg_match('/[0-9][0-9][0-9][0-9][0-9][0-9][0-9]:[0-9][0-9]:[0-9][0-9]/', $row[$colunas], $matches) )
 			$MTBR = $matches[0];
 		      else
-		        $MTBR = $row[$colunas];
+		      if (preg_match('/[0-9][0-9][0-9][0-9][0-9][0-9]:[0-9][0-9]:[0-9][0-9]/', $row[$colunas], $matches) )
+			$MTBR = $matches[0];
+		      else
+		      if (preg_match('/[0-9][0-9][0-9][0-9][0-9]:[0-9][0-9]:[0-9][0-9]/', $row[$colunas], $matches) )
+			$MTBR = $matches[0];
+		      else
+		      if (preg_match('/[0-9][0-9][0-9][0-9]:[0-9][0-9]:[0-9][0-9]/', $row[$colunas], $matches) )
+			$MTBR = $matches[0];
+		      else
+		      if (preg_match('/[0-9][0-9][0-9]:[0-9][0-9]:[0-9][0-9]/', $row[$colunas], $matches) )
+			$MTBR = $matches[0];
+		      else
+
+		        if (preg_match('/[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/', $row[$colunas], $matches) )
+			  $MTBR = $matches[0];
+                        else
+		          $MTBR = $row[$colunas];
 		    }
 		    echo "<TD " . ($row[$formata['corDeFundo']] ? " bgcolor=\"" . $row[$formata['corDeFundo']] . "\" ": "") . " class=onde VALIGN=\"TOP\">" . $MTBR . " " . $timeString . ($MTBR>1 ? $plural : $singular) . "</TD>";
 		}	    
@@ -3297,7 +3370,7 @@ function show_query(){
  */
 function dbcombo($tablename, $fieldvalue, $fieldcaption, $conn,
                  $comboname, $width, $default, $submit, $echoCaption,
-                 $filter, $desc){//, $forceSelect, $selectLimit, $multiple){
+                 $filter, $desc, $forceSelect){//, $selectLimit, $multiple){
   if (!$fieldvalue && $fieldcaption) $fieldvalue=$fieldcaption;
   if ($fieldvalue && !$fieldcaption) $fieldcaption=$fieldvalue;
   if (!$fieldvalue && !$fieldcaption) exit;
@@ -3394,8 +3467,7 @@ function querycombo($query, $conn, $comboname, $width, $default,
   arraycombo($comboarray, "tag[" . $key . "][campo]", 10, "selecione", 0);
  */
  function arraycombo($comboarray, $comboname, $with, $default, $onchange, $echoCaption, $forceSelect, $selectLimit, $multiple){
-  global $_debug;  
-
+  global $_debug;
   if ($_debug>1){ echo "<PRE>\n"; var_dump($comboarray); echo "\n</PRE>\n"; }
   
   $total = count($comboarray);// Verifica o numero de linhas resultante.
@@ -3421,33 +3493,41 @@ function querycombo($query, $conn, $comboname, $width, $default,
     echo "<BR>\n";
     echo"         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
   }
+  //echo "\$default_index: "  . $default_index . "<BR>\n";
   if ($_debug>1) echo "<B>default=" . htmlentities($default) . "</B><BR>\n";
 
   if (count($comboarray)> ($selectLimit ? $selectLimit : 7)  || $forceSelect){
     $linhas=0;
     if ($onchange){
-      if ($onchange==1){
-        echo "<SELECT NAME=\"" . $comboname . "\" ID=\"" . $comboname . "\" SIZE=\"1\"";
-        echo " onchange=\"submit()\" ";
-      }
-      else{
-        echo "<SELECT NAME=\"" . $comboname . "\" ID=\"" . $comboname . "\" SIZE=\"1\"";
-        echo " onchange=\"" . $onchange . "\" ";
-      }
+     if ($onchange==1){
+       echo"<SELECT class=\"chosen-select\" NAME=\"" . $comboname . "\" ID=\"" . $comboname . "\" SIZE=\"1\" ";
+       //echo "<SELECT NAME=\"" . $comboname . "\" ID=\"" . $comboname . "\" SIZE=\"1\"";
+       echo " onchange=\"submit()\" ";
+     }
+     else{
+       echo"<SELECT class=\"chosen-select\" NAME=\"" . $comboname . "\" ID=\"" . $comboname . "\" SIZE=\"1\" ";
+       //echo "<SELECT NAME=\"" . $comboname . "\" ID=\"" . $comboname . "\" SIZE=\"1\"";
+       echo " onchange=\"" . $onchange . "\" ";
+     }
     }
-    else // 
+    else{ // 
       echo"<SELECT class=\"chosen-select\" NAME=\"" . $comboname . "\" ID=\"" . $comboname . "\" SIZE=\"1\" ";
-
+      //echo "<script> \$(\".chosen-select\").chosen({allow_single_deselect: true});</script>"; //<<< para permitir a deseleção
+    }
     echo " " .  ((isset($multiple) && $multiple) ? "CHECKBOX" : "radio") . " >\n";
 
+   //if (strlen(trim($default)))
+   echo "            <OPTION VALUE=\"\"></OPTION>\n";//<<< para permitir a deseleção
+
+    //if (!$default_index && $default != $row[0] ){
+    //  echo "            <OPTION SELECTED VALUE=\"" . $default;
+    //  echo "\">" . $default . "</OPTION>\n" ;
+    //}
     
-    if (!$default_index){
-      echo "            <OPTION SELECTED VALUE=\"" . $default;
-      echo "\">" . $default . "</OPTION>\n" ;
-    }
+    
     while ($linhas<$total){//Preenche o combo com o resultado da consulta.
       $row = $comboarray[$linhas];
-      if (($default_index) && ($default_index == ($linhas + 1))){
+      if ( (($default_index) && ($default_index == ($linhas + 1))) || $default == $row[0] ){
         echo "            <OPTION SELECTED VALUE=\"" . $row[0] . "\">";
         echo $row[1] . "</OPTION>\n";
       }
@@ -3458,13 +3538,53 @@ function querycombo($query, $conn, $comboname, $width, $default,
       $linhas++; 
     }
     echo "          </SELECT>\n";
+    
+    if (count($comboarray)> ($selectLimit ? $selectLimit : 7)  || $forceSelect){
+      echo "<SCRIPT>\n";
+      //if ($default)
+        echo "$(\".chosen-select\").chosen({allow_single_deselect: true});\n";
+      //echo "    $(\"select#" . $comboname . "\").attr(\"value\", '" . $default . "');\n";
+      //echo "    $(\"select#" . $comboname . "\").chosen({allow_single_deselect: true});\n";
+      echo "console.log(\"passei -- allowing single select " . $comboname . "   \\n\")\n";
+      //echo "console.log(\"" . $comboname . "   \\n\")\n";
+      if (strlen(trim($default)))
+      echo "console.log(\"default grande: " . strlen(trim($default)) . "   \\n\")\n";
+
+      echo "console.log(\"default: " . $default . "   \\n\")\n";
+      echo "</SCRIPT>\n";
+    }
+
+    /* if ($onchange){ */
+    /*   if ($onchange==1){ */
+    /* //    echo "<SELECT NAME=\"" . $comboname . "\" ID=\"" . $comboname . "\" SIZE=\"1\""; */
+    /* //    echo " onchange=\"submit()\" "; */
+    /* 	//  echo "$(\"#" . $comboname . "\").chosen().change(\"submit()\");\n"; */
+    /*     //echo "console.log(\"" . $comboname . "   \\n\")\n"; */
+    /*   } */
+    /*   else{ */
+    /* //    echo "<SELECT NAME=\"" . $comboname . "\" ID=\"" . $comboname . "\" SIZE=\"1\""; */
+    /* //    echo " onchange=\"" . $onchange . "\" "; */
+    /* 	// echo "console.log('$(\"#" . $comboname . "\").chosen().change(" . $onchange . ");\n')\n"; */
+    /* 	  //                $("#form_field").chosen().change( … ); */
+    /*       //echo "$(\"#" . $comboname . "\").chosen().change(" . $onchange . ");\n"; */
+    /*       //echo "console.log(\"" . $comboname . "   \\n\")\n"; */
+    /*       //echo "console.log(\"\$(\\\"#" . $comboname . "\\\").chosen().change(" . $onchange . "  \\n\")\n"; */
+    /*   } */
+    /* } */
+    /* //else // */
+    /* echo "</SCRIPT>\n"; */
+
   }
   else{
+    //echo "<input type=\"" . ((isset($multiple) && $multiple) ? "CHECKBOX" : "radio") . "\" name=\"" . $comboname . "\" ID=\"" . $comboname . "\" value=\"\""; //<<< para permitir a deseleção
+    //echo "><br>\n         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";//<<< para permitir a deseleção
+    
     $linhas = 0;
     while ($linhas<$total){//Preenche o combo com o resultado da consulta.
       $row = $comboarray[$linhas];      
       echo "<input type=\"" . ((isset($multiple) && $multiple) ? "CHECKBOX" : "radio") . "\" name=\"" . $comboname . "\" ID=\"" . $comboname . "\" value=\"" . $row[0] . "\"";
-      if (($default_index) && ($default_index == ($linhas + 1)))
+      //if (($default_index) && ($default_index == ($linhas + 1)))
+      if ( (($default_index) && ($default_index == ($linhas + 1))) || $default == $row[0] )	
 	echo " CHECKED ";
       else
         if (isset($multiple) && in_array($linhas + 1, $multiple))  echo " CHECKED ";	
@@ -3741,7 +3861,7 @@ function show_table($tablename, $conn, $orderby, $desc, $formata,
  * @param integer handler da conexcao com o banco.
  */
 function show_tables($conn){
-  $query = "SELECT tablename FROM pg_tables WHERE tableowner<>'postgres'";
+  $query = "SELECT tablename FROM pg_tables WHERE tableowner<>'postgres' OR t.tablename in ('pg_class', 'pg_constraint', 'pg_attribute') ";
   $result = pg_Exec ($conn, $query);/* Executa a consulta */
   if (!$result) { 
     echo "Erro na execucao da consulta.\n";
@@ -3884,14 +4004,6 @@ $meses['10'] = "Outubro";
 $meses['11'] = "Novembro";
 $meses['12'] = "Dezembro";
 
-$curso['EC'] = "Engenharia Civil";
-$curso['ECP'] = "Engenharia de Computação";
-$curso['EE'] = "Engenharia Elétrica";
-$curso['EM'] = "Engenharia Mecânica";
-$curso['ECA'] = "Engenharia Mecatrônica";
-$curso['EP'] = "Engenharia de Produção";
-$curso['EQ'] = "Engenharia Química";
-
 /**
  * Calcula media de 10 valores.
  * @author: Guilherme Reschke <reschke@pucrs.br>
@@ -3939,7 +4051,7 @@ function calc_media_final($nr_membros,$media1,$media2,$media3,$media4){
 
 /**
  * Mostra uma mensagem adequada ao tipo de saida utilizada.
- * Verifica a saida pela variavel glocal ehXML.
+ * Verifica a saida pela variavel global ehXML.
  */
 function echoMessage($message){
   global $ehXML;
@@ -3953,7 +4065,7 @@ function echoMessage($message){
 
 /**
  * Mostra uma mensagem adequada ao tipo de saida utilizada.
- * Verifica a saida pela variavel glocal ehXML.
+ * Verifica a saida pela variavel global ehXML.
  */
 function echoTT($message){
   global $ehXML;
@@ -4184,4 +4296,64 @@ function icsToArray($paramUrl) {
 
   return $icsDates;
 }
+
+/** 	
+ * https://php.net/manual/pt_BR/ref.mbstring.php	
+ *	
+ * Trim characters from either (or both) ends of a string in a way that is 	
+ * multibyte-friendly. 	
+ * 	
+ * Mostly, this behaves exactly like trim() would: for example supplying 'abc' as 	
+ * the charlist will trim all 'a', 'b' and 'c' chars from the string, with, of 	
+ * course, the added bonus that you can put unicode characters in the charlist. 	
+ * 	
+ * We are using a PCRE character-class to do the trimming in a unicode-aware 	
+ * way, so we must escape ^, \, - and ] which have special meanings here. 	
+ * As you would expect, a single \ in the charlist is interpretted as 	
+ * "trim backslashes" (and duly escaped into a double-\ ). Under most circumstances 	
+ * you can ignore this detail. 	
+ * 	
+ * As a bonus, however, we also allow PCRE special character-classes (such as '\s') 	
+ * because they can be extremely useful when dealing with UCS. '\pZ', for example, 	
+ * matches every 'separator' character defined in Unicode, including non-breaking 	
+ * and zero-width spaces. 	
+ * 	
+ * It doesn't make sense to have two or more of the same character in a character 	
+ * class, therefore we interpret a double \ in the character list to mean a 	
+ * single \ in the regex, allowing you to safely mix normal characters with PCRE 	
+ * special classes. 	
+ * 	
+ * *Be careful* when using this bonus feature, as PHP also interprets backslashes 	
+ * as escape characters before they are even seen by the regex. Therefore, to 	
+ * specify '\\s' in the regex (which will be converted to the special character 	
+ * class '\s' for trimming), you will usually have to put *4* backslashes in the 	
+ * PHP code - as you can see from the default value of $charlist. 	
+ * 	
+ * @param string 	
+ * @param charlist list of characters to remove from the ends of this string. 	
+ * @param boolean trim the left? 	
+ * @param boolean trim the right? 	
+ * @return String 	
+ */ 	
+ function mb_trim($string, $charlist='\\\\s', $ltrim=true, $rtrim=true){	
+   $both_ends = $ltrim && $rtrim;	
+    $char_class_inner = preg_replace( 	
+				    array( '/[\^\-\]\\\]/S', '/\\\{4}/S' ),	
+				    array( '\\\\\\0', '\\' ),	
+				    $charlist	
+				     );	
+    $work_horse = '[' . $char_class_inner . ']+'; 	
+   $ltrim && $left_pattern = '^' . $work_horse; 	
+   $rtrim && $right_pattern = $work_horse . '$'; 	
+    if($both_ends) { 	
+     $pattern_middle = $left_pattern . '|' . $right_pattern; 	
+   } 	
+   elseif($ltrim) { 	
+     $pattern_middle = $left_pattern; 	
+   } 	
+   else { 	
+     $pattern_middle = $right_pattern; 	
+   } 	
+    return preg_replace("/$pattern_middle/usSD", '', $string );	
+}	
 ?>
