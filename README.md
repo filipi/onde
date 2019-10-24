@@ -17,7 +17,7 @@ size of the list) for the 1:N relations and check boxes lists for the
 N:N relations.
 
 The tool handles the submited information throught a "insert" or a "save" button,
-thus automaticallly generating an insert or update query statment.
+thus automaticallly generating an insert or an update query statment.
 There is no object relational abstration, the queries are generated directly
 in the PHP functions. 
 
