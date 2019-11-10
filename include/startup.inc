@@ -26,7 +26,7 @@ if (!isset($_startup) || !$_startup){
   include_once("lib.inc");
 
   $ONDE_VERSION = "0.1.0";
-  $SYSTEM_NAME = "EasyBeasy";
+  $SYSTEM_NAME = "System Name as on startup.inc";
   $APPLICATION_NAME = "Demonstraion";
   $SYSTEM_VERSION = "0.0.1";
   $DATABASE_VERSION = "0.0";
