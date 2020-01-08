@@ -56,7 +56,7 @@ if ($_manutencao){
    <TD class=onde>
    <DIV ID='coment'>
    Matrícula:<BR>
-   <INPUT CLASS='campo' TYPE='text' NAME="matricula" SIZE='30' MAXLENGTH='8' 
+   <INPUT CLASS='campo' TYPE='text' NAME="login" SIZE='30' MAXLENGTH='8' 
     style="width: 200px; font-size:4em;"
     onKeyUp= <?PHP echo "'return autoTab(this, 8, event); ' " ?> 
     onkeypress="return isNumberKey(event)"><BR>

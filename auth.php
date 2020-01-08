@@ -55,12 +55,16 @@ $nro_linhas =  pg_NumRows($exec_adm);
 $authlog_query  = "INSERT INTO authlog(matricula, IP, success)\n";
 $authlog_query .= "  VALUES ('" . $login . "', \n";
 $authlog_query .= "          '" . $ip . "', ";
-$authlog_query .= ($user->isValidUser() ? "true" : "false") . ")\n";
+//$authlog_query .= ($user->isValidUser() ? "true" : "false") . ")\n"; // Aguardar o Gustavo concluir a classe
+$authlog_query .= (($nro_linhas>0) ? "true" : "false") . ")\n";
 $authlog_exe = pg_exec($conn,$authlog_query);
 
-if($user->isValidUser()){
+//if($user->isValidUser()){
+if ($nro_linhas > 0){
+  $linha = pg_fetch_row($exec_adm,0); 
+  
   $h_log = date("Y-m-d H:i:s");
-
+  echo "PASSEI";
   /*Depois do merge*/
   $login = $linha[0];
   $senha_crypt = $linha[1];
@@ -74,6 +78,7 @@ if($user->isValidUser()){
 /* Antes do merge
   $login = $user->getUserInfo('login');
   $first = $user->getUserInfo('first');
+*/
   $_SESSION['h_log']       = $h_log;
   $_SESSION['matricula']   = $login;
   $_SESSION['senha']       = $senha;
@@ -83,14 +88,13 @@ if($user->isValidUser()){
   $_SESSION['last_login']  = $user->getUserInfo('last_login');
   $_SESSION['first']       = $first;
   $_SESSION['ip']          = $ip;
-*/
 
-/*
 
-  session_register("h_log","matricula","senha","senha_crypt",
-		   "nome","email","last_login","first","ip");
 
-*/
+  //  session_register("h_log","matricula","senha","senha_crypt",
+  //	   "nome","email","last_login","first","ip");
+
+
 /*
   $_SESSION['h_log']       = $h_log;
   $_SESSION['matricula']   = $login;
