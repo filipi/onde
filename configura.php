@@ -157,7 +157,7 @@ if ($handle = opendir('themeAssets')) {
 echo "    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
 echo "    <B>Tema visual:</B><BR>\n";
 echo "    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
-echo "    <SELECT NAME=\"theme\" SIZE=\"1\" >\n";
+echo "    <SELECT class=\"chosen-select\" NAME=\"theme\" SIZE=\"1\" >\n";
 foreach($themes as $val){
   $dep = trim(str_replace("-", "_", $dep));
   if (isset($_POST['theme'])){

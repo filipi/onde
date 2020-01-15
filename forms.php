@@ -1774,6 +1774,7 @@ if ($formulario['formulario']){
             //echo "TEXT";
             echo "ui-input ui-widget ui-corner-all";
             echo "\" NAME=\"" . fixField($row[0]) . "\" ";
+	    echo " STYLE=\"height: 28px; ";	    
 	    echo "id=\"onde_" . fixField($row[0]) . "\" SIZE=\"9\" MAXLENGTH=\"10\" ";
 	    echo " onKeypress=\"if( (event.keyCode < 48 || event.keyCode > 57) && event.keyCode != 44 ) event.returnValue = false;\"";
 	    //echo " onKeypress=\"if( event.keyCode != 44 ) event.returnValue = false;\"";
@@ -1788,6 +1789,7 @@ if ($formulario['formulario']){
             //echo "TEXT";
             echo "ui-input ui-widget ui-corner-all";
             echo "\" NAME=\"" . fixField($row[0]) . "\" ";
+	    echo " STYLE=\"height: 28px; ";	    
 	    echo "id=\"onde_" . fixField($row[0]) . "\" SIZE=\"6\" MAXLENGTH=\"10\" ";
 	    echo " onKeypress=\"if(event.keyCode < 48 || event.keyCode > 57) event.returnValue = false;\"";
 	    echo " VALUE = \"" . intval($array[$row[0]]) . "\">";
@@ -1800,6 +1802,7 @@ if ($formulario['formulario']){
             //echo "TEXT";
             echo "ui-input ui-widget ui-corner-all";
             echo "\" NAME=\"" . fixField($row[0]) . "\" ";
+	    echo " STYLE=\"height: 28px; ";	    
 	    echo "id=\"onde_" . fixField($row[0]) . "\" SIZE=\"10\" MAXLENGTH=\"19\" ";
 	    echo " onKeypress=\"if(event.keyCode < 48 || event.keyCode > 57) event.returnValue = false;\"";
 	    echo " VALUE = \"" . intval($array[$row[0]]) . "\">";
