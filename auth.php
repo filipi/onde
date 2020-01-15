@@ -64,7 +64,7 @@ if ($nro_linhas > 0){
   $linha = pg_fetch_row($exec_adm,0); 
   
   $h_log = date("Y-m-d H:i:s");
-  echo "PASSEI";
+
   /*Depois do merge*/
   $login = $linha[0];
   $senha_crypt = $linha[1];
@@ -78,7 +78,7 @@ if ($nro_linhas > 0){
 /* Antes do merge
   $login = $user->getUserInfo('login');
   $first = $user->getUserInfo('first');
-*/
+
   $_SESSION['h_log']       = $h_log;
   $_SESSION['matricula']   = $login;
   $_SESSION['senha']       = $senha;
@@ -89,13 +89,13 @@ if ($nro_linhas > 0){
   $_SESSION['first']       = $first;
   $_SESSION['ip']          = $ip;
 
-
+*/
 
   //  session_register("h_log","matricula","senha","senha_crypt",
   //	   "nome","email","last_login","first","ip");
 
 
-/*
+
   $_SESSION['h_log']       = $h_log;
   $_SESSION['matricula']   = $login;
   $_SESSION['senha']       = $senha;
@@ -106,7 +106,7 @@ if ($nro_linhas > 0){
   $_SESSION['first']       = $first;
   $_SESSION['ip']          = $ip;
 
-*/
+
 //echo $_SESSION['matricula'] ;
 //echo "<BR>\nSID=" . SID . "<BR>\n";
 //echo "PASSEI";

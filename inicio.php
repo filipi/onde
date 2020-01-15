@@ -48,6 +48,7 @@ if ($totalAniversariantes){
   }
   //echo "</div>\n";  // Nao Achei onde abre esse DIV
  }
+
 ?>
 <DIV CLASS=titulo><?PHP 
   if ($felicitacoes)
@@ -62,7 +63,7 @@ if ($totalAniversariantes){
       else
         echo "o(a)";
   }
-  echo ", <B>" . $_SESSION[nome] . "</B>!</DIV>\n";
+  echo ", <B>" . $_SESSION['nome'] . "</B>!</DIV>\n";
 
 
 
