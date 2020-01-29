@@ -14,10 +14,16 @@ if ($isMobile){
 <?PHP
 }
 
-if (isset($_POST['toggle']))
-  $toggle = $_POST['toggle'];
- else
-   $toggle = $_GET['toggle'];
+if (isset($_POST['t']))
+  $toggle = $_POST['t'];
+else
+  if (isset($_GET['t']))
+    $toggle = $_GET['t'];
+  else
+    if (isset($_POST['toggle']))
+      $toggle = $_POST['toggle'];
+    else
+      $toggle = $_GET['toggle'];
 ?>
     <STYLE type="text/css">
 <?PHP

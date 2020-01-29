@@ -71,7 +71,8 @@ while ($linhas<$total){
 <?PHP
 $query  = "SELECT c.oid, t.tablename\n";
 $query .= "  FROM pg_tables as t, pg_class as c\n";
-$query .= "  WHERE tableowner<>'postgres' AND c.relname=t.tablename";
+$query .= "  WHERE (tableowner<>'postgres' OR t.tablename in ('pg_class', 'pg_constraint', 'pg_attribute') ) AND c.relname=t.tablename";
+//$query .= "  WHERE tableowner<>'postgres' AND c.relname=t.tablename";
 $result = pg_exec ($conn, $query);
 $tables = pg_fetch_all ($result);
 $linhas = 0;
@@ -139,7 +140,9 @@ foreach ($tables as $table){
     echo $top;
   echo "px;  height: " . (intval($innerTotal)*17 + 16) . "px; \">";
   echo "<span style=\"color: black;\" title=\"criar um novo formulário para a tabela " . $table['tablename'] . "\">";
-  echo "<a href=\"newform.php?tablename=" . $table['tablename'] . "\">";  
+  echo "<a href=\"newform.php?tablename=" . $table['tablename'];
+  foreach($toggle as $item) echo "&t[]=" . $item;
+  echo "\">";  
   echo "<img src=\"images/newform.png\" width=12></a></span>";
 
   $form = 0;
@@ -149,7 +152,11 @@ foreach ($tables as $table){
   $form = $row[0];
   
   if (!strpos("_" . $table['tablename'], "<span")) echo "<span style=\"color: black;\" title=\"" . $table['tablename'] . "\">";
-  if ($form) echo "<a style=\"color: brown;\" href=\"forms.php?form=" . $form . "\">";
+  if ($form){
+    echo "<a style=\"color: brown;\" href=\"forms.php?form=" . $form;
+    foreach($toggle as $item) echo "&t[]=" . $item;    
+    echo "\">";
+  }
   echo ( (strlen($table['tablename']) > 29) ? substr($table['tablename'], 0, 26) . "..." : $table['tablename'] );
   if ($form) echo "</a>";
   //echo strlen($table['tablename']);
