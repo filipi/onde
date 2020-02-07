@@ -75,7 +75,9 @@ function pretty_dump($var){
 
 
 function fixField($fieldName){
-  return stripAccents(strtr($fieldName, ' <>?=.\\-', '________'));
+  //echo "<script>console.log('" . pg_escape_string($fieldName) . "');</script>";
+  //echo "<script>console.log('" . strtr($fieldName, ' <>?=.\\-()', '___________') . "');</script>";
+  return stripAccents(strtr($fieldName, ' <>?=.\\-()', '__________'));
 }
 
 /*
