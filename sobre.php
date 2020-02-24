@@ -27,17 +27,17 @@ echo "<BR>\n";
 <H1><?PHP echo $SYSTEM_NAME; ?> <?PHP echo $SYSTEM_VERSION; ?></H1>
 <DIV class=coment>
   Desenvolvido por Gustavo Leal<BR>
-  de Janeiro de 2018 à Junho de 2018 (5 meses)<?PHP /*<img src = "images/cake.png">*/ ?>
+  de Janeiro de 2018 à Fevereiro de 2020 (2 anos)<?PHP /*<img src = "images/cake.png">*/ ?>
   <BR>
   e por Filipi Vianna<BR>
-  de Fevereiro de 2008 à Junho de 2018 (10 anos)<?PHP /*<img src = "images/cake.png">*/ ?>
+  de Fevereiro de 2008 à Junho de 2018 (12 anos)<?PHP /*<img src = "images/cake.png">*/ ?>
 </DIV>
 <BR>
-  O <?PHP echo $SYSTEM_NAME; ?> utiliza como base a <I>fLameWork</I> - O.N.D.E.<BR>
+  O <?PHP echo $SYSTEM_NAME; ?> utiliza como base a <a href="https://github.com/filipi/onde" target="_blank"><I>fLameWork</I> - O.N.D.E.</a><BR>
 <DIV class=coment>O.N.D.E.: ONDE Não é Desenvolvida por Experts<BR>
 <BR>
 Versão da <I>fLameWork</I> - O.N.D.E. <B><?PHP echo $ONDE_VERSION; ?></B><BR>
-de Janeiro de 2003 à Junho de 2018 (15 anos)<BR><BR>
+de Janeiro de 2003 à Junho de 2018 (17 anos)<BR><BR>
 Contribuiram para a criação desta <I>fLameWork</I><BR>
 Bruno Cortopassi Trindade (<I>documentação</I>)<BR>
 Felipe Schiefferdecker Karpouzas (<I>documentação</I>)<BR>
