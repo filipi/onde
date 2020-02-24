@@ -24,7 +24,7 @@ ini_set ( "error_reporting", "E_ALL" );
 $matricula = intval(trim($_POST['matricula']));
 $email = pg_escape_string(trim($_POST['email']));
 $senha = pg_escape_string(trim($_POST['senha']));
-if (!strpos($email, "@")) $email = $email . "@pucrs.br";
+
 $matricula_ou_email = pg_escape_string(trim($_POST['matricula_ou_email']));
 $senha_crypt = crypt(trim($senha),'9$');
 $ip = getenv(REMOTE_ADDR);
