@@ -270,7 +270,7 @@ echo "<BR>\n";
     <INPUT TYPE="RADIO" <?PHP if ($login_field==1) echo "CHECKED"; ?>
     NAME="login_field" VALUE="1">E-mail<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <INPUT TYPE="RADIO" <?PHP if ($login_field==2) echo "CHECKED"; ?>
-    NAME="login_field" VALUE="2">Matrícula ou e-mail (detectar automáticamente)<BR>
+    NAME="login_field" VALUE="2">Matrícula ou e-mail (detectar automaticamente)<BR>
     <br>
 				    
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
