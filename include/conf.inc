@@ -15,6 +15,7 @@
   $developer[0] = "66260700";
   $_menu_from_db = 1;
   $_debug = 0;
+  $login_field = 1;
   $_singleQueue = 0;
   $_remoteAssets = 0;
   $_theme = "framelessTron";

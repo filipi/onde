@@ -48,6 +48,7 @@ if (trim($_POST['banco'])){
   }
   $confStr .= "  \$_menu_from_db = " . intval( (boolean) trim($_POST['menu_from_db']) ) . ";\n";
   $confStr .= "  \$_debug = " . (integer) trim($_POST['debug']) . ";\n";
+  $confStr .= "  \$login_field = " . (integer) trim($_POST['login_field']) . ";\n";  
   $confStr .= "  \$_singleQueue = " . (integer) trim($_POST['singleQueue']) . ";\n";
   $confStr .= "  \$_remoteAssets = " . (integer) trim($_POST['remoteAssets']) . ";\n";
   $confStr .= "  \$_theme = \"" .  pg_escape_string(trim($_POST['theme'])) . "\";\n";
@@ -260,6 +261,18 @@ echo "<BR>\n";
     <INPUT TYPE="CHECKBOX" <?PHP if (intval($_menu_from_db)!=0) echo "CHECKED"; ?>
     NAME="menu_from_db"><br><br>
 
+
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <B>Campo para utilizar como login:</B><BR>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <INPUT TYPE="RADIO" <?PHP if ($login_field==0) echo "CHECKED"; ?>
+    NAME="login_field" VALUE="0">Matrícula numérica com 8 dígitos<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <INPUT TYPE="RADIO" <?PHP if ($login_field==1) echo "CHECKED"; ?>
+    NAME="login_field" VALUE="1">E-mail<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <INPUT TYPE="RADIO" <?PHP if ($login_field==2) echo "CHECKED"; ?>
+    NAME="login_field" VALUE="2">Matrícula ou e-mail (detectar automáticamente)<BR>
+    <br>
+				    
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <B>N&iacute;vel de debug:</B><BR>
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

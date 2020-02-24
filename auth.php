@@ -21,11 +21,14 @@ ini_set ( "error_reporting", "E_ALL" );
 /**
  * Trecho de codigo para autenticacao.
  */
-$login = $_POST['login'];
-$senha = $_POST['senha'];
+$matricula = intval(trim($_POST['matricula']));
+$email = pg_escape_string(trim($_POST['email']));
+$senha = pg_escape_string(trim($_POST['senha']));
+if (!strpos($email, "@")) $email = $email . "@pucrs.br";
+$matricula_ou_email = pg_escape_string(trim($_POST['matricula_ou_email']));
 $senha_crypt = crypt(trim($senha),'9$');
 $ip = getenv(REMOTE_ADDR);
-$type = intval($_POST['type']);
+//$type = intval($_POST['type']);
 
 // Informacaoes sobre a sessao.
 session_cache_expire(1);
@@ -36,18 +39,33 @@ ini_set('session.save_path',"./session_files");
 session_name('onde');
 session_start();
 
-$user = new userInfo($login, $type, $senha_crypt);
+//$user = new userInfo($login, $type, $senha_crypt);
 
-$query_adm  = "SELECT * \n";
+//$query_adm  = "SELECT * \n";
+$query_adm  = "SELECT login, senha, nome, email, last_login, first, ativo, aniversario, tema, masculino, dark \n";
 $query_adm .= "  FROM usuarios\n";
-if($type){
-  $query_adm .= "  WHERE email='" . $login . "' AND\n";
-} else {
-  $query_adm .= "  WHERE login='" . $login . "' AND\n";
-}
+$query_adm .= "  WHERE ";
+switch ($login_field){
+  case 1:
+    $query_adm .= " email='" . $email . "' ";
+    break;
+  case 2:
+    $query_adm .= " (email='" . $matricula_ou_email . "' OR login = '" . $matricula_ou_email . "') ";
+    break;
+  case 0:
+  default:
+    $query_adm .= " login='" . $matricula . "' ";
+ }
+$query_adm .= " AND\n";
+//if($type){
+//  $query_adm .= "  WHERE email='" . $login . "' AND\n";
+//} else {
+//  $query_adm .= "  WHERE login='" . $login . "' AND\n";
+//}
 $query_adm .= "        senha='" . $senha_crypt . "' AND ativo = true";
 $exec_adm = pg_exec($conn,$query_adm);
 $nro_linhas =  pg_NumRows($exec_adm);
+
 //$login = pg_fetch_row($exec_adm);
 //$authlog_query  = "INSERT INTO authlog(matricula, senha, IP, success)\n";
 //$authlog_query .= "  VALUES ('" . $login . "', '" . $senha . "',\n";
@@ -58,6 +76,7 @@ $authlog_query .= "          '" . $ip . "', ";
 //$authlog_query .= ($user->isValidUser() ? "true" : "false") . ")\n"; // Aguardar o Gustavo concluir a classe
 $authlog_query .= (($nro_linhas>0) ? "true" : "false") . ")\n";
 $authlog_exe = pg_exec($conn,$authlog_query);
+
 
 //if($user->isValidUser()){
 if ($nro_linhas > 0){
@@ -72,6 +91,7 @@ if ($nro_linhas > 0){
   $email = $linha[3];
   $last_login = $linha[4];
   $first = $linha[5];
+  $dark = $linha[10];
   /*Depois do merge*/
   
 
@@ -159,7 +179,9 @@ else{
 if ($_debug){
   echo "<PRE>\n";
   echo $query_adm . "\n";
-  echo "<B>matricula: " . $login . "</B>\n";
+  echo "<B>matricula: " . $matricula . "</B>\n";
+  echo "<B>email: " . $email . "</B>\n";
+  echo "<B>matricula_ou_email: " . $matricula_ou_email . "</B>\n";
   echo "<B>senha: " . $senha . "</B>\n";
   echo "<B>IP: " . $ip . "</B>\n";
   echo "<B>conn: " . $conn . "</B>\n";

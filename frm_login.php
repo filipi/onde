@@ -54,12 +54,30 @@ if ($_manutencao){
  </TR>
   <TR>
    <TD class=onde>
-   <DIV ID='coment'>
+   <DIV ID='coment'><?PHP
+  switch ($login_field){
+  case 1:?>
+   E-mail:<BR>
+   <INPUT CLASS='campo' TYPE='text' NAME="email" SIZE='100' MAXLENGTH='128' 
+    style="width: 300px; font-size:3em;"><BR>
+  <?PHP
+  break;
+  case 2:?>
+   Matrícula ou email:<BR>
+   <INPUT CLASS='campo' TYPE='text' NAME="matricula_ou_email" SIZE='30' MAXLENGTH='128' 
+    style="width: 300px; font-size:3em;"><BR>
+  <?PHP
+  break;  
+  case 0:
+  default:?>
    Matrícula:<BR>
-   <INPUT CLASS='campo' TYPE='text' NAME="login" SIZE='30' MAXLENGTH='8' 
+   <INPUT CLASS='campo' TYPE='text' NAME="matricula" SIZE='30' MAXLENGTH='8' 
     style="width: 200px; font-size:4em;"
     onKeyUp= <?PHP echo "'return autoTab(this, 8, event); ' " ?> 
     onkeypress="return isNumberKey(event)"><BR>
+  <?PHP
+  }
+?>
   <?PHP /*
    Problems with keyCode on firefox. changed to charCode and works with chrome and firefox, test with others
    But special keys (backspace, for example) still not work with firefox
@@ -71,13 +89,14 @@ if ($_manutencao){
    */?>
    Senha:<BR>
    <INPUT CLASS='campo' TYPE='password' NAME="senha" SIZE='12' MAXLENGTH='12'
-    style="width: 150px;"
+    style="width: <?PHP if (!$login_field) echo "150"; else echo "245"; ?>px;"
     >&nbsp;
    <INPUT CLASS='button' TYPE='submit' VALUE=' OK '>
    </TD>
   <?PHP 
   if($debug == 1){ 
     echo $_POST['matricula'];
+    echo $_POST['email'];
     echo  $_POST['senha']; echo $conn;
   }?>
   </TR>

@@ -2,3 +2,4 @@ session_files
 *sql*
 *.sql*
 db/*.log
+conf*.inc
