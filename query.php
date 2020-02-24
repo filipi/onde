@@ -97,8 +97,8 @@ if($_POST['buttonrow']){
 
   <?PHP /* <FORM ACTION="<?PHP echo $_SERVER['PHP_SELF']; ?>" METHOD="POST" */ ?>
 <FORM ACTION="" METHOD="POST"
- NAME="query">
-
+ NAME="query" ID="sql_query">
+  
   <INPUT TYPE="HIDDEN" NAME="tempo" VALUE=<?php if (isset($_POST['tempo'])) echo floatval($_POST['tempo']); else echo "0";?> id="tempo">
   
   
@@ -127,7 +127,19 @@ if($_POST['buttonrow']){
     var editor = CodeMirror.fromTextArea(document.getElementById("query_field"), {
 	//mode: "text/x-sql",
 	mode: {name: "text/x-sql",globalVars: true},
-        extraKeys: {"Ctrl-Space": "autocomplete"},
+        extraKeys: {
+          "Ctrl-Space": "autocomplete",
+	  "Shift-Enter": (cm) => {
+            console.log('This works normally');
+            form = document.getElementById("sql_query");
+            const hiddenField = document.createElement('input');
+            hiddenField.type = 'hidden';
+            hiddenField.name = "executar";
+            hiddenField.value = "Executar ▶ ...";
+            form.appendChild(hiddenField);
+            form.submit();
+          },
+	},
         lineNumbers: true,
 	tabMode: "indent",
 	<?PHP if (stripos("_" . $_theme, 'fancy') || stripos("_" . $_theme, 'tron')) echo "	    theme: \"night\", \n"; ?>
@@ -330,6 +342,14 @@ echo "    </CENTER>\n";
 echo "<BR>\n";
 
 echo "<BR>\n";
-
+?>
+<script>
+//https://davidwalsh.name/codemirror-set-focus-line
+//console.log('passei');
+//document.getElementById("query_field").focus();
+editor.focus();
+editor.setCursor(editor.lineCount(), 0);
+</script>
+<?php
 include "page_footer.inc";
 ?>
