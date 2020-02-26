@@ -34,12 +34,12 @@ echo "<BR>\n";
 //echo "    <CENTER>\n";
 echo "      <BR>\n      <BR>\n";
 
-if (isset($_POST['salvar'])) $_POST['salvar'] = true;
+if (isset($_POST['salvar']))   $_POST['salvar']   = true;
 if (isset($_POST['executar'])) $_POST['executar'] = true;
-if (isset($_POST['remover'])) $_POST['remover'] = true;
-if (isset($_POST['novo'])) $_POST['novo'] = true;
-if (isset($_POST['nome'])) $_POST['nome'] = pg_escape_string(trim($_POST['nome']));
-if (isset($_POST['codigo'])) $_POST['codigo'] = intval($_POST['codigo']);
+if (isset($_POST['remover']))  $_POST['remover']  = true;
+if (isset($_POST['novo']))     $_POST['novo']     = true;
+if (isset($_POST['nome']))     $_POST['nome']     = pg_escape_string(trim($_POST['nome']));
+if (isset($_POST['codigo']))   $_POST['codigo']   = intval($_POST['codigo']);
 
 //$_debug=1;
 if (isset($_POST['DeleteCheckBox']) && $_POST['remover']){
@@ -122,6 +122,7 @@ if($_POST['buttonrow']){
 	*/?>
 <input class=onde size=20 type=text id=nome style="font-size: 14;" name="nome" value="<?PHP echo ($_POST['novo'] ? '' : $_POST['nome']); ?>">
 <INPUT TYPE="SUBMIT" CLASS="SUBMIT" VALUE='Salvar...' NAME='salvar'>
+<INPUT TYPE="SUBMIT" CLASS="SUBMIT" VALUE='Salvar como form' NAME='form'>
 </form>
     <script>
     var editor = CodeMirror.fromTextArea(document.getElementById("query_field"), {
@@ -253,6 +254,31 @@ if($_POST['buttonrow'] &&  $query_field && $_POST['executar']){
 ?>
 <?PHP
         $_debug = $last_debug;
+	if ($_POST['form'] && $query_field){
+	  $query  = "INSERT INTO forms (nome, titulo, consulta, dono";
+	  $query .=") VALUES (\n";
+	  $query .= "  '" . substr(pg_escape_string($_POST['nome']), 0, 29) . "',\n";
+	  $query .= "  '" . pg_escape_string($_POST['nome']) . "',\n";
+	  $query .= "  '" . pg_escape_string($query_field) . "',\n";
+	  $query .= "  '" . pg_escape_string($_SESSION['matricula']) . "'";
+	  $query .= ")\n";
+          echo "<PRE>";
+	  if ($_debug) echo $query;
+	  $result = pg_exec($conn, $query);
+	  if (!$result) {
+	    echo "Erro na execucao da consulta.\n";
+	    echo pg_last_error();
+	    echo "</PRE>";
+	    echo $closeDIV;
+	    echo "<CENTER>\n";
+	    include("page_footer.inc");
+	    exit(1);
+	  }
+	  else{
+            echo "</PRE>";
+            echo "<DIV CLASS=\"message\">Consulta salva como um novo formulário com sucesso.</DIV>\n";
+	  }
+	}
 	if ($_POST['salvar'] && $query_field){
 	  if ($_POST['codigo']){
 	    $query  = "UPDATE consultas\n";
@@ -286,7 +312,6 @@ if($_POST['buttonrow'] &&  $query_field && $_POST['executar']){
 	    exit(1);
 	  }
 	  echo "</PRE>";
-
 	}
 
 

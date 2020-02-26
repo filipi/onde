@@ -39,6 +39,8 @@ echo "<BR>\n";
 Versão da <I>fLameWork</I> - O.N.D.E. <B><?PHP echo $ONDE_VERSION; ?></B><BR>
 de Janeiro de 2003 à Junho de 2018 (17 anos)<BR><BR>
 Contribuiram para a criação desta <I>fLameWork</I><BR>
+Eduardo da Silva Pereira (<I>testes extensivos, migração do menu estático para dinâmico</I>)<BR>
+Bruno Henrique Bueno (<I>documentação e testes</I>)<BR>
 Bruno Cortopassi Trindade (<I>documentação</I>)<BR>
 Felipe Schiefferdecker Karpouzas (<I>documentação</I>)<BR>
 Henrique Damasceno Vianna (<I>mecanismos para prevenir SQL injection</I>)<BR>
