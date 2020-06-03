@@ -26,40 +26,40 @@ if (trim($_POST['banco'])){
   $developer_array = explode(",", $_POST['developer']);
 
   $confStr  = "<?PHP\n";
-  $confStr .= "  \$banco = \"" . pg_escape_string(trim($_POST['banco'])) . "\";\n";
-  $confStr .= "  \$banco_cadastro = \"" . pg_escape_string(trim($_POST['banco_cadastro'])) . "\";\n";
-  $confStr .= "  \$usuario_banco = \"" . pg_escape_string(trim($_POST['usuario_banco'])) . "\";\n";
-  $confStr .= "  \$senha_banco = \"" . pg_escape_string(trim($_POST['senha_banco'])) . "\";\n";
+  $confStr .= "  \$banco = '" . pg_escape_string(trim($_POST['banco'])) . "';\n";
+  $confStr .= "  \$banco_cadastro = '" . pg_escape_string(trim($_POST['banco_cadastro'])) . "';\n";
+  $confStr .= "  \$usuario_banco = '" . pg_escape_string(trim($_POST['usuario_banco'])) . "';\n";
+  $confStr .= "  \$senha_banco = '" . pg_escape_string(trim($_POST['senha_banco'])) . "';\n";
 
-  $confStr .= "  \$system_mail_from = \"" . pg_escape_string(trim($_POST['system_mail_from'])) . "\";\n";
-  $confStr .= "  \$system_mail_from_name = \"" . pg_escape_string(trim($_POST['system_mail_from_name'])) . "\";\n";
-  $confStr .= "  \$system_mail_host = \"" . pg_escape_string(trim($_POST['system_mail_host'])) . "\";\n";
-  $confStr .= "  \$system_mail_mailer = \"" . pg_escape_string(trim($_POST['system_mail_mailer'])) . "\";\n";
-  $confStr .= "  \$debug_mail_recipient = \"" . pg_escape_string(trim($_POST['debug_mail_recipient'])) . "\";\n";
+  $confStr .= "  \$system_mail_from = '" . pg_escape_string(trim($_POST['system_mail_from'])) . "';\n";
+  $confStr .= "  \$system_mail_from_name = '" . pg_escape_string(trim($_POST['system_mail_from_name'])) . "';\n";
+  $confStr .= "  \$system_mail_host = '" . pg_escape_string(trim($_POST['system_mail_host'])) . "';\n";
+  $confStr .= "  \$system_mail_mailer = '" . pg_escape_string(trim($_POST['system_mail_mailer'])) . "';\n";
+  $confStr .= "  \$debug_mail_recipient = '" . pg_escape_string(trim($_POST['debug_mail_recipient'])) . "';\n";
   
-  $confStr .= "  \$URL = \"" . pg_escape_string(trim($_POST['URL'])) . "\";\n";
-  $confStr .= "  \$email = \"" . pg_escape_string(trim($_POST['email'])) . "\";\n";
-  $confStr .= "  \$fone = \"" . pg_escape_string(trim($_POST['fone'])) . "\";\n";
-  $confStr .= "  \$organizationWebSiteURL = \"" . pg_escape_string(trim($_POST['organizationWebSiteURL'])) . "\";\n";  
+  $confStr .= "  \$URL = '" . pg_escape_string(trim($_POST['URL'])) . "';\n";
+  $confStr .= "  \$email = '" . pg_escape_string(trim($_POST['email'])) . "';\n";
+  $confStr .= "  \$fone = '" . pg_escape_string(trim($_POST['fone'])) . "';\n";
+  $confStr .= "  \$organizationWebSiteURL = '" . pg_escape_string(trim($_POST['organizationWebSiteURL'])) . "';\n";  
   reset($developer_array);
   while (list($key, $val) = each($developer_array)){
     $confStr .= "  \$developer[" . $key . "] = \"";
-    $confStr .= pg_escape_string(trim($developer_array[$key])) . "\";\n";
+    $confStr .= pg_escape_string(trim($developer_array[$key])) . "';\n";
   }
   $confStr .= "  \$_menu_from_db = " . intval( (boolean) trim($_POST['menu_from_db']) ) . ";\n";
   $confStr .= "  \$_debug = " . (integer) trim($_POST['debug']) . ";\n";
   $confStr .= "  \$login_field = " . (integer) trim($_POST['login_field']) . ";\n";  
   $confStr .= "  \$_singleQueue = " . (integer) trim($_POST['singleQueue']) . ";\n";
   $confStr .= "  \$_remoteAssets = " . (integer) trim($_POST['remoteAssets']) . ";\n";
-  $confStr .= "  \$_theme = \"" .  pg_escape_string(trim($_POST['theme'])) . "\";\n";
+  $confStr .= "  \$_theme = \"" .  pg_escape_string(trim($_POST['theme'])) . "';\n";
   $confStr .= "  \$verificaEmail = " . (integer) trim($_POST['verificaEmail']) . ";\n";
-  $confStr .= "  \$encoding = \"" . pg_escape_string(trim($_POST['encoding'])) . "\";\n";
-  $confStr .= "  \$mem_limit = \"" . (integer) trim($_POST['mem_limit']) . "\";\n";
-  $confStr .= "  \$max_execution_time = \"" . (integer) trim($_POST['max_execution_time']) . "\";\n";
+  $confStr .= "  \$encoding = '" . pg_escape_string(trim($_POST['encoding'])) . "';\n";
+  $confStr .= "  \$mem_limit = \"" . (integer) trim($_POST['mem_limit']) . "';\n";
+  $confStr .= "  \$max_execution_time = \"" . (integer) trim($_POST['max_execution_time']) . "';\n";
 
   foreach($deps as $dep){
     $dep = trim(str_replace("-", "_", $dep));
-    $confStr .= "  \$path_to_" . $dep . " = \"" . pg_escape_string(trim($_POST['path_to_' . $dep])) . "\";\n";
+    $confStr .= "  \$path_to_" . $dep . " = '" . pg_escape_string(trim($_POST['path_to_' . $dep])) . "';\n";
   }
 
   $confStr .= "?>\n";

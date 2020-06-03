@@ -208,7 +208,7 @@ $authlog_query .= "  VALUES (" . (intval($matricula) ? "'" . $matricula . "', " 
 $authlog_query .= "          '" . $ip . "', '";
 $authlog_query .= basename($_SERVER["PHP_SELF"]) . "',\n '{";
 foreach ($_GET as $key => $value){
-  $authlog_query .=  "(" . $key . " = " . $value . ")"; 
+  $authlog_query .=  "(" . pg_escape_string($key) . " = " . pg_escape_string($value) . ")"; 
 }
 $authlog_query .= "}')\n";
 //echo "<PRE>". $authlog_query . "</PRE>";
