@@ -14,7 +14,7 @@
   $organizationWebSiteURL = "";
   $developer[0] = "66260700";
   $_menu_from_db = 1;
-  $_debug = 0;
+  $_debug = 3;
   $_singleQueue = 0;
   $_remoteAssets = 0;
   $_theme = "framelessTron";
