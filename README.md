@@ -12,7 +12,7 @@ providing functions to generate HTML tables from PostgreSQL queries and also a
 module to automatically generate CRUD forms for PostgreSQL tables.
 
 The CRUD form generation tool scans the database data dictionary to
-identify relations making selection boxes (or radio lists, depending of the
+identify relations making selection boxes (or radio lists, depending on the
 size of the list) for the 1:N relations and check boxes lists for the
 N:N relations.
 
