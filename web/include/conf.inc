@@ -2,7 +2,7 @@
   $banco = "onde";
   $banco_cadastro = "";
   $usuario_banco = "onde";
-  $senha_banco = "change_this_password_on_prodution_site";
+  $senha_banco = "1ndu$mart";
   $system_mail_from = "";
   $system_mail_from_name = "";
   $system_mail_host = "";

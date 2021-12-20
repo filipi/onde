@@ -22,6 +22,12 @@ Became root user. You will be prompted your user's password.
 
     sudo su -
 
+## Installing PostgreSQL Database Server
+
+
+    apt install apt install postgresql-12
+
+
 Now, use the **``su``** command to became the postgres user.
 The postgres user is usually setup without a password, that's
 why we became root first
