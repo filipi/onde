@@ -1,1 +1,1 @@
-acct apache2 aspell-pt-br fail2ban gnuplot imagemagick inkscape libapache2-mod-php librsvg2-bin lynx make php-gd php-mbstring php-pgsql php-pspell php-xml php-xmlrpc pngquant postgresql wget enscript php-imagick
+acct nginx aspell-pt-br fail2ban gnuplot imagemagick inkscape librsvg2-bin lynx make php-gd php-mbstring php-pgsql php-pspell php-xml php-xmlrpc pngquant postgresql wget enscript php-imagick

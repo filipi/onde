@@ -22,11 +22,9 @@ Became root user. You will be prompted your user's password.
 
     sudo su -
 
-## Installing PostgreSQL Database Server
-
+First install the data base server, on ubuntu 20.04 it can be like this
 
     apt install apt install postgresql-12
-
 
 Now, use the **``su``** command to became the postgres user.
 The postgres user is usually setup without a password, that's
@@ -48,6 +46,32 @@ The default **``include/conf.inc``** comes with a default password
 The password you put in **``include/conf.inc``** is the same you've
 informed to **``createuser``**
 
+You may use a .pg_pass on your home folder to store postgres passwords
+(not much safe, but makes things easy on a developer environment).
+
+    ~/.pg_pass
+    localhost:5432:onde:change_this_password_on_prodution_site
+
+To enable onde database user to authenticate from command line and from PHP postgres library,
+you have to grant acces at the postgres host based authentication configuration file.
+Depending on your local postgres installation it may have different locations but is always named
+pg_hba.conf
+In Ubuntu distributions it is at
+
+   /etc/postgresql/12/main/pg_hba.conf
+
+For easy of setup you can change the following line (change peer for trust)
+
+    # "local" is for Unix domain socket connections only                                                                      
+    #local   all             all                                     peer                                                     
+    local   all             all                                     trust
+
+Don't forget to restart the database server deamon, as root
+
+      sudo service postgresql stop
+
+      sudo service postgresql start
+
 Now you can finish the postgres login and the root login.
 You can go back to your login shell and run the developer
 database backup recovery script (restauraDev). As this is the
@@ -65,4 +89,14 @@ issue a failure message. This is the correct output:
     Populando tabelas(onde.backup-dev.sql)................[  OK  ]
         
     youruser@yourhost:~/onde/db$ 
+
+
+Installing webserver
+
+Onde is compatible with Apache and Nginx
+
+     apt install nginx
+
+Edit /etc/nginx/sites-avaliable and set document root to [onde root]/web
+
 
