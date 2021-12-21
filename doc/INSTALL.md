@@ -53,9 +53,9 @@ You may use a .pg_pass on your home folder to store postgres passwords
     localhost:5432:onde:change_this_password_on_prodution_site
 
 To enable onde database user to authenticate from command line and from PHP postgres library,
-you have to grant acces at the postgres host based authentication configuration file.
+you have to grant access at the postgres host based authentication configuration file.
 Depending on your local postgres installation it may have different locations but is always named
-pg_hba.conf
+pg_hba.conf .
 In Ubuntu distributions it is at
 
    /etc/postgresql/12/main/pg_hba.conf
