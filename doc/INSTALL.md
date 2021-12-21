@@ -18,7 +18,7 @@ populate it with the database backup file.
 
 ### Linux (Debian / Ubuntu)
 
-Became root user. You will be prompted your user's password.
+Become root user. You will be prompted your user's password.
 
     sudo su -
 
