@@ -24,7 +24,7 @@ Become root user. You will be prompted your user's password.
 
 First install the data base server, on ubuntu 20.04 it can be like this
 
-    apt install apt install postgresql-12
+    apt install postgresql-12
 
 Now, use the **``su``** command to become the postgres user.
 The postgres user is usually setup without a password, that's
