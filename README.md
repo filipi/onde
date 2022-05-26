@@ -1,6 +1,6 @@
 # O.N.D.E.
 
-O.N.D.E. - Onde is Not Developed by Experts
+O.N.D.E. - Onde was Not Developed for aEsthetics
 
 Inspired by the [exflickr/flamework](https://github.com/exflickr/flamework), 
 Onde is a quick and dirty PHP application prototyping fLame Work.
