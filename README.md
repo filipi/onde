@@ -7,7 +7,7 @@ Onde is a quick and dirty PHP application prototyping fLame Work.
 
 ## Automatic form CRUD (forms.php)
 
-In its current version, it serves as the basis for an simple PHP application,
+In its current version, it serves as the basis for a simple PHP application,
 providing functions to generate HTML tables from PostgreSQL queries and also a
 module to automatically generate CRUD forms for PostgreSQL tables.
 
