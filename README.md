@@ -16,16 +16,16 @@ identify relations making selection boxes (or radio lists, depending on the
 size of the list) for the 1:N relations and check boxes lists for the
 N:N relations.
 
-The tool handles the submited information throught a "insert" or a "save" button,
-thus automaticallly generating an insert or an update query statment.
-There is no object relational abstration, the queries are generated directly
+The tool handles the submited information throught an "insert" or a "save" button,
+thus automaticallly generating an insert or an update query statement.
+There is no object relational abstraction, the queries are generated directly
 in the PHP functions. 
 
 ## Automatic Menus from table menu (databasemenu.php)
 
-The framework provides a side menu (usually at left side of the window),
+The framework provides a side menu (usually at the left side of the window),
 which is generated from table menu's data. The menu items could link
-to a php script a forms.php's form ar a calendar.
+to a php script for a forms.php's form or a calendar.
 
 ## User access control
 
