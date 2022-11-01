@@ -32,6 +32,15 @@ would look like this:
 
     apt install postgresql-9.5
 
+Next, it is necessary to create a new PostgreSQL server cluster. Use the
+following command (swap out 9.5 for 12 if need be):
+
+    pg_createcluster 9.5 main --start
+
+Be sure to check the status of the cluster before continuing:
+
+    service postgresql status
+
 Now, use the **``su``** command to become the postgres user.
 The postgres user is usually setup without a password, that's
 why we became root first.
