@@ -25,7 +25,7 @@ in the PHP functions.
 
 The framework provides a side menu (usually on the left side of the window),
 which is generated from table menu's data. The menu items could link
-to a php script for a forms.php's form or a calendar.
+to a php script, or a forms.php's form, or a calendar.
 
 ## User access control
 
