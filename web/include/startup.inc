@@ -7,7 +7,7 @@ if (!isset($_startup) || !$_startup){
   if (!$_debug)
     ini_set ( "error_reporting", "E_COMPILE_ERROR|E_ERROR|E_CORE_ERROR" );
   else
-    ini_set ( "error_reporting", "E_ALL" );
+    ini_set ( "error_reporting", "E_ALL ^ E_DEPRECATED" );
   
   $connectionString  = "dbname =   " . $banco . "\n";
   $connectionString .= "user =     " . $usuario_banco . "\n";
@@ -23,7 +23,11 @@ if (!isset($_startup) || !$_startup){
   if ($encoding)
     ini_set ( 'default_charset', $encoding );
 
+  echo "PASSEI";
+
   include_once("lib.inc");
+echo "PASSEI";
+
 
   $ONDE_VERSION = "0.1.0";
   $SYSTEM_NAME = "System Name as on startup.inc";

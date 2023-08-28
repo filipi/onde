@@ -3,3 +3,6 @@ session_files
 *.sql*
 db/*.log
 conf*.inc
+stuff
+backup_plumes
+info.php

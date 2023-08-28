@@ -28,7 +28,9 @@
   //if ($_debug) echo "PHP_VERSION_ID: - " . PHP_VERSION_ID . "<BR>\n";
   //http://stackoverflow.com/questions/23616724/include-requires-reload
 
-  if (PHP_VERSION_ID >= 50500) opcache_invalidate("conf.inc");
+  //if (PHP_VERSION_ID >= 50500) opcache_invalidate("conf.inc");
+
+  //echo PHP_VERSION_ID;
 
   if (!function_exists('boolval')) {
     function boolval($val) {
