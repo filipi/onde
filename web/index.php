@@ -1,7 +1,7 @@
 <?PHP
-include_once("include/php_backwards_compatibility.inc");
-include_once("include/escapeConfVars.inc");
-include("include/conf.inc");escapeConfVars();
+include_once("../include/php_backwards_compatibility.inc");
+include_once("../include/escapeConfVars.inc");
+include("../include/conf.inc");escapeConfVars();
 $remoteDomain = "http://remotedomain";
 if (isset($_GET['demanda'])) $demanda = intval($_GET['demanda']); else $demanda = 0;
 if (isset($_GET['form'])) $form = $form = intval($_GET['form']); else $form = 0;
