@@ -1,4 +1,4 @@
-# Crindo link simbolico no cmd (mklink)
+# Criando link simbólico no cmd (mklink)
 
 ## Caminho da pasta de origem
 $origem = "C:\Caminho\Para\A\PastaOrigem"
