@@ -193,7 +193,7 @@ if ( stripos("_" . $_theme, "frameless") && !$ehXML){
 
 $isdeveloper = 0;
 reset($developer);
-while (list($key, $val) = each($developer)){
+foreach($developer as $key => $val){
   if ($useSessions)
     if ($developer[$key] == $_SESSION['matricula'])
       $isdeveloper=1;
@@ -201,7 +201,7 @@ while (list($key, $val) = each($developer)){
 
 $matricula = trim($_SESSION['matricula']);
 $senha =  trim($_SESSION['senha']);
-$ip = getenv(REMOTE_ADDR);
+$ip = getenv('REMOTE_ADDR');
 
 $authlog_query  = "INSERT INTO authlog (" . (intval($matricula) ? "matricula, " : '') . "IP, page, get)\n";
 $authlog_query .= "  VALUES (" . (intval($matricula) ? "'" . $matricula . "', " : '') . "\n";
@@ -212,7 +212,7 @@ foreach ($_GET as $key => $value){
 }
 $authlog_query .= "}')\n";
 //echo "<PRE>". $authlog_query . "</PRE>";
-$authlog_exe = pg_exec($conn,$authlog_query);
+$authlog_exe = pg_exec($conn, $authlog_query);
 
 if (!$authlog_exe){
   $authlog_query  = "INSERT INTO authlog(error) VALUES('" . pg_last_error();
@@ -220,6 +220,7 @@ if (!$authlog_exe){
   //$authlog_query .= "\nsenha:" . $senha . "')";
   $authlog_exe = pg_exec($conn,$authlog_query);
 }
+
 
 /*
 echo basename($_SERVER['PHP_SELF']) . "\n";
