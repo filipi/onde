@@ -1,8 +1,7 @@
 <?PHP
 if (isset($_GET['PHPSESSID'])) $PHPSESSID = $_GET['PHPSESSID']; else $PHPSESSID = 0;
 $headerTitle = "Closing ONDE";
-$myPATH = ini_get('include_path') . ':./include:../include:../../include';
-ini_set('include_path', $myPATH);
+include "iniset.php";
 include "page_header.inc";
 
 error_reporting(1);
