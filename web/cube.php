@@ -5,8 +5,8 @@
    * $Id: cube.php,v 1.28 2018/06/01 19:44:13 filipi Exp $
    */
 $useSessions = 1; $ehXML = 0;
-$myPATH = ini_get('include_path') . ':./include:../include:../../include';
-ini_set('include_path', $myPATH);include "page_header.inc";
+include "iniset.php";
+include "page_header.inc";
 
 $leftOffset = 0;
 if (stripos("_" . $_theme, "frameless"))  $leftOffset = 208;

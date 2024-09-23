@@ -9,8 +9,7 @@ if (isset($_GET['left']))  $left    = intval($_GET['left']);         else $left 
 if (isset($_GET['height'])) $height = intval($_GET['height']);       else $height = 0;
 if (isset($_GET['width'])) $width   = intval($_GET['width']);        else $width = 0;
 $useSessions = 1; $ehXML = 1;
-$myPATH = ini_get('include_path') . ':./include:../include:../../include';
-ini_set('include_path', $myPATH);
+include "iniset.php";
 include "page_header.inc";
 
 $erro = "";

@@ -8,8 +8,7 @@ $target = "forms.php?form=259&toggle[]=M285&buttonrow[" . $codigo . "]=detalhes"
 $useSessions = 1; $ehXML = 0;
 
 $headerTitle = "AGU 2019 > <a href=" . $target . ">Scripts python</a>";
-$myPATH = ini_get('include_path') . ':./include:../include:../../include';
-ini_set('include_path', $myPATH);
+include "iniset.php";
 include "page_header.inc";
 //////////////////////////////////////////////////////////////// Funcoes locais
 ///////////////////////////////////////////////////////////////////////////////

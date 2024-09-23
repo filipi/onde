@@ -20,8 +20,7 @@ $table       = pg_escape_string(trim($_GET['table']));
 ///////////////////////////////////////////////////////////////////// Cabecalho
 $useSessions = 1; $ehXML = 1;
 //$headerTitle = "Página de gabarito";
-$myPATH = ini_get('include_path') . ':./include:../include:../../include';
-ini_set('include_path', $myPATH);
+include "iniset.php";
 include "light_header.inc";
 //////////////////////////////////////////////////////////////// Funcoes locais
 ///////////////////////////////////////////////////////////////////////////////

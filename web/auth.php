@@ -13,10 +13,7 @@ if (isset($_GET['alvo'])){
 
 $ehXML = 1; $useSessions = 0;
 $headerTitle = "ONDE loging in";
-$myPATH = ini_get('include_path') . ';./include;../include;../../include';
-ini_set('include_path', $myPATH);
-
-echo ini_get('include_path');
+include "iniset.php";
 include "page_header.inc";
 ini_set ( "error_reporting", "E_ALL" );
 

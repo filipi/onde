@@ -11,8 +11,7 @@ if (isset($_GET['alvo'])){
  }
 
 $useSessions = 1; $ehXML = 1;
-$myPATH = ini_get('include_path') . ':./include:../include:../../include';
-ini_set('include_path', $myPATH);
+include "iniset.php";
 include_once("include/php_backwards_compatibility.inc");
 include_once("include/escapeConfVars.inc");
 include("conf.inc");escapeConfVars();
