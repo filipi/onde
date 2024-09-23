@@ -5,9 +5,7 @@
 * Only change a dependency class if your know what you're doing.
 * Add your classes in the section application classes
 */
-$myPATH = ini_get('include_path') . ':./include/classes:../include/classes:../../include/classes';
-ini_set('include_path', $myPATH);
-
+include("iniset.inc");
 
 //////////////////////////////////////////////////////////////////
 /** Dependency Classes  
