@@ -54,16 +54,16 @@ if [ ${backup} == "./$databasename.backup-dev.sql.bz2" ]; then
 	if ( bunzip2 -q $databasename.backup-dev.sql.bz2 ); then
 	    echoOk      #------------------------------------------------------------#
 	    echo -n     "Removendo banco......................................."
-	    if ( dropdb -h $databasehostname $databasename -U $databaseuser ); then
+	    if ( dropdb -U $databaseuser -h $databasehostname $databasename ); then
 		echoOk
 	    else
 		echoFalhou
 	    fi          #------------------------------------------------------------#
 	    echo -n     "Criando o banco novamente............................."
-	    if ( createdb -h $databasename $databasename -U $databaseuser ); then
+	    if ( createdb -U $databaseuser -h $databasename $databasename  ); then
 		echoOk  #---------------------------------------------------------------#
 		echo -n "Populando tabelas($databasename.backup-dev.sql)................"
-		if ( psql -h $databasehostname $databasename -U $databaseuser -q -f $databasename.backup-dev.sql -o reseta_banco.log); then
+		if ( psql -U $databaseuser -h $databasehostname $databasename -q -f $databasename.backup-dev.sql -o reseta_banco.log); then
 		    echoOk
 		else
 		    echoFalhou
@@ -83,16 +83,16 @@ if [ ${backup} == "./$databasename.backup-dev.sql.bz2" ]; then
 	if ( pbzip2 -p$nofprocs -q -d $databasename.backup-dev.sql.bz2 ); then
 	    echoOk      #------------------------------------------------------------#
 	    echo -n     "Removendo banco......................................."
-	    if ( dropdb -h $databasehostname $databasename -U $databaseuser ); then
+	    if ( dropdb -U $databaseuser -h $databasehostname $databasename  ); then
 		echoOk
 	    else
 		echoFalhou
 	    fi          #------------------------------------------------------------#
 	    echo -n     "Criando o banco novamente............................."
-	    if ( createdb -h $databasehostname $databasename -U $databaseuser ); then
+	    if ( createdb -U $databaseuser -h $databasehostname $databasename ); then
 		echoOk  #---------------------------------------------------------------#
 		echo -n "Populando tabelas($databasename.backup-dev.sql)................"
-		if ( psql -h $databasehostname $databasename -U $databaseuser -q -f $databasename.backup-dev.sql -o reseta_banco.log); then
+		if ( psql -U $databaseuser -h $databasehostname $databasename -q -f $databasename.backup-dev.sql -o reseta_banco.log); then
 		    echoOk
 		else
 		    echoFalhou
@@ -111,16 +111,16 @@ if [ ${backup} == "./$databasename.backup-dev.sql.bz2" ]; then
 else
     if [ ${backup} == "./$databasename.backup-dev.sql" ]; then
 	echo -n     "Removendo banco......................................."
-	if ( dropdb -h $databasehostname $databasename -U $databaseuser ); then
+	if ( dropdb -U $databaseuser -h $databasehostname $databasename ); then
 	    echoOk
 	else
 	    echoFalhou
 	fi          #------------------------------------------------------------#
 	echo -n     "Criando o banco novamente............................."
-	if ( createdb -h $databasehostname $databasename -U $databaseuser ); then
+	if ( createdb -U $databaseuser -h $databasehostname $databasename  ); then
 	    echoOk  #---------------------------------------------------------------#
 	    echo -n "Populando tabelas($databasename.backup-dev.sql)................"
-	    if ( psql -h $databasehostname $databasename -U $databaseuser -q -f $databasename.backup-dev.sql -o reseta_banco.log); then
+	    if ( psql -U $databaseuser -h $databasehostname $databasename -q -f $databasename.backup-dev.sql -o reseta_banco.log); then
 		echoOk
 	    else
 		echoFalhou
