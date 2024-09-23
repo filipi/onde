@@ -23,11 +23,7 @@ if (!isset($_startup) || !$_startup){
   if ($encoding)
     ini_set ( 'default_charset', $encoding );
 
-  echo "PASSEI";
-
   include_once("lib.inc");
-echo "PASSEI";
-
 
   $ONDE_VERSION = "0.1.0";
   $SYSTEM_NAME = "System Name as on startup.inc";
