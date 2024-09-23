@@ -25,7 +25,7 @@ function isNumberKey(evt){
 </script><?PHP
 
 
-if ($_GET[ERR] == '1'){
+if ($_GET['ERR'] == '1'){
  ?>
   <DIV CLASS=coment>
   <CENTER>
