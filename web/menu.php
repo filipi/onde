@@ -2,8 +2,7 @@
 if (isset($_GET['PHPSESSID']))
   $PHPSESSID = $_GET['PHPSESSID'];
 $useSessions = 1; $ehXML = 1;
-$myPATH = ini_get('include_path') . ':./include:../include:../../include';
-ini_set('include_path', $myPATH);
+include "iniset.php";
 //include("masterFormStartup.inc");
 //include("monitorLADStartup.inc");
 include "page_header.inc";
