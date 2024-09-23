@@ -8,9 +8,7 @@ if (isset($_GET['alvo'])){
  }
 $headerTitle = "EasyBeasy login";
 $useSessions = 0; $ehXML = 0;
-$myPATH = ini_get('include_path') . ':./include:../include:../../include';
-ini_set('include_path', $myPATH);
-
+include "iniset.php";
 include "page_header.inc";
 
 ?><script>

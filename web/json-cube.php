@@ -4,8 +4,7 @@
    * á
    */
 $useSessions = 1; $ehXML = 1;
-$myPATH = ini_get('include_path') . ':./include:../include:../../include';
-ini_set('include_path', $myPATH);
+include "iniset.php";
 include "page_header.inc";
 
 $action = "list";
