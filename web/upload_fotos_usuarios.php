@@ -8,8 +8,7 @@
 $useSessions = 0;
 $ehXML = 1;
 $headerTitle = "";
-$myPATH = ini_get('include_path') . ':./include:../include:../../include';
-ini_set('include_path', $myPATH);
+include "iniset.php";
 include "page_header.inc";
 //////////////////////////////////////////////////////////////// Funcoes locais
 ///////////////////////////////////////////////////////////////////////////////

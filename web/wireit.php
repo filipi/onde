@@ -2,8 +2,7 @@
 <?PHP  
 $headerTitle = "Developer > Modelo";
 $useSessions = 1; $ehXML = 0;
-$myPATH = ini_get('include_path') . ':./include:../include:../../include';
-ini_set('include_path', $myPATH);include "page_header.inc";
+include "iniset.php";include "page_header.inc";
 echo "<BR>\n";
 if ($_debug) echo "<B>Conection handle=" . $conn . "</B><BR>\n";
 if ($_debug) echo "<B>Genero: " . $_POST['genero'] . "</B><BR>\n";

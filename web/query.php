@@ -5,8 +5,7 @@
   * $Id: query.php,v 1.36 2018/12/17 13:03:49 filipi Exp $
   */
 $useSessions = 1; $ehXML = 0;
-$myPATH = ini_get('include_path') . ':./include:../include:../../include';
-ini_set('include_path', $myPATH);
+include "iniset.php";
 if (isset($_POST['nome'])) $headerTitle = pg_escape_string($_POST['nome']);
 include "page_header.inc";
 ?>
