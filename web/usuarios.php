@@ -7,8 +7,7 @@ $headerTitle = "Administra&ccedil;&atilde;o > Usu&aacute;rios > Usu&aacute;rios"
 $useSessions = 1;
 $ehXML = 0;
 
-$myPATH = ini_get('include_path') . ':./include:../include:../../include';
-ini_set('include_path', $myPATH);
+include "iniset.php";
 include "page_header.inc";
 
 //$_debug = 1;

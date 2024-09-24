@@ -8,8 +8,7 @@
 $useSessions = 1;
 $ehXML = 0;
 $headerTitle = "Configura&ccedil;&otilde;es pessoais";
-$myPATH = ini_get('include_path') . ':./include:../include:../../include';
-ini_set('include_path', $myPATH);
+include "iniset.php";
 include "page_header.inc";
 global $PHPSESSID;
 

@@ -6,8 +6,7 @@
 $useSessions = 1;
 $ehXML = 0;
 $headerTitle = "Ground truth generation tool";
-$myPATH = ini_get('include_path') . ':./include:../include:../../include';
-ini_set('include_path', $myPATH);
+include "iniset.php";
 include "page_header.inc";
 //////////////////////////////////////////////////////////////// Funcoes locais
 ///////////////////////////////////////////////////////////////////////////////
