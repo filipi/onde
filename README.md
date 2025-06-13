@@ -177,22 +177,6 @@ ONDE embodies true zero‑code CRUD: you declare your interface in PostgreSQL an
 
 ---
 
-### 📂 Project Structure
-
-web/
-├─ forms.php
-├─ frm_login.php
-├─ auth.php
-├─ logout.php
-├─ resetSenha.php
-├─ doResetPass.php
-include/
-├─ startup.inc
-├─ start_sessao.inc
-├─ lib.inc
-
----
-
 ### 🤝 Contribute
 
 Authored by *filipi*. Issues and PRs for feature improvements (session security, Argon2 tuning, UI enhancements, multitenancy) are welcome.
