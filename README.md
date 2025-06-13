@@ -1,6 +1,6 @@
-[![PHP](https://img.shields.io/badge/PHP-^7.2--^8.2-blue?style=for-the-badge&logo=php&logoColor=white)]
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-%E2%89%A56.0-blue?style=for-the-badge&logo=postgresql&logoColor=white)]
-[![License MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)]
+![PHP](https://img.shields.io/badge/PHP-^7.2--^8.2-blue?style=for-the-badge&logo=php&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-%E2%89%A56.0-blue?style=for-the-badge&logo=postgresql&logoColor=white)
+![License MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
 # ONDE – PHP Database‑Driven Form & CRUD Micro‑Framework 🚀
 
