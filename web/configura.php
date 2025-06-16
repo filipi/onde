@@ -5,8 +5,7 @@
   */
 $headerTitle = "P&aacute;gina de configura&ccedil;&atilde;o do sistema";
 $useSessions = 1; $ehXML = 0;
-$myPATH = ini_get('include_path') . ':./include:../include:../../include';
-ini_set('include_path', $myPATH);
+include "iniset.php";
 include_once("masterFormStartup.inc");
 include "page_header.inc";
 

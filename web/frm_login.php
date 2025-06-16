@@ -1,6 +1,12 @@
 <?PHP
 if (isset($_GET['demanda'])) $demanda = intval($_GET['demanda']); else $demanda = 0;
-if (isset($_GET['form'])) $form = $form = intval($_GET['form']); else $form = 0;
+if (isset($_GET['form'])) $form = intval($_GET['form']); else $form = 0;
+if (isset($_GET['i']))    $codigoImpressora = intval($_GET['i']); else $codigoImpressora = 0;
+if (isset($_GET['landingPage']) && file_exists(basename($_GET['landingPage'])))
+  $landingPage =  basename($_GET['landingPage']);
+else
+  $landingPage = 0;
+
 if (isset($_GET['alvo'])){
   $alvo = intval($_GET['alvo']);
   if ($alvo)
@@ -8,11 +14,9 @@ if (isset($_GET['alvo'])){
  }
 $headerTitle = "ONDE login";
 $useSessions = 0; $ehXML = 0;
-$myPATH = ini_get('include_path') . ':./include:../include:../../include';
-ini_set('include_path', $myPATH);
+include "iniset.php";
 
 include "page_header.inc";
-
 ?><script>
 function isNumberKey(evt){
   var charCode = (evt.which) ? evt.which : event.keyCode
@@ -39,15 +43,17 @@ if ($_GET['ERR'] == '1'){
  <?PHP
 }
 
-if ($_manutencao){
+if (isset($_manutencao) && $_manutencao){
   echo "<CENTER>MANUTENÇÃO</CENTER><BR>\n";
   include "page_footer.inc";
   exit;
 }
 
+if (stripos($_theme, "tron")) echo "<style>td {background-color: black;} </style>";
+
 ?>
 <CENTER>
- <FORM METHOD='POST' ACTION='./auth.php<?PHP if ($demanda) echo "?demanda=" . $demanda; if ($form) echo "?form=" . $form . ($alvo ? "&alvo=" . $alvo : ""); ?>' NAME='LOGIN'>
+ <FORM METHOD='POST' ACTION='./auth.php<?PHP echo "?" . ($demanda ? "demanda=" . $demanda : "") . ($form ? "&form=" . $form : "") . ($alvo ? "&alvo=" . $alvo : "") . ($landingPage ? "&landingPage=" . $landingPage : "") . ($hash ? "&h=" . $hash : "") . ($codigoImpressora ? "&i=" . $codigoImpressora : ""); ?>' NAME='LOGIN'>
  <TABLE class=onde>
   <TR>
     <TH class=onde>EFETUAR LOGIN</TH>
@@ -85,10 +91,12 @@ if ($_manutencao){
    onKeypress=<?PHP echo"'console.log(event); if(event.charCode < 48 || event.charCode > 57) event.returnValue = false;'"?>><BR>
    // Perhaps this should work:
    //https://stackoverflow.com/questions/27813731/event-returnvalue-false-is-not-working-in-firefox
+   
+   MAXLENGTH='12'
 
    */?>
    Senha:<BR>
-   <INPUT CLASS='campo' TYPE='password' NAME="senha" SIZE='12' MAXLENGTH='12'
+   <INPUT CLASS='campo' TYPE='password' NAME="senha" SIZE='12' 
     style="width: <?PHP if (!$login_field) echo "150"; else echo "245"; ?>px;"
     >&nbsp;
    <INPUT CLASS='button' TYPE='submit' VALUE=' OK '>
@@ -102,11 +110,15 @@ if ($_manutencao){
   </TR>
  </TABLE>
  </FORM>
+<?PHP
+  if (isset($_integracaoMoodleLigada) && $_integracaoMoodleLigada)
+    echo "<small>Usuários do Moodle da PUCRS podem utilizar o login e senha do Moodle para acessar o Grande Ideia.<BR>\n";
+?>
+								       (<a href="resetSenha.php">esqueci minha senha</a>)</small>
 </CENTER>
 
 <!--
 <DIV style="float:right; border: 1px solid #c86060;">
-afsdjfçlaksdjfçalksdjf
 </DIV>
 -->
 
