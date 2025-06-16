@@ -112,7 +112,6 @@ if (stripos($_theme, "tron")) echo "<style>td {background-color: black;} </style
  </FORM>
 <?PHP
   if (isset($_integracaoMoodleLigada) && $_integracaoMoodleLigada)
-    echo "<small>Usuários do Moodle da PUCRS podem utilizar o login e senha do Moodle para acessar o Grande Ideia.<BR>\n";
 ?>
 								       (<a href="resetSenha.php">esqueci minha senha</a>)</small>
 </CENTER>
