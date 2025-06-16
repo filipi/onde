@@ -1,4 +1,4 @@
-<?php
+<?PHP
 ///////////////////////////////////////////////////////////////////////////////
 /**
  * Biblioteca de funcoes PHP
@@ -6,22 +6,22 @@
  * $Id: lib.inc,v 1.256 2019/01/18 19:35:29 filipi Exp $
  *
  * Contribuiram para a criacao dessa biblioteca:
+ * Ana Laura Lopes
  * Marcelo Rodrigues Schmitz
  * Guilherme Reschke
  * Filipi Damasceno Vianna
  * Gustavo Henrique leal
  */
 ///////////////////////////////////////////////////////////////////////////////
-
 require('Encoding.php');
 
-//use ForceUTF8 \Encoding as ForceEncoding;
+use ForceUTF8\Encoding as ForceEncoding;
 
-$menuDivider = "    <HR SIZE=1 WIDTH=\"95%\">\n";
+$menuDivider = "";//"    <HR SIZE=1 WIDTH=\"95%\">\n";
 $menuMargin = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 $closeDIV = "        </DIV>\n";
 
-$dataDictionary  = "SELECT a.attname, tt.typname, a.atttypmod, a.atthasdef\n";
+$dataDictionary  = "SELECT a.attname, tt.typname, a.atttypmod, a.atthasdef, a.attnum\n";
 $dataDictionary .= "  FROM pg_tables as t, pg_class as c, pg_attribute as a, pg_type as tt\n";
 $dataDictionary .= "  WHERE\n";
 $dataDictionary .= "    (tableowner <> 'postgres' OR t.tablename in ('pg_class', 'pg_constraint', 'pg_attribute') )AND\n";
@@ -56,27 +56,143 @@ $withoutMenu[] = "logoff.php";
 $withoutMenu[] = "cleanUp.php";
 $withoutMenu[] = "chgpasswd.php";
 $withoutMenu[] = "f_cronograma.php";
+$withoutMenu[] = "detalhesGTiT.php";
+$withoutMenu[] = "cnaf.php";
 //$withoutMenu[] = "wireit.php";
 
 // Ver mais itens em $withoutMenu no start_sessao.inc
+function checkClearence($conn, $clearGroups){
+  global $_SESSION, $developer, $headerTitle;
+  $devLinks[] = "botControl.php";
+  $devLinks[] = "configura.php";
+  $devLinks[] = "query.php";
+  $devLinks[] = "wireit.php";
 
-/**
-* @brief Simply uses var_dump() inside a <pre> to give a more visibly a var.
-* @param $var The var to be dumped for debuging. Ex: $_POST
-* @author: Gustavo Leal
-*/
+  $ideiaLinks[] = "pesquisa.php";
+  $ideiaLinks[] = "masterForm.php";
+  $ideiaLinks[] = "pesquisa_no_patrimonio_grande.php";
+  $ideiaLinks[] = "usuarios.php";
 
-function pretty_dump($var){
-  echo "<PRE>";
-  var_dump($var);
-  echo "</PRE>";
+  $clear = 0;
+  $clearanceQuery  = "select count(codigo) from grupos\n";
+  $clearanceQuery .= "     where codigo in (SELECT grupo from usuarios_grupos where usuario = '" . trim($_SESSION['matricula']) . "')\n";
+
+  if (isset($clearGroups) && is_array($clearGroups)){
+    $clearanceQuery .= "     and codigo in (";
+    $clearanceQuery .= implode(",", $clearGroups);
+    $clearanceQuery .= ")\n";
+  }  
+  $clearanceResult = pg_exec ($conn, $clearanceQuery);
+  $clearanceArray = pg_fetch_all($clearanceResult);
+  $clear = intval($clearanceArray[0]['count']);
+
+  //echo "<PRE>"; var_dump($clearGroups); echo "</PRE>";
+  //echo "<PRE>" . $clearanceQuery . "</PRE>";
+
+  //echo "<PRE>DEVELOPER"; var_dump($developer); echo "</PRE>";
+  //echo "<PRE>" . $clearanceQuery . "</PRE>";
+
+  //if (in_array($_SESSION['matricula'], $developer)){
+  //  echo "Pagina atual: " . $_SERVER['PHP_SELF'] . "<BR>\n";
+  //}
+
+  if (in_array($_SESSION['matricula'], $developer) // Se for dev
+    &&
+      in_array(basename($_SERVER['PHP_SELF']), $devLinks) // e site é de dev
+      )$clear++;
+
+if ( !$clear ){
+    changeTitle("Proibido!");
+    echo "   <CENTER>\n";
+    echo "        <IMG SRC=images/icon_vazio.jpg>\n";
+    echo "        <BR>\n";
+    echo "        <BR>\n";
+    echo "        <B>Voc&ecirc; n&atilde;o tem permiss&atilde;o para acessar\n";
+    if (isset($headerTitle))
+      echo "           \"" . $headerTitle . "\".</B><BR>\n";
+    else
+      echo "           esta página.</B><BR>\n";
+    echo "         <BR>\n";
+    include("versions.inc");
+    include "page_footer.inc";
+    exit(1);
+  }
+}
+
+function changeTitle($titulo){
+  echo "<script>\nvar titulo = document.getElementById('o_titulo');\n";
+  echo "titulo.innerHTML = '" . $titulo . "';\n";
+  echo "document.title = '" . $titulo . "';\n";
+  echo "</script>\n";
+}
+
+
+function show_status($done, $total, $size=30) {
+  static $start_time;
+
+  // if we go over our bound, just ignore it
+  if($done > $total) return;
+
+  if(empty($start_time)) $start_time=time();
+  $now = time();
+
+  $perc=(double)($done/$total);
+
+  $bar=floor($perc*$size);
+
+  $status_bar="\r[";
+  $status_bar.=str_repeat("=", $bar);
+  if($bar<$size){
+    $status_bar.=">";
+    $status_bar.=str_repeat(" ", $size-$bar);
+  } else {
+    $status_bar.="=";
+  }
+
+  $disp=number_format($perc*100, 0);
+
+  $status_bar.="] $disp%  $done/$total";
+
+  $rate = ($now-$start_time)/$done;
+  $left = $total - $done;
+  $eta = round($rate * $left, 2);
+
+  $elapsed = $now - $start_time;
+
+  $status_bar.= " remaining: ".number_format($eta)." sec.  elapsed: ".number_format($elapsed)." sec.";
+
+  echo "$status_bar  ";
+
+  flush();
+
+  // when done, send a newline
+  if($done == $total) {
+    echo "\n";
+  }
 }
 
 function fixField($fieldName){
   //echo "<script>console.log('" . pg_escape_string($fieldName) . "');</script>";
-  //echo "<script>console.log('" . strtr($fieldName, ' <>?=.\\-()', '___________') . "');</script>";
-  return stripAccents(strtr($fieldName, ' <>?=.\\-()', '__________'));
+  //echo "<script>console.log('" . strtr($fieldName, ' <>?=.\\-()', '____________') . "');</script>";
+  /*
+  if (strpos("_". $fieldName, ":")){
+    echo "<script>console.log('Campo com \":\"  " . $fieldName . "');</script>";
+    echo "\nconsole.log('Campo com \":\"  " . $fieldName . "');\n";
+  } 
+  */
+  $fieldName = str_replace('²', '_', $fieldName);
+  $fieldName = str_replace('³', '_', $fieldName);
+  return stripAccents(strtr($fieldName, ' <>?=.\\-\(\)/:,\'\{\}&%↗↘↖↙', '_____________________________________'));
+  //return stripAccents(strtr($fieldName, ' <>?=.\\-', '________'));
 }
+
+
+function fixID($ID){
+  $ID = str_replace('²', '_', $ID);
+  $ID = str_replace('³', '_', $ID);
+  return stripAccents(strtr($ID, ' <>?=.\\-\(\)/:,\'\[\]\{\}&%↗↘↖↙', '________________________________________'));
+}
+
 
 /*
  * http://itman.in/en/how-to-get-client-ip-address-in-php/
@@ -198,15 +314,24 @@ function printTimeStamp($resetCounter){
 }
 
 function menuItem($baseName, $caption, $indentLevel, $notDivide, $hint, $codigo){
-  global $menuDivider, $menuMargin, $_theme, $_menu_from_db, $isdeveloper, $isMobile, $PHPSESSID;
+  global $menuDivider, $menuMargin, $_theme, $_menu_from_db, $isdeveloper, $isMobile, $PHPSESSID, $toggleString2;
+  echo "<div id='onde_menu_item_" . $codigo . "'>\n";
+  //echo "<div class=\"menu_item\">";
+  ////echo "<script> console.log('\$toggleString2: " . $toggleString2 . "'); </script>\n"; 
+
   //echo "<PRE>CAPTION: " . $caption . "</PRE>";
   $caption = tiraQuebrasDeLinha($caption, "<|>");
   $caption = explode("<|>", $caption);  
   //echo "<PRE>CAPTION: ";$caption . "</PRE>";
-  
   if (isset($hint))  echo "<SPAN TITLE=\"" . trim($hint) . "\">";
-  echo "        <A ";
-  if ($isMobile) echo " STYLE=\" width: 100%; display:block; height: 48px; font-size: 18px;  vertical-align: middle;\" ";
+  echo "        <A id=\"onde_menu_link_" . $codigo . "\" ";
+  if ($isMobile) 
+    echo " STYLE=\" width: 80%; display:inline-block; height: 38px; font-size: 16px;  vertical-align: middle; padding-top: 12px;  \" ";
+  else
+	if (stripos("_" . $_theme, "frameless"))    
+      echo " STYLE=\"width: " . ($isdeveloper?"90%":"100%") . "; display:inline-block; height: 18px; padding-top: 5px; vertical-align: middle;\" ";
+
+  if (stripos("_" . $_theme, "frameless")) echo " class=\"hover-link\" ";
   echo " HREF=\"" . $baseName . "\" BORDER=0 ";
   if (!stripos("_" . $_theme, "frameless")){    
     echo "TARGET=\"";
@@ -224,15 +349,21 @@ function menuItem($baseName, $caption, $indentLevel, $notDivide, $hint, $codigo)
   echo "</A>\n";  
   if (isset($hint)) echo "</SPAN>";
 
-  if ($_menu_from_db && $isdeveloper && $codigo != NULL && !$isMobile){
-  echo "<a href=\"forms.php?PHPSESSID=" . $PHPSESSID . "&form=194&buttonrow[" . $codigo . "]=detalhes";
-  foreach ($_GET['toggle'] as $value)
-    echo "&toggle[]=" . $value;  
-  echo "\">[E]</a>\n";
+  if ($_menu_from_db && $isdeveloper && $codigo != NULL ){//&& !$isMobile){
+    echo "<a ";
+    if ($isMobile) 
+      echo " STYLE=\" width: 15%; display:inline-block; height: 48px; font-size: 18px; border-top: solid; border-bottom:solid; border-left:solid; border-right: solid; background-color: pink; border-width: thin; text-align: center;\" margin: 0px; padding: 0px; vertical-align: middle; ";
+
+    echo " href=\"forms.php?PHPSESSID=" . $PHPSESSID . "&form=194&buttonrow[" . $codigo . "]=detalhes";
+    echo $toggleString2;
+    //foreach ($toggle as $value) echo "&t[]=" . $value;  
+    echo "\">" . ($isMobile ? "" : "[") . "E" . ($isMobile ? "" : "]") . "</a>\n";
+    if (!stripos("_" . $_theme, "frameless")) echo "<HR>";
   }    
   
   if (!isset($notDivide) || !$notDivide )echo $menuDivider;
-  }
+  echo "</div>";
+}
 
 function indent($indentLevel){
   global $menuMargin;
@@ -241,7 +372,7 @@ function indent($indentLevel){
 }
 
 function menuTogglePoint($idString, $label, $indentLevel, $codigo){
-  global $menuDivider, $toggle, $_menu_from_db, $isdeveloper, $isMobile, $PHPSESSID;
+	global $menuDivider, $toggle, $_menu_from_db, $isdeveloper, $isMobile, $PHPSESSID, $_theme;
   //indent($indentLevel);
   echo "<SCRIPT LANGUAGE='javascript'>\n";
   echo "   var M_" . $idString . "_mouse;\n";
@@ -250,25 +381,36 @@ function menuTogglePoint($idString, $label, $indentLevel, $codigo){
   echo "    onmouseover=\"M_" . $idString . "_mouse = document.body.style.cursor;";
   echo "    document.body.style.cursor = 'pointer'; \"";
   echo "    onmouseout=\"document.body.style.cursor =  M_" . $idString . "_mouse;\"";
-  echo "  STYLE=\"text-decoration: none; cursor: pointer; margin: 0px; padding: 0px; border: 0px;";
-  if ($isMobile) echo "  width: 100%; display:block; height: 48px; font-size: 18px;  vertical-align: middle;";  
+  echo "  STYLE=\"text-decoration: none; cursor: pointer; margin: 0px; padding: 0px;";// border: 0px;";
+  if ($isMobile) 
+    echo "  width: 80%; display:inline-block; height: 38px; font-size: 16px;  vertical-align: middle; padding-top: 12px; ";  
+  else
+	if (stripos("_" . $_theme, "frameless"))    	  
+      echo "  width: " . ($isdeveloper?"90%":"100%") . "; display:inline-block; vertical-align: middle; height: 18px; padding-top: 5px; ";
   echo "\" ";
+  if (stripos("_" . $_theme, "frameless")) echo " class=\"hover-link\"";
   echo " BORDER=0";
   echo ">\n";
+  //echo "<DIV class=\"menu_item\">\n";
   indent($indentLevel);
   echo "<B>.::" . $label . "::.</B></A>\n";
   
-  if ($_menu_from_db && $isdeveloper && $codigo != NULL && !$isMobile){
-  echo "<a href=\"forms.php?PHPSESSID=" . $PHPSESSID . "&form=194&buttonrow[" . $codigo . "]=detalhes";
+  if ($_menu_from_db && $isdeveloper && $codigo != NULL){// && !$isMobile){
+    echo "<a ";
+    if ($isMobile) 
+      echo " STYLE=\" width: 15%; display:inline-block; height: 48px; font-size: 18px;  vertical-align: middle; border:solid; background-color: pink; border-width: thin; text-align: center;\" ";    
+    echo " href=\"forms.php?PHPSESSID=" . $PHPSESSID . "&form=194&buttonrow[" . $codigo . "]=detalhes";
   foreach ($_GET['toggle'] as $value)
-    echo "&toggle[]=" . $value;  
-  echo "\">[E]</a>\n";
+    echo "&toggle[]=" . $value;
+  echo "\">" . ($isMobile ? "" : "[") . "E" . ($isMobile ? "" : "]") . "</a>\n";
+  if (!stripos("_" . $_theme, "frameless")) echo "<HR>"; 
   }    
   
-  
   echo $menuDivider;
+  //echo "</div>";
+  //echo "\$toggle: " .  print_r($toggle, true);
   echo "    <DIV ID=\"" . $idString . "\"  style=\"display:";
-  if (in_array($idString, $toggle)){
+  if (isset($toggle) && $toggle && in_array($idString, $toggle)){
     echo "block";
   }
   else{
@@ -277,7 +419,7 @@ function menuTogglePoint($idString, $label, $indentLevel, $codigo){
   echo "\">\n";
 }
 
-function wordHeader($title, $filename, $landscape){
+function wordHeader($title, $filename, $landscape = false){
   global $ehXML, $_debug, $encoding;
   header("Cache-Control: ");// leave blank to avoid IE errors
   header("Pragma: ");// leave blank to avoid IE errors
@@ -338,11 +480,11 @@ function getContraintKeys(){
   global $foreginKeys, $formulario, $_debug, $conn;
   $relationsQuery  = $foreginKeys;
   $relationsQuery .= "  and class.relname = '" . $formulario['tabela'] . "'\n";
-  $relationsQuery .= "  and cons.confkey is not null\n";
+  $relationsQuery .= "  and cons.confkey is not null\n";  
 
   $result = pg_exec ($conn, $relationsQuery);
   if ($result){
-    $total = pg_numrows($result);
+    $total = pg_num_rows($result);
     $rows = pg_fetch_all($result);
     $linhas = 0;
     foreach($rows as $row){
@@ -354,19 +496,55 @@ function getContraintKeys(){
   return $conKeys;
 }
 
-
 function checkRelations($linhas){
   global $foreginKeys, $formulario, $_debug, $conn;
   $relationsQuery  = $foreginKeys;
   $relationsQuery .= "  and class.relname = '" . $formulario['tabela'] . "'\n";
   $relationsQuery .= "  and cons.confkey is not null\n";
-  $relationsQuery .= "  and cons.conkey = '{" . ( $linhas + 1 ) . "}'\n";
+  $relationsQuery .= "  and cons.conkey = '{" . ( $linhas ) . "}'\n";
   if ($_debug>2) show_query($relationsQuery, $conn);
   $relations['result'] = pg_exec ($conn, $relationsQuery);
-  $relations['total'] = pg_numrows($relations['result']);
+  $relations['total'] = pg_num_rows($relations['result']);
+  /*
+   echo "<script>\n";
+   echo "console.log('conkey: " . ($linhas + 1) . "\\n');\n";
+   echo "console.log('Relacoes: \\n" . tiraQuebrasDeLinha(addslashes($relationsQuery), '\n') . "');\n";
+   echo "</script>\n";
+  */
+
+  /*
+  if (in_array($formulario['tabela'], array("Aplicações", "umlpositions"))){
+    echo "<script>\n";
+    echo "console.log('tabela " . $formulario['tabela'] . "');\n";
+    echo "console.log('Relacoes: " . $relations['total'] . "');\n";
+    echo "console.log('Relacoes: \\n" . tiraQuebrasDeLinha(addslashes($relationsQuery), '\n') . "');\n";
+    echo "</script>\n";
+    }
+   */
+
   return $relations;
 }
 
+function hasRelations($linhas){
+  global $foreginKeys, $formulario, $_debug, $conn;
+  $relationsQuery  = $foreginKeys;
+  $relationsQuery .= "  and class.relname = '" . $formulario['tabela'] . "'\n";
+  $relationsQuery .= "  and cons.confkey is not null\n";
+  //$relationsQuery .= "  and cons.conkey = '{" . ( $linhas + 1 ) . "}'\n";
+  if ($_debug>2) show_query($relationsQuery, $conn);
+  $relations['result'] = pg_exec ($conn, $relationsQuery);
+  $relations['total'] = pg_num_rows($relations['result']);
+
+  /* if (in_array($formulario['tabela'], array("Aplicações", "umlpositions"))){ */
+  /*   echo "<script>\n"; */
+  /*   echo "console.log('tabela " . $formulario['tabela'] . "');\n"; */
+  /*   echo "console.log('Relacoes: " . $relations['total'] . "');\n"; */
+  /*   echo "console.log('Relacoes: \\n" . tiraQuebrasDeLinha(addslashes($relationsQuery), '\n') . "');\n"; */
+  /*   echo "</script>\n"; */
+  /* } */
+
+  return $relations;
+}
 
 
 //http://us2.php.net/function.fsockopen
@@ -433,7 +611,7 @@ function timeOutCheck($url){
     }
   }
   else{ // caso nao tenha erro, remove do array
-    if (!in_array($url_info['host'], $error_hosts)){
+    if (isset($error_hosts) && is_array($error_hosts) && !in_array($url_info['host'], $error_hosts)){
       foreach($error_hosts as $error_host){
         if ($error_host != $url_info['host'])
    	  $new_error_hosts[] = $url_info['host'];	
@@ -454,8 +632,10 @@ function timeOutCheck($url){
       stream_set_timeout($fid, intval($timeout/10));            
       $data .= @fgets($fid, 128);
       if ((microtime(true) - $START_gets) >= intval($timeout/10)){
-        //echo "TEMPO do fgets: " . (microtime(true) - $START_gets)	. "\n";
-	//echo "DESISTINDO...\n";
+        echo "TEMPO do fgets: " . (microtime(true) - $START_gets)	. "\n";
+	echo "DESISTINDO...\n";
+	var_dump($data);
+	var_dump($timeout);
         fclose($fid);
          empty($data);
          return "tempo de espera excedido";		
@@ -558,7 +738,6 @@ function getHtmlImage($string, $id){
   }
   return $images;
 }
-
 
 function depsOK($deps){
   global $_debug, $ehXML, $closeDIV;
@@ -688,7 +867,7 @@ function getGroups($user, $conn){
   $query .= "  WHERE ug.usuario = '" . $user . "'";
   $query .= "    AND ug.grupo = g.codigo";
   $result = pg_exec ($conn, $query);
-  $total  = pg_numrows($result);
+  $total  = pg_num_rows($result);
   if ($total){
     $linhas = 0;
     while ($linhas<$total){
@@ -717,11 +896,11 @@ function checkMembership($groups, $user, $conn){
   return $returnValue;  
 }
 
-
 function legendaCronograma($conn){
   $query = "SELECT * FROM fases ORDER BY codigo";
   $result = pg_exec($conn, $query);
   $fases = pg_fetch_all($result);
+  if ($isMobile) echo "<div style=\"overflow: scroll; width: 80vw;\">\n";
   echo "<TABLE class=onde><TR class=onde>\n";
   foreach ($fases as $fase){
     echo "<TD class=onde BGCOLOR=\"" . $fase['bg_color'] . "\">\n";
@@ -730,6 +909,7 @@ function legendaCronograma($conn){
     echo "</TD>\n";
   }
   echo "</TR></TABLE>\n";
+  if ($isMobile) echo "</div>\n";
 }
 
 /**
@@ -887,7 +1067,7 @@ function cronograma($scale, $open, $solicitacao, $atividade, $conn){
     $query .= " ORDER BY atividades.codigo";
     if ($_debug)  show_query($query, $conn);
     $result = pg_exec ($conn, $query);
-    $total  = pg_numrows($result);
+    $total  = pg_num_rows($result);
     $linhas = 0;
 
     while ($linhas<$total){
@@ -974,7 +1154,7 @@ function cronograma($scale, $open, $solicitacao, $atividade, $conn){
 	$query .= " ORDER BY af.inicio";
 
 	$result = pg_exec ($conn, $query);
-	$total  = pg_numrows($result);
+	$total  = pg_num_rows($result);
 	$linhas = 0;
 	while ($linhas<$total){
 	  $cronograma[$linhas] = pg_fetch_array ($result, $linhas);
@@ -1104,7 +1284,7 @@ function cronograma($scale, $open, $solicitacao, $atividade, $conn){
 
 
   $result = pg_exec ($conn, $query);
-  $total  = pg_numrows($result);
+  $total  = pg_num_rows($result);
   $linhas = 0;
 
   //if ($open || !$open){
@@ -1166,7 +1346,7 @@ function cronograma($scale, $open, $solicitacao, $atividade, $conn){
 	$query .= " ORDER BY af.inicio";
 
 	$result = pg_exec ($conn, $query);
-	$total  = pg_numrows($result);
+	$total  = pg_num_rows($result);
 	$linhas = 0;
 	while ($linhas<$total){
 	  $cronograma[$linhas] = pg_fetch_array ($result, $linhas);
@@ -1230,7 +1410,7 @@ function cronograma($scale, $open, $solicitacao, $atividade, $conn){
     }
     else{
       $result = pg_exec ($conn, $query);
-      $total  = pg_numrows($result);
+      $total  = pg_num_rows($result);
       $linhas = 0;
       while ($linhas<$total){
 	$cronograma[$linhas] = pg_fetch_array ($result, $linhas);
@@ -1286,7 +1466,7 @@ function cronograma($scale, $open, $solicitacao, $atividade, $conn){
 
   $dataset = pg_fetch_array ($result, 0);
   $timestamp = $dataset['inicio'];
-  $firstDay = date("N", $dataset['inicio']);
+  $firstDay = date("N", strtotime($dataset['inicio']));
   if ($_debug > 1){
     echo "First day: " . $firstDay . "<BR>\n";
     echo "timestamp: " . $timestamp  . "<BR>\n";
@@ -1306,7 +1486,7 @@ function cronograma($scale, $open, $solicitacao, $atividade, $conn){
   $query .= "UNION\n";
   $query .= "SELECT min(to_number(to_char(\"término\", 'YYYY'), '9999')) as ano from incubados order by ano";
   $result = pg_exec ($conn, $query);
-  if (pg_numrows($result))
+  if (pg_num_rows($result))
     $row = pg_fetch_row ($result, 0);
   $minimo = $row[0];
   $query  = "SELECT max(to_number(to_char(quando, 'YYYY'), '9999')) as ano from solicitacoes\n";
@@ -1319,11 +1499,61 @@ function cronograma($scale, $open, $solicitacao, $atividade, $conn){
   $query .= "UNION\n";
   $query .= "SELECT max(to_number(to_char(\"término\", 'YYYY'), '9999')) as ano from incubados order by ano desc";
   $result = pg_exec ($conn, $query);
-  if (pg_numrows($result))
+  if (pg_num_rows($result))
     $row = pg_fetch_row ($result, 0);
   $maximo = $row[0];
   return array('minimo' => $minimo, 'maximo' => $maximo);
  }
+
+
+
+/**
+ * Mostra um cabecalho de selecao de ano
+ */
+function selectTrimestre($conn, $ano, $orderBy, $desc, $PHPSESSID, $extraGET){
+  $trailling = "";
+  if (isset($orderBy) && trim($orderBy)) $trailling .= "&orderby=" . urlencode($orderBy);
+  if (isset($desc) ) $trailling .= "&desc=" . intval($desc);
+  if (isset($PHPSESSID) && trim($PHPSESSID) ) $trailling .= "&PHPSESSID=" . $PHPSESSID;
+  if (isset($extraGET)) $trailling .= $extraGET;
+
+  echo "<BR>\n";
+  $limites = getAnosMinMax($conn);
+
+  for ($i=$limites['minimo']; $i<=$limites['maximo']; $i++) {
+    echo ".::" . $i . " - ";
+    echo "[<A HREF=\"" . basename($_SERVER['PHP_SELF']);
+    echo "?PHPSESSID=" . $PHPSESSID;
+    echo "&ano=" . $i . "&mes=1";
+    echo $trailling;
+    echo "\">";
+    echo "1</A>], ";
+    echo "[<A HREF=\"" . basename($_SERVER['PHP_SELF']);
+    echo "?PHPSESSID=" . $PHPSESSID;
+    echo "&ano=" . $i . "&mes=4";
+    echo $trailling;
+    echo "\">";
+    echo "2</A>], ";
+    echo "[<A HREF=\"" . basename($_SERVER['PHP_SELF']);
+    echo "?PHPSESSID=" . $PHPSESSID;
+    echo "&ano=" . $i . "&mes=7";
+    echo $trailling;
+    echo "\">";
+    echo "3</A>], ";
+    echo "[<A HREF=\"" . basename($_SERVER['PHP_SELF']);
+    echo "?PHPSESSID=" . $PHPSESSID;
+    echo "&ano=" . $i . "&mes=10";
+    echo $trailling;
+    echo "\">";
+    echo "4</A>]";
+    echo "::.&nbsp;&nbsp;&nbsp;&nbsp;\n";
+    echo "\n";
+    if (!(($i+1)%4)) echo "<BR>";
+  }
+  echo "<BR>";
+
+  return $limites;
+}
 			
  
 /**
@@ -1331,7 +1561,7 @@ function cronograma($scale, $open, $solicitacao, $atividade, $conn){
  */
 function selectAno($conn, $ano, $orderBy, $desc, $PHPSESSID, $extraGET){
   $trailling = "";
-  if (isset($orderBy) && trim($orderBy)) $trailling .= "&orderby=" . $orderBy;
+  if (isset($orderBy) && trim($orderBy)) $trailling .= "&orderby=" . urlencode($orderBy);
   if (isset($desc) ) $trailling .= "&desc=" . intval($desc);
   if (isset($PHPSESSID) && trim($PHPSESSID) ) $trailling .= "&PHPSESSID=" . $PHPSESSID;
   if (isset($extraGET)) $trailling .= $extraGET;
@@ -1396,7 +1626,7 @@ function selectAno($conn, $ano, $orderBy, $desc, $PHPSESSID, $extraGET){
 function toPgTimeStamp($pureDate){
   if (strpos($pureDate, "/")){
     $result = explode("/", $pureDate);
-    if (count($result>2)){
+    if (is_array($result) && (count($result)>2) ){
       $result['dia'] = $result[0];
       $result['mes'] = $result[1];
       $result['ano'] = $result[2];
@@ -1512,25 +1742,23 @@ function isolaBody($conteudo){
   //$conteudo = tiraQuebrasDeLinha($conteudo, "<QUEBRA DE LINHAS>");
   
   //echo "Listagem:<BR><PRE>" . $conteudo . "</PRE>\n";
+  //echo "<PRE>CONTEUODO\n";
+  //echo htmlentities($conteudo, ENT_SUBSTITUTE);
+  //echo "</PRE>";
   
   //$pattern = '/<([B]|[b])([O]|[o])([D]|[d])([Y]|[y]).*?(>).*?(<\/([B]|[b])([O]|[o])([D]|[d])([Y]|[y])>)/';
   //$pattern = '/<([B]|[b])([O]|[o])([D]|[d])([Y]|[y])>.*?(<\/([B]|[b])([O]|[o])([D]|[d])([Y]|[y])>)/';
   $pattern = '/(<([B]|[b])([O]|[o])([D]|[d])([Y]|[y]).*?(>)(.*)?(<\/([B]|[b])([O]|[o])([D]|[d])([Y]|[y])))/';
+  
   $resultado = preg_match($pattern, $conteudo, $matches);
 
   //echo "<PRE>" . trim($conteudo) . "</PRE><BR>";
-  //echo "<PRE>";
-  //var_dump($matches);
-  //echo "</PRE>";
 
   // usando indice 0, inclui as tags body e /body
   //$conteudo = poeQuebrasDeLinha(trim($matches[0]), "<QUEBRA DE LINHAS>");
   // usando indice 7, soh coloca o que estah dentro do body
+  //if ($matches[7])
   $conteudo = poeQuebrasDeLinha(trim($matches[7]), "<QUEBRA DE LINHAS>");
-
-  //echo "<PRE>";
-  //echo htmlentities($conteudo);
-  //echo "</PRE>";
 
   return $conteudo;
 }
@@ -1559,7 +1787,7 @@ function show_week($date, $db, $type){
     echo "</PRE>\n";
   }
   $result = pg_exec ($conn, $query);
-  $total  = pg_numrows($result);
+  $total  = pg_num_rows($result);
   $linhas = 0;
   while ($linhas<$total){
     $calendar[$linhas] = pg_fetch_array ($result, $linhas);
@@ -1643,7 +1871,7 @@ function show_calendar_table($date, $db, $type){
 //    echo $query;
 //    echo "</PRE>\n";
   $result = pg_exec ($conn, $query);
-  $total  = pg_numrows($result);
+  $total  = pg_num_rows($result);
   $linhas = 0;
   while ($linhas<$total){
     $calendar[$linhas] = pg_fetch_array ($result, $linhas);
@@ -1791,8 +2019,8 @@ function htmlDropBox($classe, $classID, $PHPSESSID, $language){
   //$classe = implode("\n", $classeExplodida);
 
 
-  //$classFileName  = "./session_files/simulation" .  $PHPSESSID;
-  $classFileName = "./" . ($useSessions?"session_files/":"") . "simulation" .  $PHPSESSID;
+  //$classFileName  = "../session_files/simulation" .  $PHPSESSID;
+  $classFileName = "./" . ($useSessions?"../session_files/":"") . "simulation" .  $PHPSESSID;
   if (!file_exists($classFileName)){
     $success = mkdir($classFileName, 0777);
     if (!$success && $_debug>1) echo "<B>ERRO!! criando diretorio</B>: " . $classFileName . "\n";
@@ -1824,8 +2052,13 @@ function htmlDropBox($classe, $classID, $PHPSESSID, $language){
   $classeHtmlEd = carrega($classFileName . ".html", 1);
   echo "    <DIV id=\"" . $classID . "_Escondida\" style=\"display: block;\">\n";
   echo "    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
-  echo "      <A onClick=\"toggleShowHide('" . $classID . "_Mostrada', '" . $classID . "_Escondida');\"";
-  echo "       STYLE=\"cursor: hand\">";
+  echo "      <A onClick=\"toggleShowHide('" . $classID . "_Mostrada', '" . $classID . "_Escondida');\" ";
+  echo "    onmouseover=\"M_" . $classID . "_mouse = document.body.style.cursor;";
+  echo "    document.body.style.cursor = 'pointer'; \"";
+  echo "    onmouseout=\"document.body.style.cursor =  M_" . $classID . "_mouse;\"";
+  echo "  STYLE=\"text-decoration: none; cursor: pointer; margin: 0px; padding: 0px; border: 0px;\" ";
+  //echo "       STYLE=\"cursor: hand\"";
+  echo ">";
   //echo "      onmouseover=\"document.body.style.cursor='pointer'\">";
   echo "<IMG SRC=\"" . $imagePath;
   if (stripos("_" . $_theme, 'fancy') || stripos("_" . $_theme, 'tron'))
@@ -1845,8 +2078,13 @@ function htmlDropBox($classe, $classID, $PHPSESSID, $language){
     echo "#F3F4B2";
   echo ";\n	border: 1px solid #A3A4B2;\">\n";  
   echo "    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
-  echo "      <A onClick=\"toggleShowHide('" . $classID . "_Escondida', '" . $classID . "_Mostrada');\"";
-  echo "       STYLE=\"cursor: hand\">";
+  echo "      <A onClick=\"toggleShowHide('" . $classID . "_Escondida', '" . $classID . "_Mostrada');\" ";
+  echo "    onmouseover=\"M_" . $classID . "_mouse = document.body.style.cursor;";
+  echo "    document.body.style.cursor = 'pointer'; \"";
+  echo "    onmouseout=\"document.body.style.cursor =  M_" . $classID . "_mouse;\"";
+  echo "  STYLE=\"text-decoration: none; cursor: pointer; margin: 0px; padding: 0px; border: 0px;\" ";
+  //echo "       STYLE=\"cursor: hand\"";
+  echo ">";
   //echo "      onmouseover=\"document.body.style.cursor='pointer'\">";
   echo "<IMG SRC=\"" . $imagePath;
   if (stripos("_" . $_theme, 'fancy') || stripos("_" . $_theme, 'tron'))
@@ -1860,24 +2098,24 @@ function htmlDropBox($classe, $classID, $PHPSESSID, $language){
   echo "<BR>\n";
   //echo $classFileName . ".html";
   if ($_debug < 2){
-    unlink($classFileName . ".html");
-    unlink($classFileName . "." . $extension);
+	  unlink($classFileName . ".html");
+	  //unlink($classFileName . "." . $extension);
   }
 }
 
-function getParametros($conn, $tabela, $projeto, $orderBy){
+function getParametros($conn, $tabela, $projeto, $orderBy = NULL){
   global $_debug;
   $querySELECT  = "SELECT b.codigo, b.distribuicao, b.parametros, a.streamarjuna, b.entidade, b.local\n";
   $querySELECT .= "  FROM distribuicoes as a, ";
-  $queryWHERE   = " as b\n  WHERE b.projeto=" . $_SESSION['projetoCodigo'];
+  $queryWHERE   = " as b\n  WHERE b.projeto=" . $_SESSION['referencias']['websim_projetos'];
   $queryWHERE  .= "\n  AND a.codigo=b.distribuicao";
-  if ($orderBy)
+  if (isset($orderBy) && $orderBy)
     $queryWHERE  .= "\n  ORDER BY \"" . $orderBy . "\"";
   $queryParametros  = $querySELECT . $tabela . $queryWHERE;
   if ($_debug>1) echo "<PRE>" . $queryParametros . "</PRE>\n";
 
   $result = pg_exec ($conn, $queryParametros);
-  $total  = pg_numrows($result);
+  $total  = pg_num_rows($result);
   $linhas = 0;
   while ($linhas<$total){
     $row = pg_fetch_array ($result, $linhas);
@@ -1890,7 +2128,8 @@ function getParametros($conn, $tabela, $projeto, $orderBy){
 
     $parametros1 = explode(";", $retorno[$linhas]['string']);
     $argumento = "";
-    while (list($key, $val) = each($parametros1)){
+    //while (list($key, $val) = each($parametros1)){
+    foreach($parametros1 as $key => $val){
       $parametros2 = explode("=", $parametros1[$key]);
       if (trim($parametros2[0])){ 
         $retorno[$linhas]['parametros'][$key]['variavel'] = trim($parametros2[0]);
@@ -1916,7 +2155,7 @@ function getParametros($conn, $tabela, $projeto, $orderBy){
 
 function queryToArray($conn, $query){
   $result = pg_exec ($conn, $query); // Executa a consulta.
-  $total = pg_numrows($result); // Verifica o numero de linhas resultante.
+  $total = pg_num_rows($result); // Verifica o numero de linhas resultante.
   $linhas=0;
   while ($linhas<$total){
     $row = pg_fetch_array ($result, $linhas);
@@ -2122,8 +2361,8 @@ function query2xml($conn, $query, $tableName, $rowName){
   if ($result){
     $xml  = "<?xml version=\"1.0\" encoding=\"" . $encoding . "\"?>\n";
     $xml .= "  <" . $tableName . ">\n";
-    $totalDeCampos = pg_numfields($result);
-    $totalDeLinhas = pg_numrows($result);
+    $totalDeCampos = pg_num_fields($result);
+    $totalDeLinhas = pg_num_rows($result);
     $linhas = 0;
     if ($_debug>1) echo "<B>Total de linhas: " . $totalDeLinhas . "</B><BR>\n";
     if ($_debug>1) echo "<B>Total de campos: " . $totalDeCampos . "</B><BR>\n";
@@ -2132,9 +2371,9 @@ function query2xml($conn, $query, $tableName, $rowName){
       $row = pg_fetch_row ($result, $linhas);
       $colunas = 0;
       while ($colunas<$totalDeCampos){ 
-        $xml .= "      <" . pg_fieldname($result, $colunas) . ">";
+        $xml .= "      <" . pg_field_name($result, $colunas) . ">";
         $xml .= unhtmlentities ($row[$colunas]);
-        $xml .= "</" . pg_fieldname($result, $colunas) . ">\n";
+        $xml .= "</" . pg_field_name($result, $colunas) . ">\n";
         $colunas++;
       }
       $xml .= "    </" . $rowName . ">\n";
@@ -2190,10 +2429,10 @@ function resizeImage($file, $type, $prop, $newName, $uploadPath){
   $width = $imageprops['width'];
   $height = $imageprops['height'];
 
-  if ($width > $height && $height >  prop) {
+  if ($width > $height && $height >  $prop) {
     $newHeight = $prop;
     $newWidth = ($prop / $height) * $width;
-  } else if ($width < $height && $width >  prop){
+  } else if ($width < $height && $width >  $prop){
     $newWidth = $prop;
     $newHeight = ($prop / $width) * $height;
   } else {
@@ -2252,7 +2491,7 @@ function resizeImage($file, $type, $prop, $newName, $uploadPath){
  *    6 => Erro inserindo relação com o álbum.
  *    0 => Arquivo inserido com sucesso!
  */
-function insertFile($nome, $filedata, $type = array(), $exif = "", $md5 = "", $album = 0, $imagemOriginal = 0, $small = 0, $thumb = 0, $usuario = ""){
+function insertFile($nome, $filedata, $type = array(), $exif, $md5, $album, $imagemOriginal, $small, $thumb, $usuario){
   global $_debug, $conn, $PHPSESSID, $_SESSION;
 
   if (!isset($usuario))
@@ -2262,14 +2501,14 @@ function insertFile($nome, $filedata, $type = array(), $exif = "", $md5 = "", $a
   $query = "SELECT codigo FROM arquivos WHERE \"Assinatura MD5\" = '" . $md5 . "' ";
   $query .= "AND \"Conteúdo\" IS NOT NULL;";
   $result = pg_query($conn, $query);
-  $md5Exist = pg_NumRows($result);
+  $md5Exist = pg_num_rows($result);
 
   //////////////////////////////////////////////////////////////////Seleciona o tipo correto de arquivo
   $query = "SELECT codigo FROM tipos_de_arquivos \n";
   $query .= "WHERE \"MIME Type / Internet Media Type\" = '" . $type[0] . "/" . $type[1] . "';";
   //echo $query;
   $result = pg_query($conn, $query);
-  $exist = pg_NumRows($result);
+  $exist = pg_num_rows($result);
   //echo $type[0];
   if ($exist) {
     $extensao = pg_fetch_row($result);
@@ -2442,19 +2681,45 @@ function uploadErrors($error){
 }
 
 
-function getUserProfilePictureCode($login){
-  global $conn, $_debug;
-  $query  = "SELECT codigo from arquivos\n";
+function prepareProfilePictureQuery($login){
+  $query  = "SELECT codigo, small, thumb from arquivos\n";
   $query .= "  where \"Imagem original\" = (SELECT arquivos.codigo \n";
   $query .= "                                 from arquivos, usuarios \n";
   $query .= "                                  where usuarios.foto = arquivos.codigo\n";
   $query .= "                                  and usuarios.login = '" . pg_escape_string($login) . "')\n";
+
+  return $query;
+}
+ 
+function getUserProfilePictureCode($login){
+  global $conn, $_debug;
+  $query = prepareProfilePictureQuery($login);
+  
   $query .= "  and small = 't'";
     
   $result = pg_query($conn, $query);
   $profileImage = pg_fetch_row($result);
   return $profileImage[0];
 }
+
+function getUserProfilePictureArray($login){
+  global $conn, $_debug;
+  $query = prepareProfilePictureQuery($login);
+  
+  $result = pg_query($conn, $query);
+  $profileImage = pg_fetch_row($result, 0);
+
+  ob_start();
+  var_dump($profileImage);
+  $dump = ob_get_clean();
+  //echo "<PRE>" . $dump . "</PRE>";
+  //echo "<script>console.log( tiraQuebrasDeLinha(addslashes($dump), '\n') );\n</script>";
+  
+  return $profileImage[0];
+}
+
+ 
+
 
  
 /**
@@ -2481,7 +2746,7 @@ function getUserProfilePictureCode($login){
    //echo "<PRE>" . $query . "</PRE>";
    
    $result = pg_query($conn, $query);
-   $existFile = pg_NumRows($result);
+   $existFile = pg_num_rows($result);
    $profileImage = pg_fetch_row($result);
     
    if($existFile){
@@ -2501,6 +2766,70 @@ function getUserProfilePictureCode($login){
    }
  }   
 
+function show_form($conn, $formId, $args, $toggle){
+  $query = "select * from forms where codigo = " . intval($formId) . "";
+  $result = pg_exec ($conn, $query);/* Executa a consulta */
+  if (!$result) return 0;
+  $formulario = pg_fetch_assoc($result, 0);
+  if ($formulario['consulta'])
+    $query = $formulario['consulta'];
+  else if ($formulario['tabela'])
+    $query = "select * from " . $formulario['tabela'];
+  else
+    return 0;
+  if (is_array($args)){
+    $index = 1;
+    foreach($args as $arg){
+      $query = str_replace("\$" . $index, $arg, $query);
+      $index++;
+    }
+  }
+  if ($formulario['formata'] and is_array($formulario['formata']))
+    $formata = explode(",", $formulario['formata']);
+
+  if ($formulario['Esconde primeira coluna']=="t") $formulario['hideFirstColumn'] = true;
+
+  if (intval(trim($formulario['Coluna com cor de fundo da linha']))){
+    $formata['corDeFundo'] = intval(trim($formulario['Coluna com cor de fundo da linha']));
+  }
+
+  if (intval(trim($formulario['Coluna com condição de negrido']))){
+    $boldCondition['column'] = intval(trim($formulario['Coluna com condição de negrido']));
+    $boldCondition['value'] = trim($formulario['Valor para negrito']);
+    $boldCondition['hide'] = $formulario['Esconder coluna com condição de negrito']=='t' ? true : false;
+  }
+
+  if (trim($formulario['Segunda coluna de ordenação'])){
+    $secondOrder = trim($formulario['Segunda coluna de ordenação']);
+  }
+
+  if (trim($formulario['limite'])){
+    $limite = intval(trim($formulario['limite']));
+  }
+
+  if (trim($formulario['String printf para monstrar número de linhas']))
+    $showNum = trim($formulario['String printf para monstrar número de linhas']);
+
+  if ($formulario['Coluna que indica a condição de exclusão'])
+    $form['deleteCondition'] = $formularioulario['Coluna que indica a condição de exclusão'];
+
+  if (!$orderBy)
+    show_query($query, $conn, $formulario['ordenarpor'],
+	       $desc, $formata,
+	       $references, $form, $boolean, $link, $destak,
+	       $extraGet, $hideByQuery, $showNum, $boldCondition,
+	       $secondOrder, $limite, $totalRowCollum, 
+               $doNotRemoveOrderBy, $dicas_tabela);
+  else
+    show_query($query, $conn, $orderBy,
+	       $desc, $formata,
+	       $references, $form, $boolean, $link, $destak,
+	       $extraGet, $hideByQuery, $showNum, $boldCondition,
+	       $secondOrder, $limite, $totalRowCollum,
+               $doNotRemoveOrderBy, $dicas_tabela);
+
+    
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /*
@@ -2563,7 +2892,7 @@ function getUserProfilePictureCode($login){
  * @param int    $limite         Limite do mumero de linhas do resultado
  *                               Na pratica da um apende de um LIMIT $limite
  *                               no final da $query.
- * @param array  $appendTotalRow Inclui no final da tabela uma linha com 
+ * @param array  $appendTotalRow] Inclui no final da tabela uma linha com 
  *                               os totais dos campos numéricos e strings
  *                               nas colunas presentes no array $appendToRow
  *                           type=text [NAO IMPLEMENTADO]
@@ -2580,13 +2909,35 @@ function getUserProfilePictureCode($login){
 //<TD " . ($row[$formata['corDeFundo']] ? " bgcolor=\"" . $row[$formata['corDeFundo']] . "\" ": "") . " 
 //<TD " . ($row[$formata['corDeFundo']] ? " bgcolor=\"" . $row[$formata['corDeFundo']] . "\" ": "") . " 
 
-function show_query(){
-
+function show_query(
+		    $query,
+		    $conn,
+		    $orderby = NULL,
+		    $desc = NULL,
+		    $formata = NULL,
+		    $references = NULL,
+		    $form = NULL,
+		    $boolean = NULL,
+		    $link = NULL,
+		    $destak = NULL,
+		    $extraGet = NULL,
+		    $hideByQuery = NULL,
+		    $showNum = NULL,
+		    $boldCondition = NULL,
+		    $secondOrder = NULL,
+		    $limite = NULL,
+		    $appendTotalRow = NULL,
+		    $doNotRemoveOrderBy = NULL,
+		    $dicas_tabela = NULL,
+		    $pivotar = false,
+            $feminino = 'f',
+            $termo = NULL,
+            $termos = NULL
+     ){
   /*
      This block is necessary after PHP 7.2 checks the number of parameters passed.
      show_query has calls with different amount of parameters passed.
      It would be a larger effort to change every call to a fixed number of parameters.
-  */
   if (func_get_arg(0) != NULL)
    $query = func_get_arg(0);
   if (func_get_arg(1) != NULL)
@@ -2619,17 +2970,49 @@ function show_query(){
    $secondOrder = func_get_arg(14);
   if (func_get_arg(15) != NULL)
    $limite = func_get_arg(15);
-  if (func_get_arg(16) != NULL)
-   $appendTotalRow = func_get_arg(16);
-  $doNotRemoveOrderBy = false;
-  if (func_get_arg(17) != NULL)
-    $doNotRemoveOrderBy = func_get_arg(17);
+  */
 
+  // eh uma gambiarra, mas a ideia é colocar o order by num array,
+  // com as colunas da ordenacao e o secondOrder vai ter o numero
+  // limite de colunas para a ordenacao
+  if (is_array($orderby) && (intval($secondOrder) != 0)){
+    
+  }   
+
+  //  if (func_get_arg(16) != NULL)
+  //   $appendTotalRow = func_get_arg(16);
+  ob_start();
+  if ($_debug){
+    var_dump($appendTotalRow);
+    $variavel_legivel = ob_get_clean();
+    //echo "<script> console.log('\$appendTotalRow: " . stripLineBreaks($variavel_legivel, ' ') . "');</script>\n";
+  }
+
+  // O forms.php passa no $doNotRemoveOrderBy, a coluna que tem o 
+  // Total Row ($totalRowCollum)  
+  //$doNotRemoveOrderBy = false;
+  //if (func_get_arg(17) != NULL)
+  //  $doNotRemoveOrderBy = func_get_arg(17);
+  //echo $doNotRemoveOrderBy;
+  if ($_debug){
+    ob_start();
+    var_dump($doNotRemoveOrderBy);
+    $variavel_legivel = ob_get_clean();
+    //echo "<script> console.log('\$doNotRemoveOrderBy: " . stripLineBreaks($variavel_legivel, ' ') . "');</script>\n";
+  }
+
+  //  if (func_get_arg(18) != NULL)
+  //  $dicas_tabela = func_get_arg(18);
+  //echo "<PRE>"; var_dump($dicas_tabela); echo "</PRE>";
 
   global $_debug, $imagePath, $SYSTEM_VERSION, $ONDE_VERSION,
     $DATABASE_VERSION, $email, $fone, $_theme, $encoding, $closeDIV,
-    $toggle, $queryCount, $PHPSESSID, $abriuForm;
+    $toggle, $queryCount, $PHPSESSID, $abriuForm, $arguments, $isMobile;
   $queryCount++; // Incrementa numero de chamadas a estah funcao para modo de debug.
+
+  if ($isMobile){
+    echo "<style>td.onde{vertical-align: middle; min-height: 60px;}</style>\n";
+  }
 
   if (!$abriuForm){
     foreach($toggle as $togglePoint){
@@ -2637,9 +3020,18 @@ function show_query(){
       echo "      <INPUT TYPE=\"HIDDEN\" NAME=\"toggle[]\" VALUE=\"" . $togglePoint . "\">\n";
       //echo "<script> console.log('passei'); </script>\n"; 
     }
+    foreach($arguments as $arg){
+		
+      $extraGet .= "&amp;args[]=" . urlencode($arg);
+      echo "      <INPUT TYPE=\"HIDDEN\" NAME=\"args[]\" VALUE=\"" . $arg . "\">\n";
+	  
+	  if ($isdeveloper) echo "<PRE>" . print_r($arg, true) . "</PRE>";
+	  
+      //echo "<script> console.log('passei'); </script>\n"; 
+    }
     $abriuForm = 1;
   }
-   
+
   if ($_debug>2){
     echo "<B>Field: </B>" . $form['field'] . "<BR>\n";
     echo "<B>Action: </B>" . $form['action'] . "<BR>\n";
@@ -2649,15 +3041,15 @@ function show_query(){
   if (!$query) exit; // Abandona caso nenhuma consulta seja passada
 
   $colunas=0;
-  if ($form['hideFirstColumn']){
+  if (isset($form['hideFirstColumn']) && $form['hideFirstColumn']){
     $columnsToHide[$colunas] = 0;
     $colunas++;
   }
-  if ($formata['corDeFundo']){
+  if (isset($formata['corDeFundo']) && $formata['corDeFundo']){
     $columnsToHide[$colunas] = intval($formata['corDeFundo']);
     $colunas++;
   }
-  if ($form['deleteCondition']){
+  if (isset($form['deleteCondition']) && $form['deleteCondition']){
     $columnsToHide[$colunas] = intval($form['deleteCondition']);
     $colunas++;
   }
@@ -2719,7 +3111,7 @@ function show_query(){
     if ($secondOrder && ($orderby != $secondOrder) )
       $query .= ", " . $secondOrder;
   }
-  if (($form['field'])&&(!$form['delete'])){
+  if (isset($form['field']) && ($form['field']) && (!$form['delete']) ){
     echo "      <FORM NAME=\"" . $form['name'] . "\"";
     echo " METHOD=\"POST\" ACTION=\"" . $form['action'] . "\">\n";
   }
@@ -2728,16 +3120,15 @@ function show_query(){
     echo "</CENTER>\n";
     $toggleID = md5($query) . intval($queryCount);
     htmlDropBox($query, "enscript_" . $toggleID, $PHPSESSID, 'sql');
-
     
     togglePoint($toggleID, "Informa&ccedil;&otilde;es de debug [show_query]", 1, false, NULL);
     echo "<PRE>\n";
   }
 
   //echo "SecondOrder " . $secondOrder . "<BR>\n";
-  //echo "<PRE>" . $query . "</PRE>\n";
   if ($limite) $query .= "\nlimit " . intval($limite);
-
+  //echo "<PRE>" . $query . "</PRE>\n";
+  //exit();
 
   // Antes de executar, dar um explain, ver se o tempo é grande.
   // $result = pg_exec("EXPLAIN " . $query );
@@ -2747,10 +3138,36 @@ function show_query(){
   // Se estiver no cache, ver se o timestamp da ultima execucao
   // é não é muito maior que o tempo para executar.
 
-  
+
+  // echo "<script>";  
+  // echo "console.log('verificando se transação em andamento...');\n";
+  // $stat = pg_transaction_status($dbconn);
+  // if ($stat === PGSQL_TRANSACTION_UNKNOWN) {
+  //   echo "console.log('Connection is bad');\n";
+  // } else if ($stat === PGSQL_TRANSACTION_IDLE) {
+  //   echo "console.log('Connection is currently idle');\n";
+  // } else {
+  //   echo "console.log('Connection is in a transaction state');\n";
+  //   pg_exec($conn, "ROLLBACK");
+  //   echo "console.log('rolling back last transaction...');\n";
+
+  //   $stat = pg_transaction_status($conn);
+  //   if ($stat === PGSQL_TRANSACTION_UNKNOWN) {
+  //     echo "console.log('[ FAIL ]Connection is bad');\n";
+  //   } else if ($stat === PGSQL_TRANSACTION_IDLE) {
+  //     echo "console.log('[  OK  ] Connection is currently idle');\n";
+  //   } else {
+  //     echo "console.log('Connection still in a transaction state');\n";
+  //     pg_exec($conn, "ROLLBACK");    
+  //   }    
+  // }    
+  // echo "</script>";  
+
+  echo "<BR>";
+
+  //$query = preg_replace('/(\$\d)/i','0',  $query);
   $result = pg_exec ($conn, $query);/* Executa a consulta */
 
-  
   if (!$result and !$doNotRemoveOrderBy){
     //echo "<PRE>" . $query . "</PRE>\n";
     //$query = tiraQuebrasDeLinha($query, "<MARCADOR>");
@@ -2774,6 +3191,8 @@ function show_query(){
     }
   }  
   if (!$result) { 
+    //echo "<PRE>" . $query . "</PRE>\n";
+
     echo "Erro na execucao da consulta.\n";
     $lastError = pg_last_error();
     echo $lastError;
@@ -2788,14 +3207,14 @@ function show_query(){
   if (!$result and $doNotRemoveOrderBy){    
     if (!$ehXML) echo "</CENTER><DIV class=\"busy\">";
     echo "<BR><PRE style=\"color: black;\">" . $lastError . "</PRE>";
-    if (!$ehXML) echo $closeDIV . "<CENTER>";          
+    if (!$ehXML) echo $closeDIV . "<CENTER>";
   }
 
-  if ($form['delete']){
+  if (isset($form['delete']) && $form['delete']){
     echo "<script>\n";?>
       var delete_selected = false;;
       function selectAllDelete(total){
-	console.log(delete_selected);	
+	//console.log(delete_selected);	
 	for (var i = 0; i<total; i++){
 	  //console.log(i);
 	  //console.log(i + ') ' + $("#delete_" + i).attr('disabled'));	   
@@ -2808,7 +3227,7 @@ function show_query(){
       }
     <?PHP echo "</script>\n";
   }  
-  if ($form['duplicar']){
+  if (isset($form['duplucar']) && $form['duplicar']){
   }
   
   if ($_debug){
@@ -2816,121 +3235,166 @@ function show_query(){
     echo $closeDIV;
     echo "<CENTER>\n";
   }
-  $total = pg_numrows($result);
+  if (!$result) return 0;
+
+  if ($pivotar){
+    $tudo = pg_fetch_all($result);
+    foreach($tudo as $itemLinha => $itemColunas){
+      foreach($itemColunas as $itemColuna => $itemValor){
+        if ($itemColuna == 0)
+          $valores_cabecalho[$itemLinha] = $itemValor;
+        $valores[$itemLinha][$itemColuna] = $itemValor;
+      }
+    }
+    //echo "</CENTER><PRE>"; var_dump($tudo); echo "</PRE><CENTER>";
+    echo "</CENTER><PRE>"; var_dump($valores); echo "</PRE><CENTER>";
+  }
+
+  if ($pivotar)
+    $total = count($valores[$itemLinha]);
+  else
+    $total = pg_num_rows($result);
+  //echo "  feminino: " . print_r($feminino, true) . "<BR>";
+  if (strlen($showNum)<=1) $feminino = 't';
+  if ($total == 0) $quantidade = "nenhum";
+  if ($total == 1) $quantidade = "um";
+  if ($total < 2 && $feminino == 't') $quantidade .= "a";
+  if ($total > 1) $quantidade = $total;
   if ($showNum){
     if (strpos('%', $showNum)>1	){
-      printf($showNum, pg_numrows($result));
+      printf($showNum, $total);
     }
-    else
+    else{
+      if ($total > 1) $showNum = $termos; else $showNum = $termo;
       if (strlen($showNum)>1)
-        echo "<BR>\n" . pg_numrows($result) . " " . $showNum . "<BR>\n";
+        echo "<BR>\n" . ucfirst($quantidade) . " " . $showNum . ".<BR>\n";
       else
-        echo "<BR>\nSua consulta resultou em " . pg_numrows($result) . " linhas<BR>\n";
+        echo "<BR>\nSua consulta resultou em " . $quantidade . " linha" . (($total>1)?"s":"") . ".<BR>\n";
+    }
   }
+  
   if ($limite){
     if ( (strlen($showNum)>1) && !(strpos('%', $showNum)>1))
-      echo "<BR>\nResultado limitado em " . $limite . " " . $showNum . "<BR><BR>\n";
+      echo "<BR>\nResultado limitado em " . $limite . " " . $showNum . ".<BR><BR>\n";
     else
-      echo "<BR>\nO resultado de sua consulta foi limitado em " . $lmite . " linhas<BR><BR>\n";
+      echo "<BR>\nO resultado de sua consulta foi limitado em " . intval($limite) . " linhas.<BR><BR>\n";
   }
+  if ($isMobile) echo "<div style=\"overflow: scroll; width: 80vw;\">\n";
+  //if ($isMobile) echo "<div style=\"overflow: scroll; width: -webkit-fill-available;\">\n";
+  
   printf("      <TABLE id=\"cTable\" class=onde>\n");
+  printf("        <THEAD>\n");
   printf("        <TR>\n");
   $colunas=0;
-  $totalDeCampos=pg_numfields($result);
+  $totalDeCampos=pg_num_fields($result);
   while ($colunas<$totalDeCampos){ /* Nomes dos campos no cabecalho.    */
     //echo "<B>" . pg_field_type($result, $colunas) . "</B><BR>\n";
-
-    if (!in_array($colunas, $columnsToHide)){
+    //echo "<script> console.log('columnsToHide: ". print_r($columnsToHide, true) . "');</script>";
+    if ( !isset($columnsToHide) || (is_array($columnsToHide) && !in_array($colunas, $columnsToHide)) ){
       printf("          <TH class=onde >");
       if ($orderby){
-	$nome_do_campo = pg_fieldname($result, $colunas);
+	$nome_do_campo = pg_field_name($result, $colunas);
 	if ($nome_do_campo == $orderby)
 	  if (!$desc){
 	    echo "<A HREF=\"" . $_SERVER['PHP_SELF'];
-	    echo "?orderby=" . $nome_do_campo . "&amp;desc=1";
+	    echo "?orderby=" . urlencode($nome_do_campo) . "&amp;desc=1";
 	    if (trim($extraGet))
 	      echo $extraGet;
 	    if (isset($_GET['PHPSESSID']))
 	      echo "&PHPSESSID=" . $_GET['PHPSESSID'] . "\">";
 	    else
 	      echo "\">";
-	    echo $nome_do_campo  . "<IMG SRC=\"" . $imagePath . "/down.png\"";
+            if (!intval(strpos("_" . $nome_do_campo, "<span")) && (trim($dicas_tabela[$colunas])))
+              echo "<span title=\"" . $dicas_tabela[$colunas] . "\">" . $nome_do_campo . "</span>";
+            else
+	      echo $nome_do_campo;
+            echo "<IMG SRC=\"" . $imagePath . "/down.png\"";
 	    echo " BORDER=0 ALT=\"[v]\"></A>";
 	  }
 	  else{
 	    echo "<A HREF=\"" . $_SERVER['PHP_SELF'];
-	    echo "?orderby=" . $nome_do_campo . "&amp;desc=0";
+	    echo "?orderby=" . urlencode($nome_do_campo) . "&amp;desc=0";
 	    if (trim($extraGet))
 	      echo $extraGet;
 	    if (isset($_GET['PHPSESSID']))
 	      echo "&amp;PHPSESSID=" . $_GET['PHPSESSID'] . "\">";
 	    else
 	      echo "\">";
-	    echo $nome_do_campo  . "<IMG SRC=\"" . $imagePath . "/up.png\"";
+            if (!intval(strpos("_" . $nome_do_campo, "<span")) && (trim($dicas_tabela[$colunas])))
+              echo "<span title=\"" . $dicas_tabela[$colunas] . "\">" . $nome_do_campo . "</span>";
+            else
+	      echo $nome_do_campo;
+            echo "<IMG SRC=\"" . $imagePath . "/up.png\"";
 	    echo " BORDER=0 ALT=\"[^]\"></A>";
 	  }
 	else{
 	  echo "<A HREF=\"" . $_SERVER['PHP_SELF'];
-	  echo "?orderby=" . $nome_do_campo . "&amp;desc=0";
+	  echo "?orderby=" . urlencode($nome_do_campo) . "&amp;desc=0";
 	  if (trim($extraGet))
 	    echo $extraGet;
 	  if (isset($_GET['PHPSESSID']))
 	    echo "&amp;PHPSESSID=" . $_GET['PHPSESSID'] . "\">";
 	  else
 	    echo "\">";
-	  echo $nome_do_campo  . "</A>";
+            if (!intval(strpos("_" . $nome_do_campo, "<span")) && (trim($dicas_tabela[$colunas])))
+              echo "<span title=\"" . $dicas_tabela[$colunas] . "\">" . $nome_do_campo . "</span>";
+            else
+	      echo $nome_do_campo;
+          echo "</A>";
 	}
       }
       else{
-	echo ($_debug ? "<span title=\"" .  pg_fieldtype($result, $colunas) . "\">" : "");
-	echo pg_fieldname($result, $colunas);
+	echo ($_debug ? "<span title=\"" .  pg_field_type($result, $colunas) . "\">" : "");
+	echo pg_field_name($result, $colunas);
 	echo ($_debug ? "</span>" : "");
       }
-      if ($_debug>2) echo "Coluna: " . $colunas . " " .pg_fieldtype($result, $colunas);
+      if ($_debug>2) echo "Coluna: " . $colunas . " " .pg_field_type($result, $colunas);
       printf("</TH>\n");
 
     }    
     $colunas++;    
   }
 
-  if ($form['delete']){
+  if (isset($form['delete']) && $form['delete']){
     echo "<TH class=onde ><IMG onclick=\"javascript:selectAllDelete(" . $total . ");\" SRC=\"" . $imagePath . "/trash-x.png\"";
     echo " BORDER=0 ALT=\"[DEL]\"></A></TH>\n";
   }  
-  if ($form['duplicar']){
+  if (isset($form['duplicar']) && $form['duplicar']){
     echo "<TH class=onde ><IMG SRC=\"" . $imagePath . "/clone_2.gif\"";
     echo " BORDER=0 ALT=\"[DEL]\"></A></TH>\n";
   }
   
-  if ($form['field']){
+  if (isset($form['field']) && $form['field']){
     printf("<TH class=onde >&nbsp;</TH>\n");
   }
   $linhas=0;
   //$hideByQuery = 1; // para testar o hideByQuery
-  while ($linhas<pg_numrows($result)){// Preenche a tabela.
+  printf("</TR>\n");
+  printf("</THEAD>\n");
+  printf("<TBODY>\n");
+  while ($linhas<pg_num_rows($result)){// Preenche a tabela.
     $colunas=0;
     $row = pg_fetch_row ($result, $linhas);
     if ($linhas % 2){ // Verifica se a linha eh par ou impar.
-      echo "        </TR>\n";
       echo "        <TR ";
+      echo " id=\"cTableRow_" . fixField($row[0]) . "\"";
       if ($hideByQuery){
-        echo " id=\"" . $row[0] . "\"";
         echo " style=\"display:none\" ";
       }
       echo ">\n  ";
     }
     else{
-      echo "        </TR>\n";
       echo "        <TR";
+      echo " id=\"cTableRow_" . fixField($row[0]) . "\"";
       if ($hideByQuery){
-        echo " id=\"" . $row[0] . "\"";
         echo " style=\"display:none\" ";
       }
       echo ">\n  ";
     }
     while ($colunas<$totalDeCampos){ // Laco das colunas
-      //echo pg_fieldtype($result, $colunas);
-      if (!in_array($colunas, $columnsToHide)){
+      //echo pg_field_type($result, $colunas);
+      //echo "<script> console.log('columnsToHide: ". print_r($columnsToHide, true) . "');</script>";
+      if ( !isset($columnsToHide) || (is_array($columnsToHide) && !in_array($colunas, $columnsToHide)) ){
 	  //echo "<script> console.log('" . pg_field_type($result, $colunas) . "');\n</script>";
 	  echo "</TD>\n";	
 	// if (pg_field_type($result, $colunas)=="text" && !$formata[$colunas]){
@@ -2951,8 +3415,13 @@ function show_query(){
 	  $base64Row = pg_fetch_row($base64Result, 0);
 	  //var_dump(formsDecodeFile(base64_decode($base64Row[0])));
 	  $fileArray = formsDecodeFile(base64_decode($base64Row[0]));
-	  if (strpos("_" . $fileArray['type'], "image"))
-	    echo  "<img src=\"data:" . $fileArray['type'] . ";base64, " . base64_encode($fileArray['contents']) . "\">";
+	  if (strpos("_" . $fileArray['type'], "image")){
+	    echo  "<img src=\"data:" . $fileArray['type'] . ";base64, " . base64_encode($fileArray['contents']) . "\"";
+            if (intval($formata[$colunas])){
+              echo " width=\"" . $formata[$colunas] . "\" ";
+            }          
+            echo ">";
+          }
 	  else
 	    echo "&nbsp;";
 	  echo "</TD>\n";
@@ -2968,12 +3437,19 @@ function show_query(){
 	    pg_field_type($result, $colunas)=="int4" ||
 	    pg_field_type($result, $colunas)=="float4"||
 	    pg_field_type($result, $colunas)=="float8"||
-		pg_field_type($result, $colunas)=="numeric") &&  
-	       (isset($appendTotalRow) && $appendTotalRow) )  $totalRow[$colunas] += $row[$colunas];;
-	    
+	     pg_field_type($result, $colunas)=="numeric") ||
+	       is_numeric(strip_tags($row[$colunas]))
+              &&  
+	       (isset($appendTotalRow) && $appendTotalRow) )
+	    $totalRow[$colunas] += floatval(strip_tags($row[$colunas]));
+
 	  if (pg_field_type($result, $colunas)=="numeric" ||
 	    pg_field_type($result, $colunas)=="float4"||
 	    pg_field_type($result, $colunas)=="float8"){
+
+	    /*	  if ( (pg_field_type($result, $colunas)=="int8" ||
+		pg_field_type($result, $colunas)=="int4" ) )
+		$row[$colunas] = number_format($row[$colunas], ",", "."*/
 
 	    if ( (pg_field_type($result, $colunas)=="float4"||
 		  pg_field_type($result, $colunas)=="float8") &&
@@ -2986,11 +3462,18 @@ function show_query(){
               if ($formata[$colunas]=='$'){
                 $row[$colunas] = "R\$ " . number_format($row[$colunas], 2, ",", ".");
 	      }
-              else{                
-                $workNumber[1] = mb_substr($workNumber[1], 0, (isset($formata[$colunas]) ? $formata[$colunas] : ($_debug ? 11 : 1)), $encoding);
-                $row[$colunas] = $workNumber[0] . "," . $workNumber[1];
+              else{
+                if ($formata[$colunas]=='%'){
+                  $row[$colunas] = number_format($row[$colunas], 3, ",", ".") . "%";
+  	            }
+                else{
+                  $workNumber[1] = mb_substr($workNumber[1], 0,
+											 (isset($formata[$colunas]) && intval($formata[$colunas]) ? intval($formata[$colunas]) : ($_debug ? 11 : 1)), $encoding);
+                  $row[$colunas] = $workNumber[0] . "," . $workNumber[1];
+		        }
 	      }
-	    }              
+	    }else
+				$row[$colunas] = number_format($row[$colunas], 0, ",", ".");
 	  }
 	  if (!$row[$colunas]) $row[$colunas]=0;//Se nulo troca por ZERO
 	  if ($references[$colunas]){
@@ -2998,8 +3481,9 @@ function show_query(){
 	    dbcombo($references[$colunas]['table'], 
                     $references[$colunas]['key'],
                     $references[$colunas]['value'], $conn, 
-		    pg_fieldname($result, $colunas) .  "[" . $row[0] . "]", 
-		    40, nl2br(htmlentities($row[$colunas])), $submit);
+		    pg_field_name($result, $colunas) .  "[" . $row[0] . "]", 
+		    40, nl2br($row[$colunas]), $submit);             // Abandonado o htmlentities, pois o unico form que usa essa feature tem
+	    //40, nl2br(htmlentities($row[$colunas])), $submit);     //  defaults acentuados e  estava conflitando com o chosen-select
 	    echo "          </TD>\n";	    
 	  }
 	  else{
@@ -3018,13 +3502,13 @@ function show_query(){
 		if ($row[$colunas]=="t"){
 		  echo "        <TD " . ($row[$formata['corDeFundo']] ? " bgcolor=\"" . $row[$formata['corDeFundo']] . "\" ": "") . " class=onde VALIGN=\"TOP\" ALIGN=\"CENTER\">";
 		  echo "<CENTER><INPUT TYPE=\"checkbox\" DISABLED name=\"";
-		  echo pg_fieldname($result, $colunas);
+		  echo pg_field_name($result, $colunas);
 		  echo "[" . $row[0] ."]\" CHECKED></CENTER></TD>\n";
 		}
 		else{
 		  echo "        <TD " . ($row[$formata['corDeFundo']] ? " bgcolor=\"" . $row[$formata['corDeFundo']] . "\" ": "") . " class=onde VALIGN=\"TOP\" ALIGN=\"CENTER\">";
 		  echo "<CENTER><INPUT TYPE=\"checkbox\" DISABLED name=\"";
-		  echo pg_fieldname($result, $colunas);
+		  echo pg_field_name($result, $colunas);
 		  echo "[" . $row[0] . "]\">";
                   echo "</CENTER></TD>\n";	    	      
 		}
@@ -3035,19 +3519,27 @@ function show_query(){
 		  pg_field_type($result, $colunas)=="numeric" ){
 		$numero = $row[$colunas];		
 		if ($formata[$colunas]){
-		  while((strlen($numero))<$formata[$colunas]){
-		    $numero = "0" . $numero;
-		  }
+			//while((strlen($numero))<$formata[$colunas]){
+		    //$numero = "0" . $numero;
+			//}
 		}
 		echo "        <TD " . ($row[$formata['corDeFundo']] ? " bgcolor=\"" . $row[$formata['corDeFundo']] . "\" ": "") . " class=onde VALIGN=\"TOP\"><CENTER>";
-                if ($row[$boldCondition['column']]==$boldCondition['value'] && isset($boldCondition)) echo "<B>";
-		echo $numero;
-                if ($row[$boldCondition['column']]==$boldCondition['value'] && isset($boldCondition)) echo "</B>";
-                echo "</CENTER></TD>\n  ";	    
-	      }
-	      else // GAMBIARRA, isso deve ser feito no select
-		if (((pg_fieldtype($result, $colunas)=="text")
-		     ||(pg_fieldtype($result, $colunas)=="varchar"))
+    if ($row[$boldCondition['column']]==$boldCondition['value'] && isset($boldCondition)) echo "<B>";
+    //echo $numero . "- " . $formata[$colunas];
+      //echo "<PRE>" .print_r($numero, true) . "</PRE>";
+	  // if ($formata[$colunas]=="i")
+	  //     echo number_format(floatval($numero), (intval($formata[$colunas])?intval($formata[$colunas]):0), ",", ".");
+	  //   //echo number_format(floatval($numero), 1, ",", ".");
+	  // else
+		  echo $numero;
+	  
+      if ($row[$boldCondition['column']]==$boldCondition['value'] && isset($boldCondition)) echo "</B>";
+      echo "</CENTER></TD>\n  ";	    
+	  }
+	  else // GAMBIARRA, isso deve ser feito no select
+		if (( (pg_field_type($result, $colunas)=="text")
+		     ||(pg_field_type($result, $colunas)=="citext")
+		     ||(pg_field_type($result, $colunas)=="varchar"))
 		    && ($formata[$colunas])){
 		  echo "    <TD " . ($row[$formata['corDeFundo']] ? " bgcolor=\"" . $row[$formata['corDeFundo']] . "\" ": "");
                   echo " class=onde VALIGN=\"top\">";	  
@@ -3062,12 +3554,14 @@ function show_query(){
   		  //$row[$colunas] =  nl2br(htmlentities(mb_substr(tiraQuebrasDeLinha($row[$colunas], NULL), 0, 
 		  //						 $formata[$colunas], $encoding), ENT_COMPAT, $encoding));
   		  $row[$colunas] =  htmlentities(mb_substr(tiraQuebrasDeLinha($row[$colunas], NULL), 0, 
-								 $formata[$colunas], $encoding), ENT_COMPAT, $encoding);
-		  if ($destak)
-                    $detak = html_entity_decode($destak, ENT_COMPAT, $encoding);
-                    $row[$colunas] = html_entity_decode($row[$colunas], ENT_COMPAT, $encoding);
-                    if (is_array($destak))                      
-                      foreach($destak as $term){
+												   (is_numeric($formata[$colunas])?$formata[$colunas]:0), $encoding), ENT_COMPAT, $encoding);
+  		  //$row[$colunas] =  mb_substr(tiraQuebrasDeLinha($row[$colunas], NULL), 0, 
+		  //			      $formata[$colunas], $encoding);
+		  if ($destak && !is_array($detak))
+            $detak = html_entity_decode($detak, ENT_COMPAT, $encoding);
+          $row[$colunas] = html_entity_decode($row[$colunas], ENT_COMPAT, $encoding);
+          if (is_array($destak))                      
+            foreach($destak as $term){
 		        $row[$colunas] = str_ireplace($term, //htmlentities($term, ENT_COMPAT, $encoding),
 			    		     "<FONT COLOR=\"#FF0000\"><I><BF>" . $term . "</BF></I></FONT>", 
 				  	     $row[$colunas]);		  
@@ -3080,7 +3574,8 @@ function show_query(){
                     //echo "(" . strlen($row[$colunas]) . ")";
 
 		    if (!$link){
-		      echo nl2br($row[$colunas]);
+		      //echo nl2br($row[$colunas]) . "???"; // Alterei isso 26/09/2023 para não quebrar linha na célula
+		      echo $row[$colunas];
 		    }
 		    else{
 		      if (!is_array($link)){
@@ -3126,7 +3621,8 @@ function show_query(){
 		}
 	    
 		else
-		  if ((pg_fieldtype($result, $colunas)=="interval")){
+		  if ((pg_field_type($result, $colunas)=="interval") 
+		      && ($formata[$colunas])){ //Revisar formularios que mostram interval nao formatado...
 		    if (strpos($row[$colunas], ":")){
 		      $timeString = "";
 		      $plural = "";
@@ -3151,39 +3647,42 @@ function show_query(){
 		      $singular = "";
 		      $lookFor = "year";
 		    }
-                    $MTBR = intval(trim(mb_substr($row[$colunas], 0, strpos($row[$colunas], $lookFor))));
-		    if (!$MTBR){
+                    $MTBF = intval(trim(mb_substr($row[$colunas], 0, strpos($row[$colunas], $lookFor))));
+		    if (!$MTBF){
 		      if (preg_match('/[0-9][0-9][0-9][0-9][0-9][0-9][0-9]:[0-9][0-9]:[0-9][0-9]/', $row[$colunas], $matches) )
-			$MTBR = $matches[0];
+			$MTBF = $matches[0];
 		      else
 		      if (preg_match('/[0-9][0-9][0-9][0-9][0-9][0-9]:[0-9][0-9]:[0-9][0-9]/', $row[$colunas], $matches) )
-			$MTBR = $matches[0];
+			$MTBF = $matches[0];
 		      else
 		      if (preg_match('/[0-9][0-9][0-9][0-9][0-9]:[0-9][0-9]:[0-9][0-9]/', $row[$colunas], $matches) )
-			$MTBR = $matches[0];
+			$MTBF = $matches[0];
 		      else
 		      if (preg_match('/[0-9][0-9][0-9][0-9]:[0-9][0-9]:[0-9][0-9]/', $row[$colunas], $matches) )
-			$MTBR = $matches[0];
+			$MTBF = $matches[0];
 		      else
 		      if (preg_match('/[0-9][0-9][0-9]:[0-9][0-9]:[0-9][0-9]/', $row[$colunas], $matches) )
-			$MTBR = $matches[0];
+			$MTBF = $matches[0];
 		      else
-
 		        if (preg_match('/[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/', $row[$colunas], $matches) )
-			  $MTBR = $matches[0];
+			  $MTBF = $matches[0];
                         else
-		          $MTBR = $row[$colunas];
+		          $MTBF = $row[$colunas];
 		    }
-		    echo "<TD " . ($row[$formata['corDeFundo']] ? " bgcolor=\"" . $row[$formata['corDeFundo']] . "\" ": "") . " class=onde VALIGN=\"TOP\">" . $MTBR . " " . $timeString . ($MTBR>1 ? $plural : $singular) . "</TD>";
+		    echo "<TD " . ($row[$formata['corDeFundo']] ? " bgcolor=\"" . $row[$formata['corDeFundo']] . "\" ": "") . " class=onde VALIGN=\"TOP\">" . $MTBF . " " . $timeString . ($MTBF>1 ? $plural : $singular) . "</TD>";
 		}	    
 		else // GAMBIARRA, isso tambem deve ser feito no select
-		  if ((pg_fieldtype($result, $colunas)=="date" ||
-		       pg_fieldtype($result, $colunas)=="timestamptz" ||
-		       pg_fieldtype($result, $colunas)=="timestamp")
+		  if ((pg_field_type($result, $colunas)=="date" ||
+		       pg_field_type($result, $colunas)=="timestamptz" ||
+		       pg_field_type($result, $colunas)=="timestamp")
 		      && ($formata[$colunas])){
 		    echo "    <TD " . ($row[$formata['corDeFundo']] ? " bgcolor=\"" . $row[$formata['corDeFundo']] . "\" ": "") . " class=onde VALIGN=\"TOP\">";
                     if ($row[$boldCondition['column']]==$boldCondition['value'] && isset($boldCondition)) echo "<B>";
-		    echo date("d/m/Y",strtotime($row[$colunas]));
+		    if (pg_field_type($result, $colunas)=="date"
+			|| (pg_field_type($result, $colunas)!="date" && $formata[$colunas] != 2))
+		      echo date("d/m/Y",strtotime($row[$colunas]));
+                    else 
+		      echo date("d/m/Y H:i:s",strtotime($row[$colunas]));
                     if ($row[$boldCondition['column']]==$boldCondition['value'] && isset($boldCondition)) echo "</B>";
 		    echo "</TD>\n  ";
 		  }
@@ -3240,7 +3739,7 @@ function show_query(){
       
       $colunas++;
     }
-    if ($form['delete']){
+    if (isset($form['delete']) && $form['delete']){
       echo "        <TD " . ($row[$formata['corDeFundo']] ? " bgcolor=\"" . $row[$formata['corDeFundo']] . "\" ": "") . " class=onde VALIGN=\"TOP\" ALIGN=\"CENTER\">";
       echo "<INPUT TYPE=\"checkbox\" name=\"DeleteCheckBox[" . $row[0] ."]\"";
       echo "id = delete_" . $linhas ." ";      
@@ -3252,21 +3751,36 @@ function show_query(){
       echo ">";
       echo "</TD>\n";
     }
-    if ($form['duplicar']){
+    if (isset($form['duplicar']) && $form['duplicar']){
       echo "        <TD " . ($row[$formata['corDeFundo']] ? " bgcolor=\"" . $row[$formata['corDeFundo']] . "\" ": "") . " class=onde VALIGN=\"TOP\" ALIGN=\"CENTER\">";
       echo "<INPUT TYPE=\"checkbox\" name=\"CloneCheckBox[" . $row[0] ."]\">";
       echo "</TD>\n";
     }
-    if ($form['field']){
-      echo "<TD " . ($row[$formata['corDeFundo']] ? " bgcolor=\"" . $row[$formata['corDeFundo']] . "\" ": "") . " class=onde><INPUT TYPE=\"SUBMIT\" CLASS=\"tablesubmit\"";
-      echo " id=\"buttonrow_" . $row[0] . "\" ";
-      echo " NAME=\"buttonrow[" . $row[0] . "]\"";
-      if(!$form['buttonCaption']) $form['buttonCaption']="Detalhes...";
-      echo " value=\"" . $form['buttonCaption'] . "\"></TD>\n";
+    if (isset($form['field']) && $form['field']){
+      echo "<TD " . ($row[$formata['corDeFundo']] ? " bgcolor=\"" . $row[$formata['corDeFundo']] . "\" ": "") . " class=onde style=\"vertical-align: sub;\">";
+      if ($row[0] != NULL) {
+        echo "<INPUT TYPE=\"SUBMIT\" CLASS=\"tablesubmit\"";
+        if ($isMobile) echo " style=\"height: 60px;\" ";
+        echo " id=\"buttonrow_" . $row[0] . "\" ";
+        echo " NAME=\"buttonrow[" . $row[0] . "]\"";		
+        if(!$form['buttonCaption']) $form['buttonCaption']="Detalhes" . (isset($termo)?" d" . ($feminino=='t'?"a":"o") . " " . $termo:"") . "...";
+        echo " value=\"" . $form['buttonCaption'] . "\">";
+      }
+      //echo "<A ";
+      //echo " CLASS=\"ui-button ui-widget ui-corner-all\" ";
+      //echo "HREF=\"" . basename( $_SERVER['PHP_SELF']) . "?";
+      //if (isset($PHPSESSID) )echo "PHPSESSID=" . $PHPSESSID;
+      //if (isset($extraGet))  echo $extraGet;
+      //echo "&buttonrow[" . $row[0] . "]=detalhes";
+      //echo "\">";
+      ////echo "<button>Detalhes...</button>
+      //echo "Detalhes...";
+      //echo "</a>\n";
+      echo "</TD>\n";
     }
+    echo "</TR>";
     $linhas++;
   }
-  echo "         </TR>";
   if (isset($appendTotalRow) && $appendTotalRow){
     echo "<TR>";
     for ($colunas = 0; $colunas < $totalDeCampos; $colunas++){
@@ -3296,12 +3810,14 @@ function show_query(){
 	    $totalRow[$colunas] = "R\$ " . number_format($totalRow[$colunas], 2, ",", ".");
 	  }	  
 	  else{                
-	    $workNumber[1] = mb_substr($workNumber[1], 0, (isset($formata[$colunas]) ? $formata[$colunas] : 1), $encoding);
+		  $workNumber[1] = mb_substr($workNumber[1], 0, ( (isset($formata[$colunas]) && intval($formata)) ? intval($formata[$colunas]) : 1), $encoding);
 	    $totalRow[$colunas] = $workNumber[0] . "," . $workNumber[1];
 	  }
-	}              
-	
-	if (!in_array($colunas, $columnsToHide)){    
+	}
+        else
+	  $totalRow[$colunas] = number_format($totalRow[$colunas], 0, ",", ".");
+	//if (!in_array($colunas, $columnsToHide)){    // portando para php 8.1
+        if ( !isset($columnsToHide) || (is_array($columnsToHide) && !in_array($colunas, $columnsToHide)) ){
 	  echo "<TD class=onde><CENTER>";
           //echo "\$coluna: " . $colunas . "<BR>\n";
           //echo "pf_field_type: " . pg_field_type($result, $colunas) . "<BR>\n";	
@@ -3317,13 +3833,17 @@ function show_query(){
         echo "<TD class=onde>&nbsp;</TD>";
       if ($form['duplicar'])
         echo "<TD class=onde>&nbsp;</TD>";	  
-      echo "<TD class=onde>&nbsp;</TD>";
+      if (!isset($form['hideFirstColumn']) && count($form) > 0){
+        echo "<TD class=onde>";
+        //var_dump($form);
+        echo "&nbsp;</TD>";
+      }
     }    
     echo "</TR>";
-  }
-    
+  }    
+  printf("</TBODY>\n");
   echo "\n      </TABLE>\n";
-  
+  if ($isMobile) echo "</div>";
   //      <BR>\n";
   /*  
   echo "</CENTER>";
@@ -3337,14 +3857,16 @@ function show_query(){
   // var_dump($appendTotalRow);
   // echo "</PRE>";
   
-  if (($form['field'])&&(!$form['delete'])){
+  if (isset($from['field']) && ($form['field'])&&(!$form['delete'])){
     //echo "      </FORM>\n"; // Se descomentar os botoes de baixo para NOVO nao funcionam quando nao pode deletar
   }
-  if ($showNum &&  pg_numrows($result)>80 )
+  $resultArray['num_rows'] = pg_num_rows($result);
+  if ($showNum &&  ($resultArray['num_rows']>80) )
     if (strlen($showNum)>1)
-      echo "<BR>\n" . pg_numrows($result) . " " . $showNum . "<BR><BR>\n";
+      echo "<BR>\n" . $resultArray['num_rows'] . " " . $showNum . "<BR><BR>\n";
     else
-      echo "<BR>\nSua consulta resultou em " . pg_numrows($result) . " linhas<BR><BR>\n";
+      echo "<BR>\nSua consulta resultou em " . $resultArray['num_rows'] . " linhas<BR><BR>\n";
+  return $resultArray;
 }
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -3362,32 +3884,32 @@ function show_query(){
  * @param int    $submit        Se o combo envia um sinal de submit
  *                              para ao form
  * @param bool   $forceSelect   Forçar SELECT mesmo para listas grandes
- * @param int    $selectLimit   Tamanho limite da lista para usar SELECT
- * @param mixed  $multiple      Permitir multiplas seleções
- *                              Se estiver setado, deve ser um array
- *                              com os valores selecionados 
+ * @param string $ordenacao     Clausula para o order by
+ * @param bool   $nullable      Não exibe opção de desmarcar se for 1
  * @access public
  */
 function dbcombo($tablename, $fieldvalue, $fieldcaption, $conn,
                  $comboname, $width, $default, $submit, $echoCaption,
-                 $filter, $desc, $forceSelect){//, $selectLimit, $multiple){
+                 $filter, $desc, $forceSelect, $ordenacao = NULL,
+				 $nullable = 1){//, $selectLimit, $multiple){
   if (!$fieldvalue && $fieldcaption) $fieldvalue=$fieldcaption;
   if ($fieldvalue && !$fieldcaption) $fieldcaption=$fieldvalue;
   if (!$fieldvalue && !$fieldcaption) exit;
   global $_debug;
+
   /*Cria uma consulta.*/
   $query  = "SELECT " . $fieldvalue . ", " . $fieldcaption . "\n";
-  $query .= "  FROM \"" . $tablename . "\"\n";
+  $query .= "  FROM \"" . $tablename . "\"\n";  
   if (trim($filter))
     $query .= "  WHERE " . $filter . "\n";
-  $query .= "ORDER BY " . $fieldcaption;
+  if ($ordenacao == NULL)
+    $query .= "ORDER BY " . $fieldcaption;
+  else
+	  $query .= "ORDER BY " . $ordenacao;
   if ($desc) $query .= " DESC";
-  if ($_debug>1){
-    echo "<PRE>\n";
-    echo $query;
-    echo "\n</PRE>\n";
-  }
-  querycombo($query, $conn, $comboname, $width, $default, $submit, $echoCaption, $forceSelect, $selectLimit, $multiple);
+  if ($_debug>1)
+	  echo "<PRE>\n" . $query . "\n</PRE>\n";
+  querycombo($query, $conn, $comboname, $width, $default, $submit, $echoCaption, $forceSelect, $selectLimit, $multiple, $nullable);
 }
 
 /**
@@ -3404,19 +3926,24 @@ function dbcombo($tablename, $fieldvalue, $fieldcaption, $conn,
  * @param mixed  $multiple      Permitir multiplas seleções
  *                              Se estiver setado, deve ser um array
  *                              com os valores selecionados 
+ * @param bool   $nullable      Não exibe opção de desmarcar se for 1
  * @access public
  */
 function querycombo($query, $conn, $comboname, $width, $default, 
-                    $onchange, $echoCaption, $forceSelect, $selectLimit, $multiple){
-  global $_debug;
+                    $onchange, $echoCaption = false, $forceSelect = false,
+                    $selectLimit = NULL, $multiple = false, $nullable = 1){
+	global $_debug, $isdeveloper;
   $result = pg_exec ($conn, $query); // Executa a consulta.
-  $total = pg_numrows($result); // Verifica o numero de linhas resultante.
-  $linhas=0;
-  while ($linhas<$total){
-    $comboarray[$linhas] = pg_fetch_row ($result, $linhas);
-    $linhas++;
+  //if ($isdeveloper) echo "<pre>". $query . "</pre>\n";
+  if ($result){  
+    $total = pg_num_rows($result); // Verifica o numero de linhas resultante.
+    $linhas=0;
+    while ($linhas<$total){
+      $comboarray[$linhas] = pg_fetch_row ($result, $linhas);
+      $linhas++;
+    }
+    arraycombo($comboarray, $comboname, $with, $default, $onchange, $echoCaption, $forceSelect, $selectLimit, $multiple, $nullable);
   }
-  arraycombo($comboarray, $comboname, $with, $default, $onchange, $echoCaption, $forceSelect, $selectLimit, $multiple);
 }
 
 /**
@@ -3432,6 +3959,7 @@ function querycombo($query, $conn, $comboname, $width, $default,
  * @param mixed  $multiple      Permitir multiplas seleções
  *                              Se estiver setado, deve ser um array
  *                              com os valores selecionados 
+ * @param bool   $nullable      Não exibe opção de desmarcar se for 1
  * @access public
  * Exemplo: 
   //echo ":&nbsp;<INPUT TYPE=\"TEXT\" CLASS=\"TEXT\" NAME=\"tag[" . $key;
@@ -3452,7 +3980,7 @@ function querycombo($query, $conn, $comboname, $width, $default,
     echo "\n</PRE>\n";
   }
   $result = pg_exec ($conn, $query); // Executa a consulta.
-  $total  = pg_numrows($result); // Verifica o numero de linhas resultante.
+  $total  = pg_num_rows($result); // Verifica o numero de linhas resultante.
   $linhas = 0;
   while ($linhas<$total){
     $comboarray[$linhas] = pg_fetch_row ($result, $linhas);
@@ -3466,23 +3994,44 @@ function querycombo($query, $conn, $comboname, $width, $default,
   $comboarray[$linhas + 2][1] = "obra citada";
   arraycombo($comboarray, "tag[" . $key . "][campo]", 10, "selecione", 0);
  */
- function arraycombo($comboarray, $comboname, $with, $default, $onchange, $echoCaption, $forceSelect, $selectLimit, $multiple){
-  global $_debug;
+ function arraycombo($comboarray, $comboname, $with, $default, $onchange,
+		     $echoCaption = NULL, $forceSelect = NULL, $selectLimit = NULL,
+					 $multiple = NULL, $nullable = 1){
+	 global $_debug, $isMobile, $isdeveloper;
+	 //if ($isdeveloper) echo "Default: " . $default . "<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+  $comboLabelTotalWidth = 0;
+  foreach($comboarray as $comboItem){
+    $comboLabelTotalWidth += strlen($comboItem[1]);
+  }
+
+  // echo "<script>\n";
+  // echo "console.log(\"    \$comboname: " . $comboname . "\")\n;";
+  // echo "console.log(\"       \$default: " . $default . "\")\n;";
+  // echo "</script>\n";
+
   if ($_debug>1){ echo "<PRE>\n"; var_dump($comboarray); echo "\n</PRE>\n"; }
-  
-  $total = count($comboarray);// Verifica o numero de linhas resultante.
+  if (is_array($comboarray))
+    $total = count($comboarray);// Verifica o numero de linhas resultante.
+  else
+    $total = 0;
   if ($_debug>1) echo "<B>total=" . $total . "</B><BR>\n";
 
+  
   $linhas=0;
   $default_index=0;
   while ($linhas<$total){
-    $row = $comboarray[$linhas];
-    if ($_debug>1){
-      echo "<PRE>\n";
-      var_dump($row);
-      echo "\n</PRE>\n";
-    }
-    if ($default==$row[1]) $default_index = $linhas + 1;
+	  $row = $comboarray[$linhas];
+	  // //    if ($_debug>1){
+      // echo "<PRE>\n";
+      // var_dump($comboarray);
+      // echo "\n</PRE>\n";
+	  // //}
+	  if ($default==$row[1] and trim($row[1]) <> ''){
+		  //echo "\$row[1] :  " . $row[1] . "<BR>";
+		  //echo $row[0] . ", ";
+	      //echo "<PRE>" . print_r($row, true) . "</PRE>";
+		  $default_index = $linhas + 1;
+	  }
     $linhas++;
   }
   if ($echoCaption && $default_index){
@@ -3494,9 +4043,10 @@ function querycombo($query, $conn, $comboname, $width, $default,
     echo"         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
   }
   //echo "\$default_index: "  . $default_index . "<BR>\n";
-  if ($_debug>1) echo "<B>default=" . htmlentities($default) . "</B><BR>\n";
+  //if ($_debug>1)
+  //if ($isdeveloper) echo "<B>default=" . htmlentities($default) . "</B><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
 
-  if (count($comboarray)> ($selectLimit ? $selectLimit : 7)  || $forceSelect){
+  if ( (is_array($comboarray) &&  count($comboarray)> ($selectLimit ? $selectLimit : 7))  || $forceSelect){
     $linhas=0;
     if ($onchange){
      if ($onchange==1){
@@ -3514,6 +4064,8 @@ function querycombo($query, $conn, $comboname, $width, $default,
       echo"<SELECT class=\"chosen-select\" NAME=\"" . $comboname . "\" ID=\"" . $comboname . "\" SIZE=\"1\" ";
       //echo "<script> \$(\".chosen-select\").chosen({allow_single_deselect: true});</script>"; //<<< para permitir a deseleção
     }
+    if ($isMobile) echo " style=\"width: 80vw;\" ";
+    //if ($isMobile) echo " style=\"width: -webkit-fill-available;\" ";
     echo " " .  ((isset($multiple) && $multiple) ? "CHECKBOX" : "radio") . " >\n";
 
    //if (strlen(trim($default)))
@@ -3521,19 +4073,24 @@ function querycombo($query, $conn, $comboname, $width, $default,
 
     //if (!$default_index && $default != $row[0] ){
     //  echo "            <OPTION SELECTED VALUE=\"" . $default;
-    //  echo "\">" . $default . "</OPTION>\n" ;
+    //  echo "\">" . strip_tags($default) . "</OPTION>\n" ;
     //}
-    
     
     while ($linhas<$total){//Preenche o combo com o resultado da consulta.
       $row = $comboarray[$linhas];
+      if (!is_array($row)){
+        $valor = $row;
+	unset($row);
+	$row[0] = $valor;
+	$row[1] = $valor;
+      }
       if ( (($default_index) && ($default_index == ($linhas + 1))) || $default == $row[0] ){
-        echo "            <OPTION SELECTED VALUE=\"" . $row[0] . "\">";
-        echo $row[1] . "</OPTION>\n";
+		echo "            <OPTION SELECTED VALUE=\"" . $row[0] . "\">";
+        echo strip_tags($row[1]) . "</OPTION>\n";
       }
       else{
         echo "            <OPTION VALUE=\"" . $row[0] . "\">";
-        echo $row[1] . "</OPTION>\n";
+        echo strip_tags($row[1]) . "</OPTION>\n";
       }
       $linhas++; 
     }
@@ -3542,15 +4099,15 @@ function querycombo($query, $conn, $comboname, $width, $default,
     if (count($comboarray)> ($selectLimit ? $selectLimit : 7)  || $forceSelect){
       echo "<SCRIPT>\n";
       //if ($default)
-        echo "$(\".chosen-select\").chosen({allow_single_deselect: true});\n";
+	  echo "$(\".chosen-select\").chosen({allow_single_deselect: " . ($nullable == 1 ? "true" : "false") . "});\n";
       //echo "    $(\"select#" . $comboname . "\").attr(\"value\", '" . $default . "');\n";
       //echo "    $(\"select#" . $comboname . "\").chosen({allow_single_deselect: true});\n";
-      echo "console.log(\"passei -- allowing single select " . $comboname . "   \\n\")\n";
+      //echo "console.log(\"passei -- allowing single select " . $comboname . "   \\n\")\n";
       //echo "console.log(\"" . $comboname . "   \\n\")\n";
-      if (strlen(trim($default)))
-      echo "console.log(\"default grande: " . strlen(trim($default)) . "   \\n\")\n";
+      //if (strlen(trim($default)))
+	//echo "console.log(\"default grande: " . strlen(trim($default)) . "   \\n\")\n";
 
-      echo "console.log(\"default: " . $default . "   \\n\")\n";
+	//echo "console.log(\"default: " . $default . "   \\n\")\n";
       echo "</SCRIPT>\n";
     }
 
@@ -3578,29 +4135,71 @@ function querycombo($query, $conn, $comboname, $width, $default,
   else{
     //echo "<input type=\"" . ((isset($multiple) && $multiple) ? "CHECKBOX" : "radio") . "\" name=\"" . $comboname . "\" ID=\"" . $comboname . "\" value=\"\""; //<<< para permitir a deseleção
     //echo "><br>\n         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";//<<< para permitir a deseleção
-    
+
+	  if ($nullable == 1){
+    echo "<script>";
+    echo "function onde_unset_radio_" . $comboname . "(){\n";
+	if ($onchange)
+		echo $onchange . ";\n";
+	
     $linhas = 0;
     while ($linhas<$total){//Preenche o combo com o resultado da consulta.
       $row = $comboarray[$linhas];      
-      echo "<input type=\"" . ((isset($multiple) && $multiple) ? "CHECKBOX" : "radio") . "\" name=\"" . $comboname . "\" ID=\"" . $comboname . "\" value=\"" . $row[0] . "\"";
+      echo "let " . $comboname . "_" . $row[0] . " = document.getElementById(\"" . $comboname . "_" . $row[0] . "\");\n";
+      echo $comboname . "_" . $row[0] . ".checked = false;\n";
+      $linhas++;
+     }
+    echo "}\n";
+    echo "</script>\n";
+	  }    
+    $linhas = 0;
+    while ($linhas<$total){//Preenche o combo com o resultado da consulta.
+      $row = $comboarray[$linhas];
+      echo "<div style=\"display:inline\"";
+      echo " ID=\"onde_div_" . $comboname . "_" . $row[0] . "\"";
+      echo ">";
+      echo "<input type=\"" . ((isset($multiple) && $multiple) ? "CHECKBOX" : "radio") . "\" name=\"" . $comboname . "\" ";
+
+      //echo " ID=\"" . $comboname . "\" ";
+      echo " ID=\"" . $comboname . "_" . $row[0] . "\"";
+
+      echo " value=\"" . $row[0] . "\"";
       //if (($default_index) && ($default_index == ($linhas + 1)))
       if ( (($default_index) && ($default_index == ($linhas + 1))) || $default == $row[0] )	
 	echo " CHECKED ";
       else
-        if (isset($multiple) && in_array($linhas + 1, $multiple))  echo " CHECKED ";	
+        if (isset($multiple) && is_array($multiple) && in_array($linhas + 1, $multiple))  echo " CHECKED ";	
       if ($onchange)
         if ($onchange==1)
         echo " onchange=\"submit()\" ";
       else
         echo " onchange=\"" . $onchange . "\" ";
-      echo ">" . $row[1];
+      echo "> " . $row[1];
+
       if ($linhas < $total - 1){
-        echo "<br>\n";
-        echo"         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
+        if ($comboLabelTotalWidth > 50){
+          echo "<br>\n";
+          echo"         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
+	}
+        else
+	  echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+        //echo "</div>";
       }
       $linhas++;
+      echo "</div>";
     }
-  }   
+    if ($comboLabelTotalWidth > 50){
+      echo "<br>\n";
+      echo"         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
+    }
+    else
+      echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+	if ($nullable == 1)
+    echo " [<a style=\"cursor: pointer;\" onclick=\"onde_unset_radio_" . $comboname . "()\">desmarcar</a>]";
+
+
+    //echo $comboLabelTotalWidth;
+  }  
 }
 
 /**
@@ -3648,7 +4247,7 @@ function queryradio($query, $conn, $radioname, $default){
   global $_debug;
   if ($_debug>1) echo "<PRE>1:\n" . $query . "</PRE>";
   $result = pg_exec ($conn, $query); // Executa a consulta.
-  $total = pg_numrows($result);// Verifica o numero de linhas resultante.
+  $total = pg_num_rows($result);// Verifica o numero de linhas resultante.
   $linhas=0;
   while ($linhas<$total){// Preenche o combo com o resultado da consulta.
     $row = pg_fetch_row ($result, $linhas);
@@ -3672,7 +4271,7 @@ function queryradio($query, $conn, $radioname, $default){
  * @param string $default       Valor default
  */
 function dbCheckList($tablename, $fieldvalue, $fieldcaption, $conn,
-                     $checkListName, $default){
+                     $checkListName, $default, $whereFilter){
   global $_debug;
   if ($_debug>1){
     echo "<PRE>\n";
@@ -3691,6 +4290,8 @@ function dbCheckList($tablename, $fieldvalue, $fieldcaption, $conn,
   $query  = "SELECT " . $fieldvalue . ", " . $fieldcaption;
   $query .= ", " . $default . "\n";
   $query .= "  FROM " . $tablename;
+  if (isset($whereFilter)) $query .= "  WHERE " . $whereFilter;
+  $query .= " order by " . $fieldcaption;
   queryCheckList($query, $conn, $checkListName, $default, 0, NULL);
 }
 
@@ -3708,37 +4309,65 @@ function queryCheckList($query, $conn, $checkListName, $default,
   global $_debug;
   if ($_debug>1) echo "<PRE>1:\n" . $query . "</PRE>";
   $result = pg_exec ($conn, $query); // Executa a consulta.
-  $total = pg_numrows($result);// Verifica o numero de linhas resultante.
+  $total = pg_num_rows($result);// Verifica o numero de linhas resultante.
   $linhas = 0;
+
+  if ($total >= 7) {
+    echo"         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
+    echo"<SELECT ";
+    if ($isMobile)
+      echo "style=\"width: 80vw;\" ";
+    else
+      echo "width=500 ";
+    echo " class=\"chosen-select\" ";
+    echo " NAME=\"" . $checkListName . "[]\" ";
+    echo " ID=\"" . $checkListName . "[]\" ";
+    echo " SIZE=\"1\" multiple>";          
+  }
+
   while ($linhas<$total){// Preenche o combo com o resultado da consulta.
     $row = pg_fetch_row ($result, $linhas);
-    echo"         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
-    echo "        <INPUT TYPE=\"CHECKBOX\" ";
-    if ($row[1]==$default) echo "CHECKED"; //Compatibilidade reversa
-    if ($row[2] && $default!="unchecked") echo "CHECKED";
-    echo " NAME=\"" . $checkListName . "[" . $linhas . "]";
-    echo "\" VALUE=\"" . $row[0] . "\"";
-    if ($onClick){
-      echo " onClick=\"";
-      $consulta  = $onClick['consulta'] . $onClick['delimiter'];
-      $consulta .= $row[0] . $onClick['delimiter']; // Executa a consulta.
-      if ($_debug>1) echo "<PRE>Consulta:\n" . $consulta . "</PRE>\n";
-      $result2 = pg_exec ($conn, $consulta);
-      $total2 = pg_numrows($result2);// Verifica o numero de linhas resultante.
-      $linhas2=0;
-      while ($linhas2<$total2){// Preenche o combo com o resultado da consulta.
-        $row2 = pg_fetch_row ($result2, $linhas2);
-        echo "toggleMenuTabela('" . $row2[0] . "');";
-        $linhas2++;
-      }
-      echo "\"";
+    if ($total >= 7 ) {
+      echo "<option value=\"" . $row[0] . "\" ";
+      if ($row[1]==$default) echo "SELECTED"; //Compatibilidade reversa
+      if ($row[2] && $default!="unchecked") echo "SELECTED";
+      echo ">";
+      echo $row[1];
+      if ($_debug>1) echo "<B>noBreakLine: " . $noBreakLine . "</B><BR>\n";
+      if (!$noBreakLine) echo "<BR>\n";
     }
-    echo ">";
-    echo $row[1];
-    if ($_debug>1) echo "<B>noBreakLine: " . $noBreakLine . "</B><BR>\n";
-    if (!$noBreakLine) echo "<BR>\n";
+    else{      
+      echo "        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
+      echo "        <INPUT TYPE=\"CHECKBOX\" ";
+      if ($row[1]==$default) echo "CHECKED"; //Compatibilidade reversa
+      if ($row[2] && $default!="unchecked") echo "CHECKED";
+      echo " NAME=\"" . $checkListName . "[" . $linhas . "]";
+      echo "\" VALUE=\"" . $row[0] . "\"";
+      if ($onClick){
+        echo " onClick=\"";
+        $consulta  = $onClick['consulta'] . $onClick['delimiter'];
+        $consulta .= $row[0] . $onClick['delimiter']; // Executa a consulta.
+        if ($_debug>1) echo "<PRE>Consulta:\n" . $consulta . "</PRE>\n";
+        $result2 = pg_exec ($conn, $consulta);
+        $total2 = pg_num_rows($result2);// Verifica o numero de linhas resultante.
+        $linhas2=0;
+        while ($linhas2<$total2){// Preenche o combo com o resultado da consulta.
+          $row2 = pg_fetch_row ($result2, $linhas2);
+          echo "toggleMenuTabela('" . $row2[0] . "');";
+          $linhas2++;
+        }
+        echo "\"";
+      }
+      echo ">";
+      echo $row[1];
+      if ($_debug>1) echo "<B>noBreakLine: " . $noBreakLine . "</B><BR>\n";
+      if (!$noBreakLine) echo "<BR>\n";
+    }
     $linhas++; 
   }
+  if ($total >= 7) {
+    echo"</SELECT>";
+  }  
 }
 
 /**
@@ -3762,7 +4391,7 @@ function dbListaDetalhada($tablename, $titulo, $detalhes, $conn){
  */
 function queryListaDetalhada($conn, $query){
   $result = pg_exec ($conn, $query);// Executa a consulta.
-  $total = pg_numrows($result);// Verifica o numero de linhas resultante.
+  $total = pg_num_rows($result);// Verifica o numero de linhas resultante.
   $linhas=0;
   while ($linhas<$total){// Preenche o combo com o resultado da consulta.
     $row = pg_fetch_row ($result, $linhas);
@@ -3795,7 +4424,7 @@ function Warning($Messagem){
   global $ehXML;
   if (!$ehXML){
 ?>
-    <TABLE WIDTH="540" CLASS="warning">
+    <TABLE WIDTH="380" CLASS="warning" style="width: 380px;">
       <TR><TH class=onde ><B>Alerta!</B></TH></TR>
       <TR>
         <TD class=onde ALIGN="LEFT">
@@ -3872,7 +4501,7 @@ function show_tables($conn){
     exit;
   }
   $linhas=0;
-  while ($linhas<pg_NumRows($result)){   /* Preenche a tabela.                 */
+  while ($linhas<pg_num_rows($result)){   /* Preenche a tabela.                 */
     $row = pg_fetch_row ($result, $linhas);
     if ($row[0]){
       echo "<H2>" . $row[0] . "</H2>\n";
@@ -4129,7 +4758,11 @@ function showPgFunctionDefinition($conn, $functionName){
   $query .= "  pg_catalog.pg_get_function_arguments(p.oid) as \"Argument data types\",\n";
   $query .= "  '<PRE>'||p.prosrc||'</PRE>',\n";
   $query .= " CASE\n";
+
+  // detectar versao do banco (a partir do 11 tem que ser prokind
+  //$query .= "  WHEN p.prokind = 'f' THEN 'agg'\n";
   $query .= "  WHEN p.proisagg THEN 'agg'\n";
+  
   $query .= "  WHEN p.proiswindow THEN 'window'\n";
   $query .= "  WHEN p.prorettype = 'pg_catalog.trigger'::pg_catalog.regtype THEN 'trigger'\n";
   $query .= "  ELSE 'normal'\n";
@@ -4355,5 +4988,16 @@ function icsToArray($paramUrl) {
      $pattern_middle = $right_pattern; 	
    } 	
     return preg_replace("/$pattern_middle/usSD", '', $string );	
-}	
+}
+
+ function randomPassword() {
+   $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890@$_';
+   $pass = array(); //remember to declare $pass as an array
+   $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
+   for ($i = 0; $i < 8; $i++) {
+     $n = rand(0, $alphaLength);
+     $pass[] = $alphabet[$n];
+   }
+   return implode($pass); //turn the array into a string
+ }
 ?>
