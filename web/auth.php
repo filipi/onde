@@ -45,7 +45,7 @@ if (trim($_POST['matricula']) && intval(trim($_POST['matricula'])))
  else
   $matricula = pg_escape_string(trim($_POST['matricula']));
 $email = pg_escape_string(trim($_POST['email']));
-if (!strpos($email, "@")) $email = $email . "@pucrs.br";
+
 $matricula_ou_email = pg_escape_string(trim($_POST['matricula_ou_email']));
 $senha = pg_escape_string(trim($_POST['senha']));
 $ip = $_SERVER['REMOTE_ADDR'];

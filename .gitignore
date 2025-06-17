@@ -6,3 +6,4 @@ conf*.inc
 stuff
 backup_plumes
 info.php
+include/conf.inc

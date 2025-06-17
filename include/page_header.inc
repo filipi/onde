@@ -4,7 +4,6 @@
  * Abre uma conexao com o banco e inicializa o cabecalho do HTML
  * $Id: page_header.inc,v 1.75 2018/08/06 19:42:24 filipi Exp $
  */
-
 //if (stripos("_" . $_theme, "frameless")){
 include("startup.inc"); // Inicia a sessao.
 include "start_sessao.inc";
