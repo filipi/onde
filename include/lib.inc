@@ -68,11 +68,6 @@ function checkClearence($conn, $clearGroups){
   $devLinks[] = "query.php";
   $devLinks[] = "wireit.php";
 
-  $ideiaLinks[] = "pesquisa.php";
-  $ideiaLinks[] = "masterForm.php";
-  $ideiaLinks[] = "pesquisa_no_patrimonio_grande.php";
-  $ideiaLinks[] = "usuarios.php";
-
   $clear = 0;
   $clearanceQuery  = "select count(codigo) from grupos\n";
   $clearanceQuery .= "     where codigo in (SELECT grupo from usuarios_grupos where usuario = '" . trim($_SESSION['matricula']) . "')\n";
@@ -705,8 +700,6 @@ function getHtmlImage($string, $id){
       if (isset($id))
         $pattern = '/.*?img(.*)?(id="image_' . $id . ')?src="(.*)?(loadFiles.php\?id=' . $id . ')(.*)/i';
         
-      else
-        $pattern = '/(.*)?img(.*)?(src)="(.*)?(ideia_image)(.*)/i';
             
       //$pattern = '/(.*)?img(.*)?(src)="(.*)?(border)(.*)/i';
       //echo $pattern."</br>";
@@ -916,8 +909,8 @@ function legendaCronograma($conn){
  * Renderiza uma tabela html mostrando um cronograma cadastrado no sistema.
  * @param int $scale  - escala de dias (7 - mostra por semana)
  * @param bool $open  - se true separa as atividades em linhas diferentes
- * @param int $solicitacao - codigo da solicitacao no Grande IDEIA
- * @param int atividade    - codigo da atividade no Grande IDEIA
+ * @param int $solicitacao - 
+ * @param int atividade    - 
  * @param int $conn    - PostgreSQL database connection ID
 
 @example:

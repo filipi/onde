@@ -1,4 +1,7 @@
 <?PHP
+  //$myPATH = ini_get('include_path') . ':./include:../include:../../include';
+  //ini_set('include_path', $myPATH);
+
 if (isset($_GET['demanda'])) $demanda = intval($_GET['demanda']); else $demanda = 0;
 if (isset($_GET['form'])) $form = $form = intval($_GET['form']); else $form = 0;
 
@@ -12,8 +15,8 @@ if (isset($_GET['alvo'])){
 
 $useSessions = 1; $ehXML = 1;
 include "iniset.php";
-include_once("include/php_backwards_compatibility.inc");
-include_once("include/escapeConfVars.inc");
+include_once("../include/php_backwards_compatibility.inc");
+include_once("../include/escapeConfVars.inc");
 include("conf.inc");escapeConfVars();
 if (!stripos("_" . $_theme, "frameless")){
   include "page_header.inc";
@@ -27,9 +30,9 @@ if (isset($_GET['PHPSESSID']))
 
 $isdeveloper = 0;
 reset($developer);
-while (list($key, $val) = each($developer)){
+foreach($developer as $dev){
   if (isset($_SESSION)){
-    if ($developer[$key] == $_SESSION['matricula'])
+    if ($dev == $_SESSION['matricula'])
       $isdeveloper=1;
    }
  }
@@ -47,7 +50,6 @@ if (!stripos("_" . $_theme, "frameless")){
  }
 
 if (stripos("_" . $_theme, "frameless")){
-
   if ($demanda){
     $formID = SOLICITACOES_MINHAS_DETALHES;
     $codigo = $demanda;
@@ -61,8 +63,8 @@ if (stripos("_" . $_theme, "frameless")){
     else{
       include("inicio.php");
     }
-   }
-   else{
+}
+else{
    ?>
   <FRAMESET COLS="20%,*" BORDER=0 MARGINWIDTH="0" MARGINHEIGHT="0"
             FRAMEBORDER="0" NORESIZE>

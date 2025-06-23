@@ -629,7 +629,7 @@ if ($_POST['buttonrow'] ||
    //     var_dump($size);
    //     echo "</PRE>\n";
    echo "<DIV class=\"codigoDeDemanda\">\n";
-   echo "<IMG src=\"" . $serverImageFile . "\" ALT=\"ideia_image\" ";
+   echo "<IMG src=\"" . $serverImageFile . "\" ALT=\"\" ";
    if ($size[0] > 255) {
    echo " width=255 ";
    }

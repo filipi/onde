@@ -46,10 +46,10 @@ echo "  <DIV CLASS=\"coment\">\n";
     "><?PHP echo $SYSTEM_NAME; ?> Vers&atilde;o <?PHP echo $SYSTEM_VERSION; ?></A></DIV>
   <?PHP
   if (stripos("_" . $_theme, 'fancy') || stripos("_" . $_theme, 'tron')){
-    $logo_image = "logoIDEIAglow_2018.png";
+    $logo_image = "";
   }
   else{
-    $logo_image = "logo_ideia_2018.png";
+    $logo_image = "";
   }
   //$onde_logo_themes = 0;
   $onde_logo_themes[] = 'frameless';
@@ -59,10 +59,10 @@ echo "  <DIV CLASS=\"coment\">\n";
   if (in_array($_theme, $onde_logo_themes)) $logo_image = 'logo_onde.png';
 
   if (file_exists("./images/" . $logo_image))
-    echo ($organizationWebSiteURL ? "<a href=\"" . $organizationWebSiteURL . "\" target=\"_blank\">" : "") . "<img border=\"0\" src=images/" . $logo_image . ">" . ($site_ideia_URL ? "</a>" : "") . "\n";
+    echo ($organizationWebSiteURL ? "<a href=\"" . $organizationWebSiteURL . "\" target=\"_blank\">" : "") . "<img border=\"0\" src=images/" . $logo_image . ">" . ($site_organization  ? "</a>" : "") . "\n";
   else{
     if (file_exists("../images/" . $logo_image))
-      echo ($organizationWebSiteURL ? "<a href=\"" . $organizationWebSiteURL . "\" target=\"_blank\">" : "") . "<img  border=\"0\" src=../images/" . $logo_image . ">" . ($site_ideia_URL ? "</a>" : "") . "\n";
+      echo ($organizationWebSiteURL ? "<a href=\"" . $organizationWebSiteURL . "\" target=\"_blank\">" : "") . "<img  border=\"0\" src=../images/" . $logo_image . ">" . ($site_organization ? "</a>" : "") . "\n";
   }
   ?>
   </CENTER>

@@ -727,7 +727,6 @@ if ($formulario['formulario']){
   // Quando detectar que tem relacoes N:N, deve ver se o indice tem sequence, caso tenha, deve pedir o nextval para reserva
   // e inserir manualmente no insert, para poder montar as referencias da relacao N:N
   // http://stackoverflow.com/questions/9325017/error-permission-denied-for-sequence-cities-id-seq-using-postgres
-  // GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO ideia;
 
   $queryPrepare = "set DateStyle TO 'ISO,MDY'";
   $prepareResult = pg_exec ($conn, $queryPrepare);
@@ -1384,7 +1383,7 @@ if ($formulario['formulario']){
       if (trim($emailTemplate['Enviar confirmação de recebimento para']))
         $mail->ConfirmReadingTo = trim($emailTemplate['Enviar confirmação de recebimento para']);
 
-      $mail->Subject  = stripAccents($emailTemplate['assunto'] ? $emailTemplate['assunto'] : "[IDEIA] Mensagem enviada pelo sistema interno");
+      $mail->Subject  = stripAccents($emailTemplate['assunto'] ? $emailTemplate['assunto'] : "[ONDE] Mensagem enviada pelo sistema interno");
       // Plain text body (for mail clients that cannot read HTML)
 
       $htmlTemp = stripslashes($html);

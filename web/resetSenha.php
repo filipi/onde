@@ -158,7 +158,7 @@ if (!$email){
 
 	   
        $mail->CharSet = $encoding;
-       $assunto  = "[IDEIA] Solicitação de alteração de senha ";
+       $assunto  = "[ONDE] Solicitação de alteração de senha ";
        $mail->Subject  = stripAccents($assunto);
        $mail->Body    = str_replace(" src=\"logo.png\"", " src=\"cid:1272542224.13304.4.camel@brainstorm\"", $emailArray['content']);
        $h2t = new \Html2Text\Html2Text($emailArray['content']);

@@ -380,7 +380,7 @@ if ($_POST['buttonrow'] ||
         //     var_dump($size);
         //     echo "</PRE>\n";
         echo "<DIV class=\"codigoDeDemanda\">\n";
-        echo "<IMG src=\"" . $serverImageFile . "\" ALT=\"ideia_image\" ";
+        echo "<IMG src=\"" . $serverImageFile . "\" ALT=\"\" ";
         if ($size[0] > 255) {
             echo " width=255 ";
         }
@@ -521,19 +521,6 @@ if ($_POST['buttonrow'] ||
     echo "    <INPUT TYPE=\"PASSWORD\" CLASS=\"PASSWORD\" NAME=\"confirma\" SIZE=\"40\"\n";
     echo "    MAXLENGTH=\"200\"";
     echo "     VALUE=\"" . $disciplina['confirma'] . "\"><BR><BR>";
-
-    echo "    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
-    echo "    <B>Senha principal no Sistema IDEIA (GTiT):</B><BR>\n";
-    echo "    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
-    echo "    <INPUT TYPE=\"TEXT\" CLASS=\"TEXT\" NAME=\"senha2\" SIZE=\"40\"\n";
-    echo "    MAXLENGTH=\"6\"";
-    echo "     VALUE=\"" . $disciplina['senha2'] . "\"><BR><BR>";
-    echo "    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
-    echo "    <B>Senha alternativa no Sistema IDEIA (GTiT):</B><BR>\n";
-    echo "    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
-    echo "    <INPUT TYPE=\"TEXT\" CLASS=\"TEXT\" NAME=\"senha3\" SIZE=\"40\"\n";
-    echo "    MAXLENGTH=\"6\"";
-    echo "     VALUE=\"" . $disciplina['senha3'] . "\"><BR><BR>";
 
     echo "    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
     echo "    <B>N&uacute;mero de horas semanais:</B><BR>\n";

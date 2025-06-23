@@ -27,10 +27,10 @@ function generateRandomString($length = 8) {
 $logo_image = "yourlogo";
 $name_image = "yourlogo";
 if (file_exists("./images/" . $logo_image))
-echo ($organizationWebSiteURL ? "<a href=\"" . $organizationWebSiteURL . "\" target=\"_blank\">" : "") . "<img border=\"0\" src=images/" . $logo_image . " width=\"116\">" . "<img border=\"0\" src=images/" . $name_image . " width=\"156\">" . ($site_ideia_URL ? "</a>" : "") . "\n";
+echo ($organizationWebSiteURL ? "<a href=\"" . $organizationWebSiteURL . "\" target=\"_blank\">" : "") . "<img border=\"0\" src=images/" . $logo_image . " width=\"116\">" . "<img border=\"0\" src=images/" . $name_image . " width=\"156\">" . ($site_organization ? "</a>" : "") . "\n";
 else{
 if (file_exists("../images/" . $logo_image))
-  echo ($organizationWebSiteURL ? "<a href=\"" . $organizationWebSiteURL . "\" target=\"_blank\">" : "") . "<img  border=\"0\" src=../images/" . $logo_image . ">" . ($site_ideia_URL ? "</a>" : "") . "\n";
+  echo ($organizationWebSiteURL ? "<a href=\"" . $organizationWebSiteURL . "\" target=\"_blank\">" : "") . "<img  border=\"0\" src=../images/" . $logo_image . ">" . ($site_organization ? "</a>" : "") . "\n";
 }
 
 if(isset($_POST['email']) && !empty($_POST['email'])){ //verify if a email was typed

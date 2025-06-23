@@ -166,7 +166,7 @@ if (stripos("_" . $_theme, 'fancy') || stripos("_" . $_theme, 'tron'))
   echo "  <BODY TEXT=\"lightblue\" BGCOLOR=\"black\">\n";
 else
   echo "  <BODY TEXT=\"#000000\" BGCOLOR=\"#FFFFFF\">\n";
-
+    
 if ( stripos("_" . $_theme, "frameless") && !$ehXML){
   echo "<div id=\"wrapper\"><!--root element for IE6-->  \n";
 }
@@ -188,7 +188,6 @@ if ( stripos("_" . $_theme, "frameless") && !$ehXML){
     exit(1);
   }
   pg_set_client_encoding($conn, $encoding);
-  include_once("sistemaIdeia.inc");
 
 $isdeveloper = 0;
 reset($developer);
@@ -207,8 +206,11 @@ $authlog_query .= "  VALUES (" . (intval($matricula) ? "'" . $matricula . "', " 
 $authlog_query .= "          '" . $ip . "', '";
 $authlog_query .= basename($_SERVER["PHP_SELF"]) . "',\n '{";
 foreach ($_GET as $key => $value){
-  $authlog_query .=  "(" . pg_escape_string($key) . " = " . pg_escape_string($value) . ")"; 
+  //echo "\$key: " . $key . "<BR>";
+  //echo "\$value: " . print_r($value, true) . "<BR>";
+  $authlog_query .=  "(" . pg_escape_string($conn, $key) . " = '" . pg_escape_string($conn, print_r($value, true)) . "')"; 
 }
+//exit();
 $authlog_query .= "}')\n";
 //echo "<PRE>". $authlog_query . "</PRE>";
 $authlog_exe = pg_exec($conn, $authlog_query);
@@ -219,7 +221,6 @@ if (!$authlog_exe){
   //$authlog_query .= "\nsenha:" . $senha . "')";
   $authlog_exe = pg_exec($conn,$authlog_query);
 }
-
 
 /*
 echo basename($_SERVER['PHP_SELF']) . "\n";

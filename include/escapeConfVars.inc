@@ -16,9 +16,9 @@ $moduleDeps = array ("Core", "date", "ereg", "libxml", "openssl", "pcre", "zlib"
 
  function escapeConfVars(){
    global $conn, $_integracaoSiteLigada,
-     $host_siteIdeia, $usuario_siteIdeia, $_integracaoLigada, $_voltaMesma, $trocas_minimas,
-     $tamanho_senha, $usuario_sistemaIdeia, $senha_sistemaIdeia, $senha2_sistemaIdeia, $URL_sistemaIdeia,
-     $URL_sipesq, $URL, $email, $fone, $developer, $_debug, $_singleQueue, $_remoteAssets, $_theme,
+     $_integracaoLigada, $_voltaMesma, $trocas_minimas,
+     $tamanho_senha, $URL, $email, $fone, $developer, $_debug, $_singleQueue,
+     $_remoteAssets, $_theme,
      $verificaEmail, $encoding, $mem_limit, $max_execution_time, $deps, $_menu_from_db,
      $logo_image, $organizationWebSiteURL, $_no_check_certificate,
      $system_mail_from, $system_mail_from_name, $system_mail_host, $system_mail_mailer, $debug_mail_recipient;
@@ -32,19 +32,11 @@ $moduleDeps = array ("Core", "date", "ereg", "libxml", "openssl", "pcre", "zlib"
   }
 
   $_integracaoSiteLigada = intval(trim($_integracaoSiteLigada));
-  $host_siteIdeia =  pg_escape_string($conn, trim($host_siteIdeia));
-  $usuario_siteIdeia =  pg_escape_string($conn, trim($usuario_siteIdeia));
 
   $_integracaoLigada = intval(trim($_integracaoLigada));
   $_voltaMesma = intval(trim($_voltaMesma));
   $trocas_minimas =  intval(trim($trocas_minimas));
   $tamanho_senha =  intval(trim($tamanho_senha));
-
-  $usuario_sistemaIdeia =  pg_escape_string($conn, trim($usuario_sistemaIdeia));
-  $senha_sistemaIdeia =  pg_escape_string($conn, trim($senha_sistemaIdeia));
-  $senha2_sistemaIdeia =  pg_escape_string($conn, trim($senha2_sistemaIdeia));
-  $URL_sistemaIdeia =  pg_escape_string($conn, trim($URL_sistemaIdeia));
-  $URL_sipesq =  pg_escape_string($conn, trim($URL_sipesq));
 
   $logo_image = ($logo_image != NULL ? pg_escape_string($conn, trim($logo_image)) : NULL);
   $organizationWebSiteURL = pg_escape_string($conn, trim($organizationWebSiteURL));

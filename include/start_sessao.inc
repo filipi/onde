@@ -13,11 +13,10 @@ if($useSessions){
 	  $PHPSESSID = $_SESSION['PHPSESSID'];
   //session_save_path("./session_files");
 
-  ini_set('session.save_path',"./session_files");
+  ini_set('session.save_path',"../session_files");
   //session_save_path('./session_files');
   session_name('onde');
   session_start();
-
 
   if (isset($PHPSESSID) && trim($PHPSESSID)){
     $_SESSION['PHPSESSID'] = $PHPSESSID;
@@ -48,4 +47,6 @@ if($useSessions){
     exit(0);
   }
  }
+//echo "oi oi oi inicio";
+//echo "<PRE>\$erro_sessao: " . print_r($erro_sessao, true) . "</PRE>";
 ?>
